@@ -1,0 +1,23 @@
+name: img-upload # You can also change this to another name to avoid warning with existing group. 
+services:
+  backend:
+    container_name: pf-img-backend
+    build: .
+    ports:
+      - ${PORT}:3000
+    networks:
+      - img-upload_pf-net
+    volumes:
+      - pf-image:/app/dist/images
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_APP_USER=${POSTGRES_APP_USER}
+      - POSTGRES_APP_PASSWORD=${POSTGRES_APP_PASSWORD}
+    
+networks:
+  img-upload_pf-net: # Check by using `docker network ls` command
+    external: true
+volumes:
+    pf-image:
