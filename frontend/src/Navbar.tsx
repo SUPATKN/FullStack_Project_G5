@@ -106,6 +106,27 @@ const NavBar: React.FC = () => {
               </>
             ) : (
               <Nav.Item className="navlink d-flex">
+                <Nav.Item>
+                  <Nav.Link
+                    as={Link}
+                    to="/upload"
+                    style={{
+                      fontSize: "15px",
+                      backgroundColor: "#ffffff",
+                      borderRadius: "25px",
+                      color: "#37517e",
+                      boxShadow:
+                        "0 6px 12px 0 rgba(0,0,0,0.2), 0 6px 15px 0 rgba(0,0,0,0.19)",
+                      padding: "5px 10px",
+                      margin: "10px 0 5px 5px",
+                      width: "max-content",
+                      textAlign: "center",
+                    }}
+                    data-cy="start-upload-button"
+                  >
+                    Start Upload
+                  </Nav.Link>
+                </Nav.Item>
                 <Nav.Link
                   as={Link}
                   to="/profile"

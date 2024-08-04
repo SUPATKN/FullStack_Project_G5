@@ -163,7 +163,7 @@ const Upload = () => {
           {success}
         </Alert>
       )}
-      <h3 className="my-4">Uploaded Images</h3>
+      {/* <h3 className="my-4">Uploaded Images</h3>
 
       <Row>
         {photos
@@ -190,7 +190,7 @@ const Upload = () => {
               </div>
             </Col>
           ))}
-      </Row>
+      </Row> */}
     </Layout>
   );
 };

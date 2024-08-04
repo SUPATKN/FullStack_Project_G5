@@ -56,7 +56,9 @@ const Gallery = () => {
               thumbnail
               className="w-100"
             />
-            <p className="mt-2 text-center">{getUsername(photo.user_id)}</p>
+            <p className="mt-2 text-center">
+              User : {getUsername(photo.user_id)}
+            </p>
           </Col>
         ))}
       </Row>
