@@ -123,7 +123,7 @@ const NavBar: React.FC = () => {
                   }}
                   data-cy="me"
                 >
-                  me
+                  Profile
                 </Nav.Link>
                 <Nav.Link
                   as={Link}
