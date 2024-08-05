@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import axios from "axios";
-import { Form, Button, Image, Row, Col, Alert } from "react-bootstrap";
+import { Form, Button, Image, Alert } from "react-bootstrap";
 import Layout from "./Layout";
 
 interface User {
@@ -13,11 +13,15 @@ const Upload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [photos, setPhotos] = useState<
-    { id: string; path: string; user_id: string }[]
+    { id: string; path: string; user_id: string; price?: number }[]
   >([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+
+  // New state for free image and price
+  const [isFree, setIsFree] = useState<boolean>(true);
+  const [price, setPrice] = useState<number | "">(0);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -33,9 +37,16 @@ const Upload = () => {
       return;
     }
 
+    if (!isFree && (price === "" || price === undefined)) {
+      setError("Please provide a price for the image.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("image", file);
-    formData.append("user_id", user?.id?.toString() || ""); // Adding user_id directly to formData
+    formData.append("user_id", user?.id?.toString() || "");
+    formData.append("isFree", isFree.toString());
+    formData.append("price", isFree ? "" : price.toString());
 
     try {
       await axios.post("/api/upload", formData, {
@@ -47,6 +58,7 @@ const Upload = () => {
       setError(null);
       fetchImages();
       setSelectedImage("");
+      setPrice(0); // Reset price after upload
     } catch (error) {
       console.error("Error uploading file:", error);
       setSuccess(null);
@@ -57,7 +69,7 @@ const Upload = () => {
   const fetchImages = async () => {
     try {
       const { data } = await axios.get<
-        { id: string; path: string; user_id: string }[]
+        { id: string; path: string; user_id: string; price?: number }[]
       >("/api/photo");
       setPhotos(data);
     } catch (error) {
@@ -90,23 +102,6 @@ const Upload = () => {
       }
     }
   };
-
-  // const handleDelete = async (filename: string) => {
-  //   try {
-  //     await axios.delete(`/api/photo/${filename}`);
-  //     setSuccess("File deleted successfully!");
-  //     setError(null);
-
-  //     const updatedPhotos = photos.filter(
-  //       (photo) => photo.path.split("/").pop() !== filename
-  //     );
-  //     setPhotos(updatedPhotos);
-  //   } catch (error) {
-  //     console.error("Error deleting file:", error);
-  //     setSuccess(null);
-  //     setError("Failed to delete file.");
-  //   }
-  // };
 
   useEffect(() => {
     fetchUser();
@@ -145,6 +140,25 @@ const Upload = () => {
             />
           </div>
         )}
+        <Form.Group controlId="formIsFree" className="mb-3">
+          <Form.Check
+            type="checkbox"
+            label="Free Image"
+            checked={isFree}
+            onChange={(e) => setIsFree(e.target.checked)}
+          />
+        </Form.Group>
+        {!isFree && (
+          <Form.Group controlId="formPrice" className="mb-3">
+            <Form.Label>Price</Form.Label>
+            <Form.Control
+              type="number"
+              placeholder="Enter price"
+              value={price}
+              onChange={(e) => setPrice(Number(e.target.value))}
+            />
+          </Form.Group>
+        )}
         <Button
           variant="primary"
           onClick={handleUpload}
@@ -163,11 +177,11 @@ const Upload = () => {
           {success}
         </Alert>
       )}
+      {/* Uncomment and adjust the following if you have a deletion feature */}
       {/* <h3 className="my-4">Uploaded Images</h3>
-
       <Row>
         {photos
-          .filter((photo) => photo.user_id == user?.id?.toString())
+          .filter((photo) => photo.user_id === user?.id?.toString())
           .map((photo) => (
             <Col key={photo.id} xs={12} md={4} lg={3} className="mb-4">
               <div className="position-relative">

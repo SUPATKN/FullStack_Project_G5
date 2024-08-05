@@ -5,6 +5,7 @@ import {
   varchar,
   integer,
   timestamp,
+  decimal,
   unique,
 } from "drizzle-orm/pg-core";
 
@@ -22,7 +23,11 @@ export const images = pgTable("images", {
     .notNull()
     .references(() => users.id),
   created_at: timestamp("created_at").defaultNow().notNull(),
+  price: integer("price").default(0), 
 });
+
+
+
 
 export const likes = pgTable(
   "likes",
@@ -52,3 +57,12 @@ export const comments = pgTable("comments", {
   content: text("content").notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
+
+
+// import { pgTable, dropTable } from "drizzle-orm/pg-core";
+
+// export const down = async (queryInterface) => {
+//   await queryInterface.dropTable('transaction_history');
+//   await queryInterface.dropTable('transactions');
+//   await queryInterface.dropTable('currencies');
+// };

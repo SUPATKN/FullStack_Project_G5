@@ -67,21 +67,23 @@ app.get("/", (req: Request, res: Response) => {
 //   }
 // );
 
-app.post("/api/upload", upload.single("image"), async (req, res) => {
+app.post("/api/upload", upload.single("image"), async (req: Request, res: Response) => {
   const filePath = `/images/${req.file?.filename}`;
+  const userId = req.body.user_id;
+  const isFree = req.body.isFree === 'true'; // รับค่าเป็น string แล้วเปลี่ยนเป็น boolean
+  const price = isFree ? 0 : parseInt(req.body.price, 10) || 0; // กำหนดราคาเป็น 0 หากฟรี
+
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
 
   try {
-    const userId = req.body.user_id; // Changed from userId to user_id to match the frontend
-
-    if (!userId) {
-      return res.status(400).json({ error: "User ID is required" });
-    }
-
     const result = await dbClient
       .insert(images)
       .values({
         path: filePath,
         user_id: Number(userId),
+        price: price,
         created_at: new Date(),
       })
       .returning({ id: images.id, path: images.path });
@@ -93,42 +95,8 @@ app.post("/api/upload", upload.single("image"), async (req, res) => {
   }
 });
 
-// app.post("/api/upload", upload.single("image"), async (req: any, res: any) => {
-// const filePath = `/images/${req.file.filename}`;  try {
-//     const result = await dbClient
-//       .insert(images)
-//       .values({ path: filePath })
-//       .returning({ id: images.id, path: images.path });
-//     res.json({ filePath });
-//   } catch (error) {
-//     console.error("Error saving file path to the database:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
 
-// app.post(
-//   "/api/upload",
-//   upload.single("image"),
-//   async (req: Request, res: Response) => {
-//     const filePath = `/images/${req.file?.filename}`;
-//     const userId = req.body.userId;
 
-//     if (!userId) {
-//       return res.status(400).json({ error: "User ID is required" });
-//     }
-
-//     try {
-//       await dbClient.insert(images).values({
-//         path: filePath,
-//         user_id: Number(userId), // Ensure the user_id is provided and correctly typed
-//       });
-//       res.json({ filePath });
-//     } catch (error) {
-//       console.error("Error saving file path to the database:", error);
-//       res.status(500).json({ error: "Internal Server Error" });
-//     }
-//   }
-// );
 
 app.get("/api/photo", async (req: Request, res: Response) => {
   try {
@@ -139,6 +107,7 @@ app.get("/api/photo", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 app.get("/api/allusers", async (req: Request, res: Response) => {
   try {

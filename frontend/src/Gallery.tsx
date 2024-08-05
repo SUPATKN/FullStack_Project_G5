@@ -13,7 +13,7 @@ interface UserProfile {
 
 const Gallery = () => {
   const [photos, setPhotos] = useState<
-    { id: string; path: string; user_id: string }[]
+    { id: string; path: string; user_id: string; price: number }[]
   >([]);
   const [users, setUsers] = useState<{ id: string; username: string }[]>([]);
   const [likes, setLikes] = useState<{ photo_id: number; user_id: number }[]>(
@@ -26,7 +26,7 @@ const Gallery = () => {
   const fetchImages = async () => {
     try {
       const { data } = await axios.get<
-        { id: string; path: string; user_id: string }[]
+        { id: string; path: string; user_id: string; price: number }[]
       >("/api/photo");
       setPhotos(data);
     } catch (error) {
@@ -152,6 +152,10 @@ const Gallery = () => {
             )}
             <h4>Likes count: {getLikeCount(photo.id)}</h4>
             <p className="mt-2">User: {getUsername(photo.user_id)}</p>
+            <p className="mt-2">
+              {photo.price > 0 ? `Price: $${photo.price}` : "Free Download"}
+            </p>{" "}
+            {/* แสดงราคา หรือ "Free Download" */}
           </Col>
         ))}
       </Row>
