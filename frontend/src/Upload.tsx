@@ -91,22 +91,22 @@ const Upload = () => {
     }
   };
 
-  const handleDelete = async (filename: string) => {
-    try {
-      await axios.delete(`/api/photo/${filename}`);
-      setSuccess("File deleted successfully!");
-      setError(null);
+  // const handleDelete = async (filename: string) => {
+  //   try {
+  //     await axios.delete(`/api/photo/${filename}`);
+  //     setSuccess("File deleted successfully!");
+  //     setError(null);
 
-      const updatedPhotos = photos.filter(
-        (photo) => photo.path.split("/").pop() !== filename
-      );
-      setPhotos(updatedPhotos);
-    } catch (error) {
-      console.error("Error deleting file:", error);
-      setSuccess(null);
-      setError("Failed to delete file.");
-    }
-  };
+  //     const updatedPhotos = photos.filter(
+  //       (photo) => photo.path.split("/").pop() !== filename
+  //     );
+  //     setPhotos(updatedPhotos);
+  //   } catch (error) {
+  //     console.error("Error deleting file:", error);
+  //     setSuccess(null);
+  //     setError("Failed to delete file.");
+  //   }
+  // };
 
   useEffect(() => {
     fetchUser();

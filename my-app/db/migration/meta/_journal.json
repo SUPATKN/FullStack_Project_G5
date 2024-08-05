@@ -29,6 +29,20 @@
       "when": 1722703202054,
       "tag": "0003_cold_human_cannonball",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1722783059509,
+      "tag": "0004_silent_silver_centurion",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1722824508695,
+      "tag": "0005_supreme_gargoyle",
+      "breakpoints": true
     }
   ]
 }

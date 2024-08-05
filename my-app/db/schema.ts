@@ -4,7 +4,8 @@ import {
   text,
   varchar,
   integer,
-  foreignKey,
+  timestamp,
+  unique,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -20,4 +21,34 @@ export const images = pgTable("images", {
   user_id: integer("user_id")
     .notNull()
     .references(() => users.id),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const likes = pgTable(
+  "likes",
+  {
+    photo_id: integer("photo_id")
+      .notNull()
+      .references(() => images.id),
+    user_id: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+  },
+  (table) => {
+    return {
+      uniqueConstraint: unique().on(table.photo_id, table.user_id),
+    };
+  }
+);
+
+export const comments = pgTable("comments", {
+  comment_id: serial("comment_id").primaryKey(),
+  photo_id: integer("photo_id")
+    .notNull()
+    .references(() => images.id),
+  user_id: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  content: text("content").notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });

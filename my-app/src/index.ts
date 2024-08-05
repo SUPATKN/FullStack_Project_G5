@@ -79,7 +79,11 @@ app.post("/api/upload", upload.single("image"), async (req, res) => {
 
     const result = await dbClient
       .insert(images)
-      .values({ path: filePath, user_id: Number(userId) })
+      .values({
+        path: filePath,
+        user_id: Number(userId),
+        created_at: new Date(),
+      })
       .returning({ id: images.id, path: images.path });
 
     res.json({ filePath });
