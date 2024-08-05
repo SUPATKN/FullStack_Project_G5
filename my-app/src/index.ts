@@ -7,8 +7,8 @@ import helmet from "helmet";
 import { hash, compare } from "bcrypt";
 // import { body, validationResult } from 'express-validator';
 import { dbClient, dbConn } from "@db/client";
-import { images, users } from "@db/schema";
-import { eq } from "drizzle-orm";
+import { images, users, likes } from "@db/schema";
+import { and, eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
 
 const app = express();
@@ -289,6 +289,60 @@ app.get("/api/profile", async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error retrieving user profile:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/likes", async (req: Request, res: Response) => {
+  const { photo_id, user_id } = req.body;
+
+  if (!photo_id || !user_id) {
+    return res.status(400).json({ error: "Photo ID and User ID are required" });
+  }
+
+  try {
+    await dbClient.insert(likes).values({
+      photo_id: Number(photo_id),
+      user_id: Number(user_id),
+    });
+
+    res.status(201).json({ message: "Like added successfully" });
+  } catch (error) {
+    console.error("Error adding like:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Remove Like
+app.delete("/api/unlikes", async (req: Request, res: Response) => {
+  const { photo_id, user_id } = req.body;
+
+  if (!photo_id || !user_id) {
+    return res.status(400).json({ error: "Photo ID and User ID are required" });
+  }
+
+  try {
+    await dbClient
+      .delete(likes)
+      .where(
+        and(
+          eq(likes.photo_id, Number(photo_id)),
+          eq(likes.user_id, Number(user_id))
+        )
+      );
+    res.status(200).json({ message: "Like removed successfully" });
+  } catch (error) {
+    console.error("Error removing like:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/getlikes", async (req: Request, res: Response) => {
+  try {
+    const result = await dbClient.query.likes.findMany();
+    res.json(result);
+  } catch (error) {
+    console.error("Error retrieving likes from the database:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

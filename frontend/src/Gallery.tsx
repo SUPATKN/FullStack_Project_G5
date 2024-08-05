@@ -1,14 +1,27 @@
-// src/Gallery.tsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Image, Row, Col } from "react-bootstrap";
 import Layout from "./Layout";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faThumbsUp } from "@fortawesome/free-regular-svg-icons";
+
+interface UserProfile {
+  id: number;
+  username: string;
+  email: string;
+}
 
 const Gallery = () => {
   const [photos, setPhotos] = useState<
     { id: string; path: string; user_id: string }[]
   >([]);
   const [users, setUsers] = useState<{ id: string; username: string }[]>([]);
+  const [likes, setLikes] = useState<{ photo_id: number; user_id: number }[]>(
+    []
+  );
+  const [me, setMe] = useState<UserProfile | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const fetchImages = async () => {
     try {
@@ -18,6 +31,32 @@ const Gallery = () => {
       setPhotos(data);
     } catch (error) {
       console.error("Error fetching images:", error);
+    }
+  };
+
+  const fetchMe = async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setError("No access token found");
+      return;
+    }
+
+    try {
+      const response = await axios.get<UserProfile>(
+        "http://localhost:3000/api/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setMe(response.data);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data.error || "Failed to fetch user profile");
+      } else {
+        setError("An unexpected error occurred");
+      }
     }
   };
 
@@ -32,14 +71,58 @@ const Gallery = () => {
     }
   };
 
+  const fetchLikes = async () => {
+    try {
+      const { data } = await axios.get<{ photo_id: number; user_id: number }[]>(
+        "/api/getlikes"
+      );
+      setLikes(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching likes:", error);
+    }
+  };
+
+  const handleLike = async (photo_id: string, user_id: string) => {
+    console.log("photoid", photo_id);
+    console.log("userid", user_id);
+
+    const alreadyLiked = likes.some(
+      (like) =>
+        like.photo_id === parseInt(photo_id) &&
+        like.user_id === parseInt(user_id)
+    );
+    if (alreadyLiked) {
+      try {
+        await axios.delete("/api/unlikes", { data: { photo_id, user_id } });
+        await fetchLikes(); // Refresh likes after the unlike action
+      } catch (error) {
+        console.error("Error", error);
+      }
+    } else {
+      try {
+        await axios.post("/api/likes", { photo_id, user_id });
+        await fetchLikes(); // Refresh likes after the like action
+      } catch (error) {
+        console.error("Error", error);
+      }
+    }
+  };
+
   useEffect(() => {
+    fetchMe();
     fetchUsers();
     fetchImages();
+    fetchLikes();
   }, []);
 
   const getUsername = (userId: string) => {
     const user = users.find((user) => user.id === userId);
     return user ? user.username : "Unknown User";
+  };
+
+  const getLikeCount = (photoId: string) => {
+    return likes.filter((like) => like.photo_id === parseInt(photoId)).length;
   };
 
   return (
@@ -56,9 +139,19 @@ const Gallery = () => {
               thumbnail
               className="w-100"
             />
-            <p className="mt-2 text-center">
-              User : {getUsername(photo.user_id)}
-            </p>
+            {me && (
+              <button onClick={() => handleLike(photo.id, me.id.toString())}>
+                {likes.some(
+                  (like) =>
+                    like.photo_id === parseInt(photo.id) &&
+                    like.user_id === me.id
+                )
+                  ? "unlike"
+                  : "like"}
+              </button>
+            )}
+            <h4>Likes count: {getLikeCount(photo.id)}</h4>
+            <p className="mt-2">User: {getUsername(photo.user_id)}</p>
           </Col>
         ))}
       </Row>

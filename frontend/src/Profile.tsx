@@ -78,6 +78,9 @@ const Profile: React.FC = () => {
       setError("Failed to delete file.");
     }
   };
+
+
+
   useEffect(() => {
     fetchUserProfile();
     fetchImages();
