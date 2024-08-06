@@ -24,7 +24,8 @@ app.use(
 app.use(helmet());
 app.use(express.json());
 
-const storage = multer.diskStorage({
+//for store photo
+const storage1 = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, "../images"));
   },
@@ -36,8 +37,25 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+//for store profile picture
+const storage2 = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../profile_picture"));
+  },
+  filename: function (req, file, cb) {
+    const timestamp = new Date().toISOString().replace(/[-T:\.Z]/g, "");
+    const originalName = file.originalname.replace(/\s+/g, "_");
+    const newFilename = `${timestamp}-${originalName}`;
+    cb(null, newFilename);
+  },
+});
+
+const upload = multer({ storage: storage1 });
 app.use("/api/images", express.static(path.join(__dirname, "../images")));
+
+const upload_profilePic = multer({ storage: storage2 });
+app.use("/api/profilePic", express.static(path.join(__dirname, "../profile_picture")));
+
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World");
@@ -315,6 +333,47 @@ app.get("/api/getlikes", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// app.post("/api/profilePic/upload", upload.single("image"), async (req: Request, res: Response) => {
+//   const filePath = `${req.file?.filename}`;
+//   const userId = req.body.user_id;
+//   const isFree = req.body.isFree === 'true'; // รับค่าเป็น string แล้วเปลี่ยนเป็น boolean
+//   const price = isFree ? 0 : parseInt(req.body.price, 10) || 0; // กำหนดราคาเป็น 0 หากฟรี
+
+//   if (!userId) {
+//     return res.status(400).json({ error: "User ID is required" });
+//   }
+
+//   try {
+//     const result = await dbClient
+//       .insert(images)
+//       .values({
+//         path: filePath,
+//         user_id: Number(userId),
+//         price: price,
+//         created_at: new Date(),
+//       })
+//       .returning({ id: images.id, path: images.path });
+
+//     res.json({ filePath });
+//   } catch (error) {
+//     console.error("Error saving file path to the database:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+
+
+
+// app.get("/api/profilePic/get", async (req: Request, res: Response) => {
+//   try {
+//     const result = await dbClient.query.images.findMany();
+//     res.json(result);
+//   } catch (error) {
+//     console.error("Error retrieving images from the database:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

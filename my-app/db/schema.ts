@@ -23,11 +23,8 @@ export const images = pgTable("images", {
     .notNull()
     .references(() => users.id),
   created_at: timestamp("created_at").defaultNow().notNull(),
-  price: integer("price").default(0), 
+  price: integer("price").default(0).notNull(),
 });
-
-
-
 
 export const likes = pgTable(
   "likes",
@@ -57,7 +54,6 @@ export const comments = pgTable("comments", {
   content: text("content").notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
-
 
 // import { pgTable, dropTable } from "drizzle-orm/pg-core";
 

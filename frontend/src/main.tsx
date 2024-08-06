@@ -24,6 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/:userId" element={<Profile />}/>
           <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </Router>

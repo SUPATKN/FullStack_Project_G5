@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Image, Row, Col } from "react-bootstrap";
 import Layout from "./Layout";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThumbsUp } from "@fortawesome/free-regular-svg-icons";
 
 interface UserProfile {
   id: number;
@@ -22,6 +21,8 @@ const Gallery = () => {
   const [me, setMe] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const navigate = useNavigate(); // Initialize navigate function
 
   const fetchImages = async () => {
     try {
@@ -77,16 +78,12 @@ const Gallery = () => {
         "/api/getlikes"
       );
       setLikes(data);
-      console.log(data);
     } catch (error) {
       console.error("Error fetching likes:", error);
     }
   };
 
   const handleLike = async (photo_id: string, user_id: string) => {
-    console.log("photoid", photo_id);
-    console.log("userid", user_id);
-
     const alreadyLiked = likes.some(
       (like) =>
         like.photo_id === parseInt(photo_id) &&
@@ -125,6 +122,13 @@ const Gallery = () => {
     return likes.filter((like) => like.photo_id === parseInt(photoId)).length;
   };
 
+  const handleUsernameClick = (userId: string) => {
+    const user = users.find((user) => user.id === userId);
+    if (user) {
+      navigate(`/profile/${userId}`, { state: { user } });
+    }
+  };
+
   return (
     <Layout>
       <h3 className="mb-4 text-center">GALLERY</h3>
@@ -151,11 +155,15 @@ const Gallery = () => {
               </button>
             )}
             <h4>Likes count: {getLikeCount(photo.id)}</h4>
-            <p className="mt-2">User: {getUsername(photo.user_id)}</p>
+            <p
+              className="mt-2"
+              onClick={() => handleUsernameClick(photo.user_id)}
+            >
+              User: {getUsername(photo.user_id)}
+            </p>
             <p className="mt-2">
               {photo.price > 0 ? `Price: $${photo.price}` : "Free Download"}
             </p>{" "}
-            {/* แสดงราคา หรือ "Free Download" */}
           </Col>
         ))}
       </Row>

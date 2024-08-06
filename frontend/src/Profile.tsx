@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import Layout from "./Layout";
 import axios from "axios";
 import { Button, Image, Row, Col } from "react-bootstrap";
@@ -15,6 +16,7 @@ interface Photo {
   price: number;
   created_at: string;
 }
+
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   const year = date.getFullYear();
@@ -26,25 +28,16 @@ const formatDate = (dateString: string) => {
 };
 
 const Profile: React.FC = () => {
+  const location = useLocation();
+  const { userId } = useParams(); // Get userId from URL params
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null); // State for current user
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
-
   const [isEdit, setIsEdit] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  const fetchImages = async () => {
-    try {
-      const { data } = await axios.get<
-        { id: string; path: string; user_id: string }[]
-      >("/api/photo");
-      setPhotos(data);
-    } catch (error) {
-      console.error("Error fetching images:", error);
-    }
-  };
-
-  const fetchUserProfile = async () => {
+  const fetchCurrentUser = async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
       setError("No access token found");
@@ -60,6 +53,23 @@ const Profile: React.FC = () => {
           },
         }
       );
+      setCurrentUser(response.data);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(
+          error.response?.data.error || "Failed to fetch current user profile"
+        );
+      } else {
+        setError("An unexpected error occurred");
+      }
+    }
+  };
+
+  const fetchUserProfile = async (id: number) => {
+    try {
+      const response = await axios.get<UserProfile>(
+        `http://localhost:3000/api/user/${id}`
+      );
       setUser(response.data);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -70,10 +80,33 @@ const Profile: React.FC = () => {
     }
   };
 
+  const fetchPhotos = async () => {
+    try {
+      const { data } = await axios.get<Photo[]>("/api/photo");
+      setPhotos(data);
+    } catch (error) {
+      console.error("Error fetching photos:", error);
+      setError("Failed to fetch photos");
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentUser();
+    // Determine if we have a user passed via state or URL params
+    if (location.state && location.state.user) {
+      setUser(location.state.user);
+    } else if (userId) {
+      fetchUserProfile(parseInt(userId, 10));
+    } else {
+      // Handle case where no user data is available
+      setError("User profile not found");
+    }
+    fetchPhotos();
+  }, [location.state, userId]);
+
   const handleEdit = () => {
     setIsEdit(!isEdit);
   };
-  console.log("isEdit", isEdit);
 
   const handleDelete = async (filename: string) => {
     try {
@@ -92,30 +125,6 @@ const Profile: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUserProfile();
-    fetchImages();
-  }, []);
-
-  useEffect(() => {
-    if (photos.length <= 0) {
-      setIsEdit(false);
-    }
-  }, [photos]);
-  const fetchPhotos = async () => {
-    try {
-      const { data } = await axios.get<Photo[]>("/api/photo");
-      setPhotos(data);
-    } catch (error) {
-      console.error("Error fetching photos:", error);
-      setError("Failed to fetch photos");
-    }
-  };
-
-  useEffect(() => {
-    fetchPhotos();
-  }, []);
-
   return (
     <Layout>
       <div>
@@ -133,14 +142,15 @@ const Profile: React.FC = () => {
         )}
       </div>
       <h1>My photos</h1>
-      <Button
-        variant="secondary"
-        className="mb-3"
-        onClick={() => handleEdit()}
-        // data-cy={`delete-button-${photo.id}`}
-      >
-        Edit
-      </Button>
+      {currentUser?.id === user?.id && (
+        <Button
+          variant="secondary"
+          className="mb-3"
+          onClick={() => handleEdit()}
+        >
+          Edit
+        </Button>
+      )}
       <Row>
         {photos
           .filter((photo) => photo.user_id == user?.id?.toString())
@@ -153,14 +163,12 @@ const Profile: React.FC = () => {
                   alt={`Image ${photo.id}`}
                   thumbnail
                   className="w-100"
-                  data-cy={`photo-${photo.id}`}
                 />
                 {isEdit && (
                   <Button
                     variant="danger"
                     className="position-absolute top-0 end-0 m-2"
                     onClick={() => handleDelete(photo.path.split("/").pop()!)}
-                    data-cy={`delete-button-${photo.id}`}
                   >
                     Delete
                   </Button>

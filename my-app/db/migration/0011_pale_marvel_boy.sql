@@ -1,0 +1,1 @@
+ALTER TABLE "images" ALTER COLUMN "price" DROP NOT NULL;

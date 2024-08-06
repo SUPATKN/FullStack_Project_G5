@@ -5,9 +5,18 @@ import Logo from "./LogoPreflight.png";
 import "./global.css";
 import { useAuth } from "./AuthContext";
 
-const NavBar: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
+interface User {
+  id: number;
+  username: string;
+  email: string;
+}
 
+interface NavBarProps {
+  user: User | null;
+}
+
+const NavBar: React.FC<NavBarProps> = ({ user }) => {
+  const { isAuthenticated, logout } = useAuth();
   console.log("isAuthenticated:", isAuthenticated);
 
   return (
@@ -129,7 +138,7 @@ const NavBar: React.FC = () => {
                 </Nav.Item>
                 <Nav.Link
                   as={Link}
-                  to="/profile"
+                  to={`/profile/${user?.id}`}
                   style={{
                     fontSize: "15px",
                     backgroundColor: "#ffffff",

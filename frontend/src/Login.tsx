@@ -3,12 +3,46 @@ import axios from "axios";
 import Layout from "./Layout";
 import { useNavigate } from "react-router-dom";
 
+interface UserProfile {
+  id: number;
+  username: string;
+  email: string;
+}
+
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [me, setMe] = useState<UserProfile | null>(null);
   const navigate = useNavigate();
+
+  const fetchMe = async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setError("No access token found");
+      return;
+    }
+
+    try {
+      const response = await axios.get<UserProfile>(
+        "http://localhost:3000/api/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setMe(response.data);
+      navigate(`/profile/${response.data.id}`); // Navigate after updating `me`
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data.error || "Failed to fetch user profile");
+      } else {
+        setError("An unexpected error occurred");
+      }
+    }
+  };
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -28,7 +62,7 @@ const Login: React.FC = () => {
       const response = await axios.post("/api/login", { email, password });
       const { accessToken } = response.data;
       localStorage.setItem("accessToken", accessToken);
-      navigate("/profile");
+      await fetchMe(); // Fetch profile and navigate
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data.error || "Login failed.");
