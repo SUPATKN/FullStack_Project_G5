@@ -1,13 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Image, Row, Col } from "react-bootstrap";
+import { Image, Row, Col, Form, Button } from "react-bootstrap";
 import Layout from "./Layout";
+import { format } from "date-fns";
 
 interface UserProfile {
   id: number;
   username: string;
   email: string;
+}
+
+interface Comment {
+  id: number;
+  photo_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
 }
 
 const Gallery = () => {
@@ -18,6 +27,8 @@ const Gallery = () => {
   const [likes, setLikes] = useState<{ photo_id: number; user_id: number }[]>(
     []
   );
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComments, setNewComments] = useState<{ [key: string]: string }>({});
   const [me, setMe] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -83,6 +94,15 @@ const Gallery = () => {
     }
   };
 
+  const fetchComments = async () => {
+    try {
+      const { data } = await axios.get<Comment[]>("/api/getcomments");
+      setComments(data);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
   const handleLike = async (photo_id: string, user_id: string) => {
     const alreadyLiked = likes.some(
       (like) =>
@@ -106,11 +126,36 @@ const Gallery = () => {
     }
   };
 
+  const handleCommentSubmit = async (photoId: string) => {
+    const comment = newComments[photoId];
+    if (!comment) {
+      setError("Comment cannot be empty");
+      return;
+    }
+
+    try {
+      await axios.post("/api/comments", {
+        photo_id: photoId,
+        user_id: me?.id,
+        content: comment,
+      });
+      setNewComments((prev) => ({ ...prev, [photoId]: "" }));
+      await fetchComments(); // Refresh comments after submitting a new comment
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+    }
+  };
+
+  const handleCommentChange = (photoId: string, content: string) => {
+    setNewComments((prev) => ({ ...prev, [photoId]: content }));
+  };
+
   useEffect(() => {
     fetchMe();
     fetchUsers();
     fetchImages();
     fetchLikes();
+    fetchComments();
   }, []);
 
   const getUsername = (userId: string) => {
@@ -150,8 +195,8 @@ const Gallery = () => {
                     like.photo_id === parseInt(photo.id) &&
                     like.user_id === me.id
                 )
-                  ? "unlike"
-                  : "like"}
+                  ? "Unlike"
+                  : "Like"}
               </button>
             )}
             <h4>Likes count: {getLikeCount(photo.id)}</h4>
@@ -163,7 +208,46 @@ const Gallery = () => {
             </p>
             <p className="mt-2">
               {photo.price > 0 ? `Price: $${photo.price}` : "Free Download"}
-            </p>{" "}
+            </p>
+            {me && (
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleCommentSubmit(photo.id);
+                }}
+              >
+                <Form.Group className="mb-3">
+                  <Form.Label>Comment</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Write a comment..."
+                    value={newComments[photo.id] || ""}
+                    onChange={(e) =>
+                      handleCommentChange(photo.id, e.target.value)
+                    }
+                  />
+                </Form.Group>
+                <Button variant="primary" type="submit">
+                  Submit
+                </Button>
+              </Form>
+            )}
+            <div className="mt-3">
+              <h5>Comments:</h5>
+              {comments
+                .filter((comment) => comment.photo_id === photo.id)
+                .map((comment) => (
+                  <div key={comment.id}>
+                    <p>
+                      <strong>{getUsername(comment.user_id)}</strong>:{" "}
+                      {comment.content}
+                    </p>
+                    {/* <small>
+                      {format(new Date(comment.created_at), "PPPppp")}
+                    </small> */}
+                  </div>
+                ))}
+            </div>
           </Col>
         ))}
       </Row>

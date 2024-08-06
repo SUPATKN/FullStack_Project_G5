@@ -7,9 +7,10 @@ import helmet from "helmet";
 import { hash, compare } from "bcrypt";
 // import { body, validationResult } from 'express-validator';
 import { dbClient, dbConn } from "@db/client";
-import { images, users, likes } from "@db/schema";
+import { images, users, likes, comments } from "@db/schema";
 import { and, eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
+
 
 const app = express();
 
@@ -54,8 +55,10 @@ const upload = multer({ storage: storage1 });
 app.use("/api/images", express.static(path.join(__dirname, "../images")));
 
 const upload_profilePic = multer({ storage: storage2 });
-app.use("/api/profilePic", express.static(path.join(__dirname, "../profile_picture")));
-
+app.use(
+  "/api/profilePic",
+  express.static(path.join(__dirname, "../profile_picture"))
+);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World");
@@ -85,36 +88,37 @@ app.get("/", (req: Request, res: Response) => {
 //   }
 // );
 
-app.post("/api/upload", upload.single("image"), async (req: Request, res: Response) => {
-  const filePath = `/images/${req.file?.filename}`;
-  const userId = req.body.user_id;
-  const isFree = req.body.isFree === 'true'; // รับค่าเป็น string แล้วเปลี่ยนเป็น boolean
-  const price = isFree ? 0 : parseInt(req.body.price, 10) || 0; // กำหนดราคาเป็น 0 หากฟรี
+app.post(
+  "/api/upload",
+  upload.single("image"),
+  async (req: Request, res: Response) => {
+    const filePath = `/images/${req.file?.filename}`;
+    const userId = req.body.user_id;
+    const isFree = req.body.isFree === "true"; // รับค่าเป็น string แล้วเปลี่ยนเป็น boolean
+    const price = isFree ? 0 : parseInt(req.body.price, 10) || 0; // กำหนดราคาเป็น 0 หากฟรี
 
-  if (!userId) {
-    return res.status(400).json({ error: "User ID is required" });
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    try {
+      const result = await dbClient
+        .insert(images)
+        .values({
+          path: filePath,
+          user_id: Number(userId),
+          price: price,
+          created_at: new Date(),
+        })
+        .returning({ id: images.id, path: images.path });
+
+      res.json({ filePath });
+    } catch (error) {
+      console.error("Error saving file path to the database:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   }
-
-  try {
-    const result = await dbClient
-      .insert(images)
-      .values({
-        path: filePath,
-        user_id: Number(userId),
-        price: price,
-        created_at: new Date(),
-      })
-      .returning({ id: images.id, path: images.path });
-
-    res.json({ filePath });
-  } catch (error) {
-    console.error("Error saving file path to the database:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-
-
+);
 
 app.get("/api/photo", async (req: Request, res: Response) => {
   try {
@@ -125,7 +129,6 @@ app.get("/api/photo", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 app.get("/api/allusers", async (req: Request, res: Response) => {
   try {
@@ -334,6 +337,37 @@ app.get("/api/getlikes", async (req: Request, res: Response) => {
   }
 });
 
+app.post("/api/comments", async (req: Request, res: Response) => {
+  const { photo_id, user_id, content } = req.body;
+
+  if (!photo_id || !user_id) {
+    return res.status(400).json({ error: "Photo ID and User ID are required" });
+  }
+
+  try {
+    await dbClient.insert(comments).values({
+      photo_id: Number(photo_id),
+      user_id: Number(user_id),
+      content: content,
+      created_at: new Date(),
+    });
+
+    res.status(201).json({ message: "Like added successfully" });
+  } catch (error) {
+    console.error("Error adding like:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/getcomments", async (req: Request, res: Response) => {
+  try {
+    const result = await dbClient.query.comments.findMany();
+    res.json(result);
+  } catch (error) {
+    console.error("Error retrieving likes from the database:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 // app.post("/api/profilePic/upload", upload.single("image"), async (req: Request, res: Response) => {
 //   const filePath = `${req.file?.filename}`;
 //   const userId = req.body.user_id;
@@ -361,9 +395,6 @@ app.get("/api/getlikes", async (req: Request, res: Response) => {
 //     res.status(500).json({ error: "Internal Server Error" });
 //   }
 // });
-
-
-
 
 // app.get("/api/profilePic/get", async (req: Request, res: Response) => {
 //   try {
