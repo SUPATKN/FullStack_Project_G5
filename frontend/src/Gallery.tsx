@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Image, Row, Col, Form, Button } from "react-bootstrap";
 import Layout from "./Layout";
-import { format } from "date-fns";
+// import { format } from "date-fns";
 
 interface UserProfile {
   id: number;
@@ -30,10 +30,10 @@ const Gallery = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComments, setNewComments] = useState<{ [key: string]: string }>({});
   const [me, setMe] = useState<UserProfile | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
+  // const [success, setSuccess] = useState<string | null>(null);
 
-  const navigate = useNavigate(); // Initialize navigate function
+  const navigate = useNavigate();
 
   const fetchImages = async () => {
     try {
@@ -49,7 +49,7 @@ const Gallery = () => {
   const fetchMe = async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
-      setError("No access token found");
+      // setError("No access token found");
       return;
     }
 
@@ -65,9 +65,9 @@ const Gallery = () => {
       setMe(response.data);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        setError(error.response?.data.error || "Failed to fetch user profile");
+        // setError(error.response?.data.error || "Failed to fetch user profile");
       } else {
-        setError("An unexpected error occurred");
+        // setError("An unexpected error occurred");
       }
     }
   };
@@ -129,7 +129,7 @@ const Gallery = () => {
   const handleCommentSubmit = async (photoId: string) => {
     const comment = newComments[photoId];
     if (!comment) {
-      setError("Comment cannot be empty");
+      // setError("Comment cannot be empty");
       return;
     }
 
@@ -174,6 +174,23 @@ const Gallery = () => {
     }
   };
 
+  const handleAddToCart = async (photoId: string) => {
+    if (!me) {
+      console.error("User is not logged in");
+      return;
+    }
+
+    try {
+      const response = await axios.post("/api/cart/add", {
+        user_id: me.id,
+        photo_id: photoId,
+      });
+      alert(response.data.message); // Display success message
+    } catch (error) {
+      console.error("Error adding photo to cart:", error);
+    }
+  };
+
   return (
     <Layout>
       <h3 className="mb-4 text-center">GALLERY</h3>
@@ -210,27 +227,36 @@ const Gallery = () => {
               {photo.price > 0 ? `Price: $${photo.price}` : "Free Download"}
             </p>
             {me && (
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleCommentSubmit(photo.id);
-                }}
-              >
-                <Form.Group className="mb-3">
-                  <Form.Label>Comment</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Write a comment..."
-                    value={newComments[photo.id] || ""}
-                    onChange={(e) =>
-                      handleCommentChange(photo.id, e.target.value)
-                    }
-                  />
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                  Submit
+              <>
+                <Button
+                  variant="success"
+                  className="mt-2"
+                  onClick={() => handleAddToCart(photo.id)}
+                >
+                  Add to Cart
                 </Button>
-              </Form>
+                <Form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleCommentSubmit(photo.id);
+                  }}
+                >
+                  <Form.Group className="mb-3">
+                    <Form.Label>Comment</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Write a comment..."
+                      value={newComments[photo.id] || ""}
+                      onChange={(e) =>
+                        handleCommentChange(photo.id, e.target.value)
+                      }
+                    />
+                  </Form.Group>
+                  <Button variant="primary" type="submit">
+                    Submit
+                  </Button>
+                </Form>
+              </>
             )}
             <div className="mt-3">
               <h5>Comments:</h5>
@@ -243,8 +269,8 @@ const Gallery = () => {
                       {comment.content}
                     </p>
                     {/* <small>
-                      {format(new Date(comment.created_at), "PPPppp")}
-                    </small> */}
+                    {format(new Date(comment.created_at), "PPPppp")}
+                  </small> */}
                   </div>
                 ))}
             </div>

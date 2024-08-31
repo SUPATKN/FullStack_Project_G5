@@ -4,6 +4,7 @@ import { Navbar, Nav, Container } from "react-bootstrap";
 import Logo from "./LogoPreflight.png";
 import "./global.css";
 import { useAuth } from "./AuthContext";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 interface User {
   id: number;
@@ -115,6 +116,51 @@ const NavBar: React.FC<NavBarProps> = ({ user }) => {
               </>
             ) : (
               <Nav.Item className="navlink d-flex">
+                <Nav.Item>
+                  <Nav.Link
+                    as={Link}
+                    to="/coin"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      color: "#ffffff",
+                      textDecoration: "none",
+                      textAlign: "center",
+                      padding: "5px 10px",
+                      margin: "10px 0 5px 5px",
+                      width: "max-content",
+                    }}
+                    data-cy="coin"
+                  >
+                    <i
+                      className="bi bi-coin"
+                      style={{ marginRight: "5px", color: "#ffffff" }}
+                    ></i>{" "}
+                    0
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link
+                    as={Link}
+                    to="/cart"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      color: "#ffffff",
+                      textDecoration: "none",
+                      textAlign: "center",
+                      padding: "5px 10px",
+                      margin: "10px 0 5px 5px",
+                      width: "max-content",
+                    }}
+                    data-cy="cart"
+                  >
+                    <i
+                      className="bi bi-cart4"
+                      style={{ marginRight: "5px", color: "#ffffff" }}
+                    ></i>
+                  </Nav.Link>
+                </Nav.Item>
                 <Nav.Item>
                   <Nav.Link
                     as={Link}

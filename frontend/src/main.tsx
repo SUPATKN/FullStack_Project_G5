@@ -9,8 +9,10 @@ import Login from "./Login";
 import Register from "./Register";
 import ForgotPassword from "./Forget";
 import Profile from "./Profile";
-import { AuthProvider } from "./AuthContext"; // Import AuthProvider
+import { AuthProvider } from "./AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Cart from "./Cart";
+import Coin from "./Coin";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -24,8 +26,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/:userId" element={<Profile />}/>
+          <Route path="/profile/:userId" element={<Profile />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/coin" element={<Coin />} />
         </Routes>
       </Router>
     </AuthProvider>

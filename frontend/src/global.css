@@ -141,6 +141,11 @@ body {
   border-radius: 15px 15px 0 0; /* Match the border-radius of the card */
 }
 
+@media (min-width: 1025px) {
+  .h-custom {
+  height: 100vh !important;
+  }
+  }
 /* Additional styling for the advisor_thumb if needed */
 .single_advisor_profile .advisor_thumb {
   overflow: hidden;
@@ -807,4 +812,107 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+.square {
+  width: 300px; /* กำหนดความกว้างของสี่เหลี่ยม */
+  height: 300px; /* กำหนดความสูงของสี่เหลี่ยม */
+  border-radius: 5%; /* ขอบกลมทำให้เป็นวงกลม */
+  background-color: #87CEFA; /* พื้นหลังสีฟ้า */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* ซ่อนส่วนเกินของรูปภาพที่เกินออกจากขอบ */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* เงาที่สี่เหลี่ยม */
+  margin-bottom: 2%;
+}
+
+.image {
+  width: 50%; /* ทำให้รูปภาพมีขนาดเต็มที่ของสี่เหลี่ยม */
+  height: 50%; /* ทำให้รูปภาพมีขนาดเต็มที่ของสี่เหลี่ยม */
+  object-fit: cover; /* ครอบรูปภาพเพื่อให้พอดีกับขอบกลม */
+  border-radius: 20%; /* ขอบกลมทำให้เป็นวงกลม */
+}
+.ms-4 {
+  margin-left: 1.5rem; /* เว้นระยะจากซ้ายของข้อความไปยังสี่เหลี่ยม */
+}
+
+.mb-0 {
+  margin-bottom: 0; /* ลดระยะห่างที่ด้านล่างของข้อความ */
+}
+
+.card {
+  border: 2px solid #87CEFA; /* ขอบสีฟ้า */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  text-align: left; /* จัดข้อความให้ชิดซ้าย */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* ให้เนื้อหาและโลโก้อยู่ที่ขอบซ้ายและขวา */
+}
+
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 15px; /* ระยะห่างระหว่างโลโก้กับรายละเอียด */
+}
+
+.card-logo {
+  width: 50px; /* ขนาดโลโก้ */
+  height: 50px; /* ขนาดโลโก้ */
+  object-fit: contain; /* ทำให้โลโก้มีขนาดพอดี */
+  border: 5px solid #87CEFA; /* ขอบสีฟ้า */
+  border-radius: 50%; /* ขอบกลมเพื่อให้โลโก้มีลักษณะวงกลม */
+  margin-right: 15px; /* ระยะห่างระหว่างโลโก้กับรายละเอียด */
+}
+
+.card-coin {
+  font-size: 1rem;
+  color: #000000;
+}
+
+.card-price {
+  font-size: 1rem; /* ลดขนาดตัวหนังสือ */
+  color: #000000; /* เปลี่ยนสีให้เป็นสีดำ */
+}
+
+
+.summary {
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.price-display p {
+  font-weight: bold;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004085;
 }

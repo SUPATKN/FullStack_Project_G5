@@ -64,11 +64,23 @@ export const comments = pgTable("comments", {
   content: text("content").notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
+export const carts = pgTable("carts", {
+  cart_id: integer("cart_id").primaryKey(),  
+  user_id: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  created_at: timestamp("created_at").defaultNow().notNull(), 
+  updated_at: timestamp("updated_at").defaultNow().notNull(),  
+});
 
-// import { pgTable, dropTable } from "drizzle-orm/pg-core";
+export const cart_items = pgTable("cart_items", {
+  cart_item_id: integer("cart_item_id").primaryKey(), 
+  cart_id: integer("cart_id")
+    .notNull()
+    .references(() => carts.cart_id),  
+  photo_id: integer("photo_id")
+    .notNull()
+    .references(() => images.id), 
+});
 
-// export const down = async (queryInterface) => {
-//   await queryInterface.dropTable('transaction_history');
-//   await queryInterface.dropTable('transactions');
-//   await queryInterface.dropTable('currencies');
-// };
+
