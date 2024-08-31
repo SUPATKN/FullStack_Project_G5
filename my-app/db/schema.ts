@@ -21,7 +21,9 @@ export const images = pgTable("images", {
   path: text("path"),
   user_id: integer("user_id")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, {
+      onDelete: "cascade", // Automatically delete related rows in 'images' when a user is deleted
+    }),
   created_at: timestamp("created_at").defaultNow().notNull(),
   price: integer("price").default(0).notNull(),
 });
@@ -31,10 +33,14 @@ export const likes = pgTable(
   {
     photo_id: integer("photo_id")
       .notNull()
-      .references(() => images.id),
+      .references(() => images.id, {
+        onDelete: "cascade",
+      }),
     user_id: integer("user_id")
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, {
+        onDelete: "cascade",
+      }),
   },
   (table) => {
     return {
@@ -47,10 +53,14 @@ export const comments = pgTable("comments", {
   comment_id: serial("comment_id").primaryKey(),
   photo_id: integer("photo_id")
     .notNull()
-    .references(() => images.id),
+    .references(() => images.id, {
+      onDelete: "cascade",
+    }),
   user_id: integer("user_id")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, {
+      onDelete: "cascade",
+    }),
   content: text("content").notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
