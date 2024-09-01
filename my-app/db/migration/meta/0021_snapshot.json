@@ -1,24 +1,73 @@
 {
-  "id": "d69aaa5a-9802-4980-84f3-79242795ab5d",
-  "prevId": "0d4650c8-4b08-4277-b4b0-5332bd2c6ede",
+  "id": "ddb9999f-55a2-4805-8e32-fce224c164db",
+  "prevId": "eaf8ed56-228e-4d44-a986-7d83318a1a2a",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.ProfilePicture": {
-      "name": "ProfilePicture",
+    "public.cart_items": {
+      "name": "cart_items",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "cart_item_id": {
+          "name": "cart_item_id",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true
         },
-        "path": {
-          "name": "path",
-          "type": "text",
+        "cart_id": {
+          "name": "cart_id",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
+        },
+        "photo_id": {
+          "name": "photo_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "cart_items_cart_id_carts_cart_id_fk": {
+          "name": "cart_items_cart_id_carts_cart_id_fk",
+          "tableFrom": "cart_items",
+          "tableTo": "carts",
+          "columnsFrom": [
+            "cart_id"
+          ],
+          "columnsTo": [
+            "cart_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "cart_items_photo_id_images_id_fk": {
+          "name": "cart_items_photo_id_images_id_fk",
+          "tableFrom": "cart_items",
+          "tableTo": "images",
+          "columnsFrom": [
+            "photo_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.carts": {
+      "name": "carts",
+      "schema": "",
+      "columns": {
+        "cart_id": {
+          "name": "cart_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
         },
         "user_id": {
           "name": "user_id",
@@ -32,13 +81,20 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "ProfilePicture_user_id_users_id_fk": {
-          "name": "ProfilePicture_user_id_users_id_fk",
-          "tableFrom": "ProfilePicture",
+        "carts_user_id_users_id_fk": {
+          "name": "carts_user_id_users_id_fk",
+          "tableFrom": "carts",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -46,7 +102,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -276,119 +332,10 @@
           ]
         }
       }
-    },
-    "public.cart_items": {
-      "name": "cart_items",
-      "schema": "",
-      "columns": {
-        "cart_item_id": {
-          "name": "cart_item_id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "cart_id": {
-          "name": "cart_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "photo_id": {
-          "name": "photo_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "cart_items_cart_id_carts_cart_id_fk": {
-          "name": "cart_items_cart_id_carts_cart_id_fk",
-          "tableFrom": "cart_items",
-          "tableTo": "carts",
-          "columnsFrom": [
-            "cart_id"
-          ],
-          "columnsTo": [
-            "cart_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "cart_items_photo_id_images_id_fk": {
-          "name": "cart_items_photo_id_images_id_fk",
-          "tableFrom": "cart_items",
-          "tableTo": "images",
-          "columnsFrom": [
-            "photo_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.orders": {
-      "name": "orders",
-      "schema": "",
-      "columns": {
-        "order_id": {
-          "name": "order_id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "total_amount": {
-          "name": "total_amount",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "orders_user_id_users_id_fk": {
-          "name": "orders_user_id_users_id_fk",
-          "tableFrom": "orders",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
     }
   },
   "enums": {},
-  "schemas": {
-    "public": {
-      "name": "public",
-      "schema": ""
-    }
-  },
+  "schemas": {},
   "_meta": {
     "columns": {},
     "schemas": {},

@@ -1,6 +1,6 @@
 // Layout.tsx
 import React, { useEffect, useState } from "react";
-import NavBar from "./Navbar"
+import NavBar from "./Navbar";
 import { Container } from "react-bootstrap";
 import { AuthProvider } from "./AuthContext";
 import axios from "axios";
@@ -13,12 +13,12 @@ interface User {
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
   const fetchUserProfile = async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
-      setError("No access token found");
+      // setError("No access token found");
       return;
     }
 
@@ -34,9 +34,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       setUser(response.data);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        setError(error.response?.data.error || "Failed to fetch user profile");
+        // setError(error.response?.data.error || "Failed to fetch user profile");
       } else {
-        setError("An unexpected error occurred");
+        // setError("An unexpected error occurred");
       }
     }
   };

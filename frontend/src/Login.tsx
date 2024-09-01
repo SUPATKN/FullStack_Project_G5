@@ -14,7 +14,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [me, setMe] = useState<UserProfile | null>(null);
+  // const [me, setMe] = useState<UserProfile | null>(null);
   const navigate = useNavigate();
 
   const fetchMe = async () => {
@@ -33,7 +33,7 @@ const Login: React.FC = () => {
           },
         }
       );
-      setMe(response.data);
+      // setMe(response.data);
       navigate(`/profile/${response.data.id}`); // Navigate after updating `me`
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
