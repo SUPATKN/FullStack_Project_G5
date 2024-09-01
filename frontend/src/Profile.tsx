@@ -35,6 +35,7 @@ const formatDate = (dateString: string) => {
 };
 
 const Profile: React.FC = () => {
+  let Uid: string = "";
   const [file, setFile] = useState<File | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const location = useLocation();
@@ -74,7 +75,7 @@ const Profile: React.FC = () => {
       });
       setSuccess("File uploaded successfully!");
       setError(null);
-      fetchProfilePicture();
+      fetchProfilePicture(parseInt(Uid, 10));
       setSelectedImage("");
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -136,9 +137,11 @@ const Profile: React.FC = () => {
     }
   };
 
-  const fetchProfilePicture = async () => {
+  const fetchProfilePicture = async (id: number) => {
     try {
-      const { data } = await axios.get<ProfilePicture[]>("/api/profilePic/get");
+      const { data } = await axios.get<ProfilePicture[]>(
+        `/api/profilePic/get/${id}`
+      );
       setProfilePic(data);
     } catch (error) {
       console.error("Error fetching photos:", error);
@@ -153,6 +156,7 @@ const Profile: React.FC = () => {
       setUser(location.state.user);
     } else if (userId) {
       fetchUserProfile(parseInt(userId, 10));
+      Uid = userId;
     } else {
       // Handle case where no user data is available
       setError("User profile not found");
