@@ -10,14 +10,14 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
-  id: integer("id").primaryKey(),
+  id: serial("id").primaryKey(),
   username: varchar("username", { length: 50 }).notNull(),
   email: varchar("email", { length: 100 }).unique().notNull(),
   password: text("password").notNull(),
 });
 
 export const images = pgTable("images", {
-  id: integer("id").primaryKey(),
+  id: serial("id").primaryKey(),
   path: text("path"),
   user_id: integer("user_id")
     .notNull()
@@ -29,7 +29,7 @@ export const images = pgTable("images", {
 });
 
 export const ProfilePicture = pgTable("ProfilePicture", {
-  id: integer("id").primaryKey(),
+  id: serial("id").primaryKey(),
   path: text("path"),
   user_id: integer("user_id")
     .notNull()
@@ -61,7 +61,7 @@ export const likes = pgTable(
 );
 
 export const comments = pgTable("comments", {
-  comment_id: integer("comment_id").primaryKey(),
+  comment_id: serial("comment_id").primaryKey(),
   photo_id: integer("photo_id")
     .notNull()
     .references(() => images.id, {
