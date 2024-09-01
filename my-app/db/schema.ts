@@ -28,6 +28,17 @@ export const images = pgTable("images", {
   price: integer("price").default(0).notNull(),
 });
 
+export const ProfilePicture = pgTable("ProfilePicture", {
+  id: serial("id").primaryKey(),
+  path: text("path"),
+  user_id: integer("user_id")
+    .notNull()
+    .references(() => users.id, {
+      onDelete: "cascade", // Automatically delete related rows in 'images' when a user is deleted
+    }),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const likes = pgTable(
   "likes",
   {

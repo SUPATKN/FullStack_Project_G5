@@ -152,7 +152,7 @@ const Upload = () => {
           <Form.Group controlId="formPrice" className="mb-3">
             <Form.Label>Price</Form.Label>
             <Form.Control
-              type="number"
+              type="text"
               placeholder="Enter price"
               value={price}
               onChange={(e) => setPrice(Number(e.target.value))}

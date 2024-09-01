@@ -6,6 +6,7 @@ COPY . .
 RUN npm ci
 RUN npm run build
 RUN mkdir ./dist/images
+RUN mkdir ./dist/profile_picture
 ENV NODE_ENV production
 ENV PORT 3000
 EXPOSE 3000
