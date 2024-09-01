@@ -1,6 +1,6 @@
 {
-  "id": "4c9e080f-9841-49ec-b6a1-c3680ad7ec4a",
-  "prevId": "af09f037-adee-44a5-8a2b-eee3bb53a6fd",
+  "id": "af09f037-adee-44a5-8a2b-eee3bb53a6fd",
+  "prevId": "ddb9999f-55a2-4805-8e32-fce224c164db",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -115,7 +115,7 @@
       "columns": {
         "comment_id": {
           "name": "comment_id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true
         },
@@ -183,7 +183,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true
         },
@@ -297,7 +297,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true
         },

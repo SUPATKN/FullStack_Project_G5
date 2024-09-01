@@ -11,7 +11,6 @@ import { images, users, likes, comments, ProfilePicture } from "@db/schema";
 import { and, eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
 
-
 const app = express();
 
 app.use(
@@ -370,37 +369,45 @@ app.get("/api/getcomments", async (req: Request, res: Response) => {
   }
 });
 
+app.post(
+  "/api/profilePic/upload",
+  upload_profilePic.single("profilePic"),
+  async (req: Request, res: Response) => {
+    const filePath = `${req.file?.filename}`;
+    const userId = req.body.user_id;
 
-app.post("/api/profilePic/upload", upload_profilePic.single("profilePic"), async (req: Request, res: Response) => {
-  const filePath = `${req.file?.filename}`;
-  const userId = req.body.user_id;
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
 
-  if (!userId) {
-    return res.status(400).json({ error: "User ID is required" });
+    try {
+      const result = await dbClient
+        .insert(ProfilePicture)
+        .values({
+          path: filePath,
+          user_id: Number(userId),
+          created_at: new Date(),
+        })
+        .returning({ id: ProfilePicture.id, path: ProfilePicture.path });
+
+      res.json({ filePath });
+    } catch (error) {
+      console.error("Error saving file path to the database:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   }
+);
 
+app.get("/api/profilePic/get/:id", async (req: Request, res: Response) => {
+  const userId = req.params.id;
   try {
-    const result = await dbClient
-      .insert(ProfilePicture)
-      .values({
-        path: filePath,
-        user_id: Number(userId),
-        created_at: new Date(),
-      })
-      .returning({ id: ProfilePicture.id, path: ProfilePicture.path });
+    const result = await dbClient.query.ProfilePicture.findFirst({
+      where: eq(ProfilePicture.user_id, Number(userId)),
+    });
 
-    res.json({ filePath });
-  } catch (error) {
-    console.error("Error saving file path to the database:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-
-
-app.get("/api/profilePic/get", async (req: Request, res: Response) => {
-  try {
-    const result = await dbClient.query.ProfilePicture.findMany();
+    if (!result) {
+      return res.status(404).json({ error: "User not found" });
+    }
     res.json(result);
   } catch (error) {
     console.error("Error retrieving images from the database:", error);

@@ -1,6 +1,6 @@
 {
-  "id": "eaf8ed56-228e-4d44-a986-7d83318a1a2a",
-  "prevId": "d69aaa5a-9802-4980-84f3-79242795ab5d",
+  "id": "d69aaa5a-9802-4980-84f3-79242795ab5d",
+  "prevId": "1abf8be2-fb48-4102-b8d6-5abae5c0372d",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -10,7 +10,7 @@
       "columns": {
         "cart_item_id": {
           "name": "cart_item_id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true
         },
@@ -65,7 +65,7 @@
       "columns": {
         "cart_id": {
           "name": "cart_id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true
         },
