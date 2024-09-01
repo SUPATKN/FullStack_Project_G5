@@ -44,7 +44,7 @@ const Profile: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null); // State for current user
   const [error, setError] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [ProfilePic, setProfilePic] = useState<ProfilePicture[]>([]);
+  const [ProfilePic, setProfilePic] = useState<ProfilePicture>();
   const [isEdit, setIsEdit] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
@@ -75,8 +75,11 @@ const Profile: React.FC = () => {
       });
       setSuccess("File uploaded successfully!");
       setError(null);
-      fetchProfilePicture(parseInt(Uid, 10));
+      if (userId) {
+        fetchProfilePicture(parseInt(userId, 10));
+      }
       setSelectedImage("");
+      setIsUpload(false);
     } catch (error) {
       console.error("Error uploading file:", error);
       setSuccess(null);
@@ -139,13 +142,13 @@ const Profile: React.FC = () => {
 
   const fetchProfilePicture = async (id: number) => {
     try {
-      const { data } = await axios.get<ProfilePicture[]>(
+      const { data } = await axios.get<ProfilePicture>(
         `/api/profilePic/get/${id}`
       );
       setProfilePic(data);
+      console.log(ProfilePic);
     } catch (error) {
       console.error("Error fetching photos:", error);
-      setError("Failed to fetch photos");
     }
   };
 
@@ -157,6 +160,7 @@ const Profile: React.FC = () => {
     } else if (userId) {
       fetchUserProfile(parseInt(userId, 10));
       Uid = userId;
+      fetchProfilePicture(parseInt(Uid, 10));
     } else {
       // Handle case where no user data is available
       setError("User profile not found");
@@ -194,16 +198,13 @@ const Profile: React.FC = () => {
       <div>
         <h2>Profile</h2>
         <div>
-          {ProfilePic.filter((pic) => pic.user_id === user?.id.toString())
-            .length > 0 ? (
+          {ProfilePic ? (
             <Image
-              src={`/api/profilePic/${
-                ProfilePic.find((pic) => pic.user_id === user?.id.toString())
-                  ?.path
-              }`}
+              src={`/api/profilePic/${ProfilePic.path}`}
               alt="Profile Picture"
               roundedCircle
               width={150}
+              height={150}
             />
           ) : (
             <Image
@@ -211,6 +212,7 @@ const Profile: React.FC = () => {
               alt="Default Avatar"
               roundedCircle
               width={150}
+              height={150}
             />
           )}
         </div>

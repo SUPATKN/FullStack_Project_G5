@@ -381,14 +381,48 @@ app.post(
     }
 
     try {
-      const result = await dbClient
+      // Check if a profile picture already exists for the user
+      const existingProfilePic = await dbClient
+        .select()
+        .from(ProfilePicture)
+        .where(eq(ProfilePicture.user_id, Number(userId)))
+        .limit(1)
+        .execute();
+
+      // If there is an existing profile picture, delete it
+      if (existingProfilePic.length > 0) {
+        const oldFilePath = existingProfilePic[0].path; // Access the path from the result
+
+        if (oldFilePath) {
+          // Check if oldFilePath is not null or undefined
+          const fullPath = path.join(
+            __dirname,
+            "../profile_picture",
+            oldFilePath
+          );
+
+          // Check if file exists before attempting to delete
+          if (fs.existsSync(fullPath)) {
+            fs.unlinkSync(fullPath);
+          }
+        }
+
+        await dbClient
+          .delete(ProfilePicture) // Specify the table to delete from
+          .where(eq(ProfilePicture.user_id, Number(userId)))
+          .execute();
+      }
+
+      // Insert the new profile picture
+      await dbClient
         .insert(ProfilePicture)
         .values({
           path: filePath,
           user_id: Number(userId),
           created_at: new Date(),
         })
-        .returning({ id: ProfilePicture.id, path: ProfilePicture.path });
+        .returning({ id: ProfilePicture.id, path: ProfilePicture.path })
+        .execute();
 
       res.json({ filePath });
     } catch (error) {

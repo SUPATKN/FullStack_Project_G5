@@ -190,6 +190,13 @@
       "when": 1725167642520,
       "tag": "0025_melodic_exodus",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1725168305079,
+      "tag": "0026_silly_boomer",
+      "breakpoints": true
     }
   ]
 }
