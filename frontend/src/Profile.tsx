@@ -35,7 +35,6 @@ const formatDate = (dateString: string) => {
 };
 
 const Profile: React.FC = () => {
-  let Uid: string = "";
   const [file, setFile] = useState<File | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const location = useLocation();
@@ -44,7 +43,8 @@ const Profile: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null); // State for current user
   const [error, setError] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [ProfilePic, setProfilePic] = useState<ProfilePicture>();
+  const [profilePics, setProfilePics] = useState<ProfilePicture[]>([]);
+  const [myProPic, setMyProPic] = useState("");
   const [isEdit, setIsEdit] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
@@ -76,7 +76,7 @@ const Profile: React.FC = () => {
       setSuccess("File uploaded successfully!");
       setError(null);
       if (userId) {
-        fetchProfilePicture(parseInt(userId, 10));
+        fetchProfilePicture();
       }
       setSelectedImage("");
       setIsUpload(false);
@@ -140,31 +140,36 @@ const Profile: React.FC = () => {
     }
   };
 
-  const fetchProfilePicture = async (id: number) => {
+  const fetchProfilePicture = async () => {
     try {
-      const { data } = await axios.get<ProfilePicture>(
-        `/api/profilePic/get/${id}`
-      );
-      setProfilePic(data);
-      console.log(ProfilePic);
+      const { data } = await axios.get<ProfilePicture[]>("/api/profilePic/get");
+      setProfilePics(data);
+      setMyProfilePic(data);
+      console.log(myProPic);
     } catch (error) {
-      console.error("Error fetching photos:", error);
+      console.error("Error fetching profile picture:", error);
+      setError("Failed to fetch profile picture");
+    }
+  };
+
+  const setMyProfilePic = (pics: ProfilePicture[]) => {
+    if (userId) {
+      const profilePicPath = pics.find((img) => img.user_id == userId)?.path;
+      console.log(profilePicPath);
+      setMyProPic(profilePicPath || "");
     }
   };
 
   useEffect(() => {
     fetchCurrentUser();
-    // Determine if we have a user passed via state or URL params
     if (location.state && location.state.user) {
       setUser(location.state.user);
     } else if (userId) {
       fetchUserProfile(parseInt(userId, 10));
-      Uid = userId;
-      fetchProfilePicture(parseInt(Uid, 10));
     } else {
-      // Handle case where no user data is available
       setError("User profile not found");
     }
+    fetchProfilePicture();
     fetchPhotos();
   }, [location.state, userId]);
 
@@ -197,10 +202,10 @@ const Profile: React.FC = () => {
     <Layout>
       <div>
         <h2>Profile</h2>
-        <div>
-          {ProfilePic ? (
+        <div className="mt-3">
+          {myProPic ? (
             <Image
-              src={`/api/profilePic/${ProfilePic.path}`}
+              src={`/api/profilePic/${myProPic}`}
               alt="Profile Picture"
               roundedCircle
               width={150}
@@ -221,7 +226,7 @@ const Profile: React.FC = () => {
           <p>{error}</p>
         ) : (
           user && (
-            <div>
+            <div className="mt-3">
               <h5>Hello, {user.username}</h5>
               <p>Email: {user.email}</p>
               <p>ID: {user.id}</p>

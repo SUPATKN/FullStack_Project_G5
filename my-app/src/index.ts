@@ -432,12 +432,10 @@ app.post(
   }
 );
 
-app.get("/api/profilePic/get/:id", async (req: Request, res: Response) => {
+app.get("/api/profilePic/get", async (req: Request, res: Response) => {
   const userId = req.params.id;
   try {
-    const result = await dbClient.query.ProfilePicture.findFirst({
-      where: eq(ProfilePicture.user_id, Number(userId)),
-    });
+    const result = await dbClient.query.ProfilePicture.findMany();
 
     if (!result) {
       return res.status(404).json({ error: "User not found" });
