@@ -76,7 +76,7 @@ export const comments = pgTable("comments", {
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 export const carts = pgTable("carts", {
-  cart_id: integer("cart_id").primaryKey(),  
+  cart_id: serial("cart_id").primaryKey(),  
   user_id: integer("user_id")
     .notNull()
     .references(() => users.id),
@@ -85,7 +85,7 @@ export const carts = pgTable("carts", {
 });
 
 export const cart_items = pgTable("cart_items", {
-  cart_item_id: integer("cart_item_id").primaryKey(), 
+  cart_item_id: serial("cart_item_id").primaryKey(), 
   cart_id: integer("cart_id")
     .notNull()
     .references(() => carts.cart_id),  

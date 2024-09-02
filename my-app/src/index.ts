@@ -7,9 +7,24 @@ import helmet from "helmet";
 import { hash, compare } from "bcrypt";
 // import { body, validationResult } from 'express-validator';
 import { dbClient, dbConn } from "@db/client";
-import { images, users, likes, comments, ProfilePicture } from "@db/schema";
+import {
+  images,
+  users,
+  likes,
+  comments,
+  ProfilePicture,
+  carts,
+  cart_items,
+} from "@db/schema";
 import { and, eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
+
+type CartType = {
+  cart_id: number;
+  user_id: number;
+  created_at: Date;
+  updated_at: Date;
+};
 
 const app = express();
 
@@ -450,4 +465,61 @@ app.get("/api/profilePic/get", async (req: Request, res: Response) => {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
+});
+
+app.post("/api/cart/add", async (req: Request, res: Response) => {
+  const { user_id, photo_id } = req.body;
+
+  if (!photo_id || !user_id) {
+    return res.status(400).json({ error: "Photo ID and User ID are required" });
+  }
+
+  try {
+    // ค้นหา cart ที่มีอยู่แล้วสำหรับ user_id นี้
+    let cart: CartType | undefined = await dbClient
+      .select()
+      .from(carts)
+      .where(eq(carts.user_id, Number(user_id)))
+      .limit(1)
+      .execute()
+      .then((result) => result[0]); // ดึงแถวแรกออกมา หรือ undefined ถ้าไม่พบ
+
+    // ถ้าไม่มี cart ให้สร้างใหม่
+    if (!cart) {
+      const [newCart] = await dbClient
+        .insert(carts)
+        .values({
+          user_id: Number(user_id),
+          created_at: new Date(),
+          updated_at: new Date(),
+        })
+        .returning({
+          cart_id: carts.cart_id,
+          user_id: carts.user_id,
+          created_at: carts.created_at,
+          updated_at: carts.updated_at,
+        });
+
+      cart = newCart; // ใช้ newCart ที่ดึงมาจากอาร์เรย์
+    }
+
+    // เพิ่มรายการใหม่ใน cart_items โดยใช้ cart_id ที่มีอยู่หรือสร้างใหม่
+    await dbClient.insert(cart_items).values({
+      photo_id: Number(photo_id),
+      cart_id: cart.cart_id,
+    });
+
+    // อัปเดตเวลาของ cart ในฟิลด์ updated_at
+    await dbClient
+      .update(carts)
+      .set({ updated_at: new Date() })
+      .where(eq(carts.cart_id, cart.cart_id));
+
+    res
+      .status(201)
+      .json({ message: "Item added to cart and cart updated successfully" });
+  } catch (error) {
+    console.error("Error adding item to cart:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
