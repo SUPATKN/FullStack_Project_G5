@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 import QRCode from "qrcode";
 import generatePayload from "promptpay-qr";
 import { dbClient, dbConn } from "@db/client";
-import { images, users, likes, comments } from "@db/schema";
+import { images, users, likes, comments ,carts,cart_items,ProfilePicture,coin_transactions,image_ownerships} from "@db/schema";
 import { and, eq } from "drizzle-orm";
 
 type CartType = {
@@ -71,30 +71,6 @@ app.use(
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World");
 });
-
-// app.post(
-//   "/api/upload",
-//   upload.single("image"),
-//   async (req: Request, res: Response) => {
-//     const filePath = `/images/${req.file?.filename}`;
-//     const userId = req.body.userId;
-
-//     if (!userId) {
-//       return res.status(400).json({ error: "User ID is required" });
-//     }
-
-//     try {
-//       await dbClient.insert(images).values({
-//         path: filePath,
-//         user_id: Number(userId), // Ensure the user_id is of the correct type
-//       });
-//       res.json({ filePath });
-//     } catch (error) {
-//       console.error("Error saving file path to the database:", error);
-//       res.status(500).json({ error: "Internal Server Error" });
-//     }
-//   }
-// );
 
 app.post(
   "/api/upload",
@@ -619,3 +595,189 @@ app.post('/api/generateQR', async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.get("/api/coin/:id", async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.id, 10);
+
+  if (isNaN(userId)) {
+    return res.status(400).json({ error: "Invalid user ID" });
+  }
+
+  try {
+    const user = await dbClient.query.users.findFirst({
+      where: eq(users.id, userId),
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({
+      userId: user.id,
+      coin: user.coin,
+    });
+  } catch (error) {
+    console.error("Error retrieving user coin balance:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+app.get("/api/coin/transactions/:id", async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.id, 10);
+
+  if (isNaN(userId)) {
+    return res.status(400).json({ error: "Invalid user ID" });
+  }
+
+  try {
+    const transactions = await dbClient.query.coin_transactions.findMany({
+      where: eq(coin_transactions.user_id, userId),
+    });
+
+    res.status(200).json(transactions);
+  } catch (error) {
+    console.error("Error retrieving user coin transactions:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/photo/:id", async (req: Request, res: Response) => {
+  const photoId = parseInt(req.params.id, 10);
+
+  if (isNaN(photoId)) {
+    return res.status(400).json({ error: "Invalid photo ID" });
+  }
+
+  try {
+    const photo = await dbClient.query.images.findFirst({
+      where: eq(images.id, photoId),
+    });
+
+    if (!photo) {
+      return res.status(404).json({ error: "Photo not found" });
+    }
+
+    res.status(200).json(photo);
+  } catch (error) {
+    console.error("Error retrieving photo detail:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/photo/:photoId/user/:userId/status", async (req: Request, res: Response) => {
+  const photoId = parseInt(req.params.photoId, 10);
+  const userId = parseInt(req.params.userId, 10);
+
+  if (isNaN(photoId) || isNaN(userId)) {
+    return res.status(400).json({ error: "Invalid photo ID or user ID" });
+  }
+
+  try {
+    // ตรวจสอบว่าผู้ใช้ได้ซื้อรูปภาพนี้แล้ว
+    const ownership = await dbClient.query.image_ownerships.findFirst({
+      where: and(
+        eq(image_ownerships.user_id, userId),
+        eq(image_ownerships.image_id, photoId)
+      ),
+    });
+
+    // ตอบกลับสถานะการซื้อ
+    res.status(200).json({
+      purchased: !!ownership,
+    });
+  } catch (error) {
+    console.error("Error checking purchase status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
+  const photoId = parseInt(req.params.photoId, 10);
+  const { userId } = req.body;
+
+  if (isNaN(photoId) || !userId) {
+    return res.status(400).json({ error: "Invalid photo ID or user ID" });
+  }
+
+  try {
+    // ตรวจสอบว่าผู้ใช้ได้ซื้อภาพนี้แล้วหรือไม่
+    const ownership = await dbClient.query.image_ownerships.findFirst({
+      where: and(
+        eq(image_ownerships.user_id, userId),
+        eq(image_ownerships.image_id, photoId)
+      ),
+    });
+
+    if (ownership) {
+      return res.status(400).json({ error: "You already own this photo" });
+    }
+
+    // Fetch the photo details
+    const photo = await dbClient.query.images.findFirst({
+      where: eq(images.id, photoId),
+    });
+    if (!photo) {
+      return res.status(404).json({ error: "Photo not found" });
+    }
+
+    // Fetch the buyer details
+    const buyer = await dbClient.query.users.findFirst({
+      where: eq(users.id, userId),
+    });
+    if (!buyer) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if the buyer has sufficient funds
+    if (buyer.coin < photo.price) {
+      return res.status(400).json({ error: "Insufficient funds" });
+    }
+
+    // Fetch the seller details
+    const seller = await dbClient.query.users.findFirst({
+      where: eq(users.id, photo.user_id),
+    });
+    if (!seller) {
+      return res.status(404).json({ error: "Seller not found" });
+    }
+
+    // Process the transaction
+    await dbClient.transaction(async (trx) => {
+      // Update the buyer's and seller's coin balances
+      await trx.update(users).set({ coin: buyer.coin - photo.price }).where(eq(users.id, userId));
+      await trx.update(users).set({ coin: seller.coin + photo.price }).where(eq(users.id, photo.user_id));
+
+      // Record the purchase in image_ownerships
+      await trx.insert(image_ownerships).values({
+        user_id: userId,
+        image_id: photoId,
+        purchased_at: new Date(),
+      });
+
+      // Record the transaction for the buyer
+      await trx.insert(coin_transactions).values({
+        user_id: userId,
+        amount: -photo.price,
+        transaction_type: "purchase",
+        description: `Purchased photo ${photoId}`,
+      });
+
+      // Record the transaction for the seller
+      await trx.insert(coin_transactions).values({
+        user_id: photo.user_id,
+        amount: photo.price,
+        transaction_type: "sale",
+        description: `Sold photo ${photoId}`,
+      });
+    });
+
+    res.status(200).json({ message: "Purchase successful" });
+  } catch (error) {
+    console.error("Error processing purchase:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+

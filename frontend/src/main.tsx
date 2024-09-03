@@ -13,6 +13,7 @@ import { AuthProvider } from "./AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Cart from "./Cart";
 import Coin from "./Coin";
+import PhotoDetail from "./PhotoDetail";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -30,6 +31,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/coin" element={<Coin />} />
+          <Route path="/photo/:id" element={<PhotoDetail />} />
         </Routes>
       </Router>
     </AuthProvider>

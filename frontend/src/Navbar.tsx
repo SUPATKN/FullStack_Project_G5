@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import Logo from "./LogoPreflight.png";
 import "./global.css";
 import { useAuth } from "./AuthContext";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import axios from "axios";
 
 interface User {
   id: number;
@@ -18,7 +19,20 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({ user }) => {
   const { isAuthenticated, logout } = useAuth();
-  console.log("isAuthenticated:", isAuthenticated);
+  const [coin, setCoin] = useState<number>(0);
+
+  useEffect(() => {
+    if (user && isAuthenticated) {
+      axios
+        .get(`/api/coin/${user.id}`)
+        .then((response) => {
+          setCoin(response.data.coin);
+        })
+        .catch((error) => {
+          console.error("Error fetching coin balance:", error);
+        });
+    }
+  }, [user, isAuthenticated]);
 
   return (
     <Navbar
@@ -136,7 +150,7 @@ const NavBar: React.FC<NavBarProps> = ({ user }) => {
                       className="bi bi-coin"
                       style={{ marginRight: "5px", color: "#ffffff" }}
                     ></i>{" "}
-                    0
+                    {coin}
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>

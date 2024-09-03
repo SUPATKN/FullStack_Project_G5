@@ -43,11 +43,11 @@ const Profile: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null); // State for current user
   const [error, setError] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [profilePics, setProfilePics] = useState<ProfilePicture[]>([]);
+  // const [profilePics, setProfilePics] = useState<ProfilePicture[]>([]);
   const [myProPic, setMyProPic] = useState("");
   const [isEdit, setIsEdit] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
-  const [success, setSuccess] = useState<string | null>(null);
+  // const [success, setSuccess] = useState<string | null>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -73,7 +73,7 @@ const Profile: React.FC = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      setSuccess("File uploaded successfully!");
+      // setSuccess("File uploaded successfully!");
       setError(null);
       if (userId) {
         fetchProfilePicture();
@@ -82,7 +82,7 @@ const Profile: React.FC = () => {
       setIsUpload(false);
     } catch (error) {
       console.error("Error uploading file:", error);
-      setSuccess(null);
+      // setSuccess(null);
       setError("Failed to upload file.");
     }
   };
@@ -143,7 +143,7 @@ const Profile: React.FC = () => {
   const fetchProfilePicture = async () => {
     try {
       const { data } = await axios.get<ProfilePicture[]>("/api/profilePic/get");
-      setProfilePics(data);
+      // setProfilePics(data);
       setMyProfilePic(data);
       console.log(myProPic);
     } catch (error) {
@@ -184,7 +184,7 @@ const Profile: React.FC = () => {
   const handleDelete = async (filename: string) => {
     try {
       await axios.delete(`/api/photo/${filename}`);
-      setSuccess("File deleted successfully!");
+      // setSuccess("File deleted successfully!");
       setError(null);
 
       const updatedPhotos = photos.filter(
@@ -193,7 +193,7 @@ const Profile: React.FC = () => {
       setPhotos(updatedPhotos);
     } catch (error) {
       console.error("Error deleting file:", error);
-      setSuccess(null);
+      // setSuccess(null);
       setError("Failed to delete file.");
     }
   };

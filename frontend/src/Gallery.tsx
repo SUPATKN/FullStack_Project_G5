@@ -35,6 +35,20 @@ const Gallery = () => {
 
   const navigate = useNavigate();
 
+  const handlePhotoClick = (photoId: string) => {
+    navigate(`/photo/${photoId}`);
+  };
+
+  const handlePhotoContextMenu = (
+    e: React.MouseEvent<HTMLImageElement, MouseEvent>,
+    photoId: string
+  ) => {
+    e.preventDefault(); // Prevent the default context menu
+    // Implement your custom behavior here
+    console.log(`Right-clicked on photo with ID: ${photoId}`);
+    // For example, you might show a modal or perform another action
+  };
+
   const fetchImages = async () => {
     try {
       const { data } = await axios.get<
@@ -204,6 +218,9 @@ const Gallery = () => {
               alt={`Image ${photo.id}`}
               thumbnail
               className="w-100"
+              onClick={() => handlePhotoClick(photo.id)}
+              onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
+              style={{ cursor: "pointer" }}
             />
             {me && (
               <button onClick={() => handleLike(photo.id, me.id.toString())}>
