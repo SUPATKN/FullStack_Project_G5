@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Image, Row, Col, Button } from "react-bootstrap";
+import { Row, Col, Button, Card } from "react-bootstrap";
 import Layout from "./Layout";
 
 const Cart = () => {
@@ -18,7 +18,7 @@ const Cart = () => {
       if (me) {
         const { data } = await axios.get<
           { id: string; path: string; user_id: string; price: number }[]
-        >(`/api/cart?userId=${me.id}`);
+        >(`/api/cart/${me.id}`);
         setCartItems(data);
       }
     } catch (error) {
@@ -48,11 +48,6 @@ const Cart = () => {
     }
   };
 
-  const handleCheckout = () => {
-    alert("Proceeding to checkout...");
-    // Implement the logic for checkout, e.g., redirect to payment page
-  };
-
   useEffect(() => {
     fetchMe();
   }, []);
@@ -63,34 +58,48 @@ const Cart = () => {
     }
   }, [me]);
 
+  // Calculate total price
+  const totalPrice = cartItems.reduce((acc, item) => acc + item.price, 0);
+
   return (
     <Layout>
       <h3 className="mb-4 text-center">My Cart</h3>
       <Row>
-        {cartItems.length > 0 ? (
-          cartItems.map((photo) => (
-            <Col key={photo.id} xs={12} md={4} lg={3} className="mb-4">
-              <Image
-                crossOrigin="anonymous"
-                src={`/api/${photo.path}`}
-                alt={`Image ${photo.id}`}
-                thumbnail
-                className="w-100"
-              />
-              <p className="mt-2">Price: ${photo.price}</p>
-            </Col>
-          ))
-        ) : (
-          <p className="text-center">Your cart is empty.</p>
-        )}
+        <Col md={8}>
+          {cartItems.length > 0 ? (
+            <Row>
+              {cartItems.map((photo) => (
+                <Col key={photo.id} xs={12} md={6} lg={4} className="mb-4">
+                  <Card>
+                    <Card.Img
+                      variant="top"
+                      src={`/api/${photo.path}`}
+                      alt={`Image ${photo.id}`}
+                      crossOrigin="anonymous"
+                    />
+                    <Card.Body>
+                      <Card.Text>Price: ${photo.price.toFixed(2)}</Card.Text>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          ) : (
+            <p className="text-center w-100">Your cart is empty.</p>
+          )}
+        </Col>
+        <Col md={4}>
+          <Card className="p-3">
+            <Card.Body>
+              <Card.Title>Total Price</Card.Title>
+              <Card.Text className="mb-4">
+                <h3>${totalPrice.toFixed(2)}</h3>
+              </Card.Text>
+              <Button variant="primary">Proceed to Checkout</Button>
+            </Card.Body>
+          </Card>
+        </Col>
       </Row>
-      {cartItems.length > 0 && (
-        <div className="text-center">
-          <Button variant="primary" onClick={handleCheckout}>
-            Proceed to Checkout
-          </Button>
-        </div>
-      )}
     </Layout>
   );
 };

@@ -5,19 +5,12 @@ import multer from "multer";
 import cors from "cors";
 import helmet from "helmet";
 import { hash, compare } from "bcrypt";
-// import { body, validationResult } from 'express-validator';
-import { dbClient, dbConn } from "@db/client";
-import {
-  images,
-  users,
-  likes,
-  comments,
-  ProfilePicture,
-  carts,
-  cart_items,
-} from "@db/schema";
-import { and, eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
+import QRCode from "qrcode";
+import generatePayload from "promptpay-qr";
+import { dbClient, dbConn } from "@db/client";
+import { images, users, likes, comments } from "@db/schema";
+import { and, eq } from "drizzle-orm";
 
 type CartType = {
   cart_id: number;
@@ -520,6 +513,109 @@ app.post("/api/cart/add", async (req: Request, res: Response) => {
       .json({ message: "Item added to cart and cart updated successfully" });
   } catch (error) {
     console.error("Error adding item to cart:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/cart/:id", async (req: Request, res: Response) => {
+  const userId = req.params.id;
+
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
+
+  try {
+    const cart = await dbClient
+      .select()
+      .from(carts)
+      .where(eq(carts.user_id, Number(userId)))
+      .limit(1)
+      .execute()
+      .then((result) => result[0]);
+
+    if (!cart) {
+      return res.json([]); // Return an empty array if no cart exists for the user
+    }
+
+    const cartItems = await dbClient
+      .select({
+        id: images.id,
+        path: images.path,
+        user_id: images.user_id,
+        price: images.price,
+      })
+      .from(cart_items)
+      .leftJoin(images, eq(cart_items.photo_id, images.id))
+      .where(eq(cart_items.cart_id, cart.cart_id))
+      .execute();
+
+    res.json(cartItems);
+  } catch (error) {
+    console.error("Error fetching cart items:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post('/api/generateQR', async (req: Request, res: Response) => {
+  const amount = parseFloat(req.body.amount); // Get amount from request body
+  const mobileNumber = '0885755068';
+  const payload = generatePayload(mobileNumber, { amount });
+  const option = {
+    color: {
+      dark: '#000',
+      light: '#fff'
+    }
+  };
+
+  try {
+    QRCode.toDataURL(payload, option, (err, url) => {
+      if (err) {
+        console.error('QR Code generation failed:', err);
+        return res.status(400).json({
+          RespCode: 400,
+          RespMessage: 'QR Code generation failed: ' + err.message
+        });
+      }
+      res.status(200).json({
+        RespCode: 200,
+        RespMessage: 'QR Code generated successfully',
+        Result: url
+      });
+    });
+  } catch (error) {
+    console.error("Error generating QR Code:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+// QR Code generation endpoint
+app.post('/api/generateQR', async (req: Request, res: Response) => {
+  const amount = parseFloat(req.body.amount);
+  const mobileNumber = '0885755068';
+  const payload = generatePayload(mobileNumber, { amount });
+  const option = {
+    color: {
+      dark: '#000',
+      light: '#fff'
+    }
+  };
+
+  try {
+    QRCode.toDataURL(payload, option, (err, url) => {
+      if (err) {
+        console.error('QR Code generation failed:', err);
+        return res.status(400).json({
+          RespCode: 400,
+          RespMessage: 'QR Code generation failed: ' + err.message
+        });
+      }
+      res.status(200).json({
+        RespCode: 200,
+        RespMessage: 'QR Code generated successfully',
+        Result: url
+      });
+    });
+  } catch (error) {
+    console.error("Error generating QR Code:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
