@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Row, Col, Button, Card } from "react-bootstrap";
+import { Row, Col, Button, Card, Spinner, Alert } from "react-bootstrap";
 import Layout from "./Layout";
 
 const Cart = () => {
@@ -12,6 +12,9 @@ const Cart = () => {
     username: string;
     email: string;
   } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const fetchCartItems = async () => {
     try {
@@ -61,6 +64,35 @@ const Cart = () => {
   // Calculate total price
   const totalPrice = cartItems.reduce((acc, item) => acc + item.price, 0);
 
+  const handleCheckout = async () => {
+    if (!me) {
+      setError("User not authenticated.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      // Send purchase requests
+      const purchasePromises = cartItems.map((item) =>
+        axios.post(`/api/photo/${item.id}/buy`, { userId: me.id })
+      );
+
+      await Promise.all(purchasePromises);
+
+      // Clear cart items on success
+      setCartItems([]);
+      setSuccess("Purchase successful!");
+    } catch (error) {
+      console.error("Error processing purchase:", error);
+      setError("Error processing purchase. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Layout>
       <h3 className="mb-4 text-center">My Cart</h3>
@@ -95,7 +127,19 @@ const Cart = () => {
               <Card.Text className="mb-4">
                 <h3>${totalPrice.toFixed(2)}</h3>
               </Card.Text>
-              <Button variant="primary">Proceed to Checkout</Button>
+              {error && <Alert variant="danger">{error}</Alert>}
+              {success && <Alert variant="success">{success}</Alert>}
+              <Button
+                variant="primary"
+                onClick={handleCheckout}
+                disabled={loading}
+              >
+                {loading ? (
+                  <Spinner animation="border" />
+                ) : (
+                  "Proceed to Checkout"
+                )}
+              </Button>
             </Card.Body>
           </Card>
         </Col>

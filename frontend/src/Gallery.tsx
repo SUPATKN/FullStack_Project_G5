@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Image, Row, Col, Form, Button } from "react-bootstrap";
+
 import Layout from "./Layout";
 // import { format } from "date-fns";
 
@@ -195,6 +196,12 @@ const Gallery = () => {
     }
 
     try {
+      const photo = photos.find((photo) => photo.id === photoId);
+
+      if (photo && photo.user_id === me.id.toString()) {
+        alert("You cannot add your own photo to the cart");
+        return;
+      }
       const response = await axios.post("/api/cart/add", {
         user_id: me.id,
         photo_id: photoId,
@@ -252,6 +259,7 @@ const Gallery = () => {
                 >
                   Add to Cart
                 </Button>
+
                 <Form
                   onSubmit={(e) => {
                     e.preventDefault();

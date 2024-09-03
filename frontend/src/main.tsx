@@ -14,6 +14,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Cart from "./Cart";
 import Coin from "./Coin";
 import PhotoDetail from "./PhotoDetail";
+import PurchasedPhotos from "./PurchasedPhotos";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -32,6 +33,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/cart" element={<Cart />} />
           <Route path="/coin" element={<Coin />} />
           <Route path="/photo/:id" element={<PhotoDetail />} />
+          <Route path="/purchased-photos" element={<PurchasedPhotos />} />
         </Routes>
       </Router>
     </AuthProvider>

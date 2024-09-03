@@ -95,7 +95,6 @@ export const cart_items = pgTable("cart_items", {
     .references(() => images.id), 
 });
 
-// ตาราง image_ownerships เก็บข้อมูลความเป็นเจ้าของรูปภาพ
 export const image_ownerships = pgTable("image_ownerships", {
   id: serial("id").primaryKey(),
   user_id: integer("user_id")
@@ -107,16 +106,15 @@ export const image_ownerships = pgTable("image_ownerships", {
   purchased_at: timestamp("purchased_at").defaultNow().notNull(),
 });
 
-// ตาราง coin_transactions เก็บประวัติการใช้จ่าย coin
 export const coin_transactions = pgTable("coin_transactions", {
   transaction_id: serial("transaction_id").primaryKey(),
   user_id: integer("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  amount: integer("amount").notNull(),  // จำนวน coin ที่ใช้ (บวกหรือลบ)
-  transaction_type: varchar("transaction_type", { length: 50 }).notNull(), // ประเภทของธุรกรรม เช่น 'purchase', 'earn'
+  amount: integer("amount").notNull(),
+  transaction_type: varchar("transaction_type", { length: 50 }).notNull(), 
   created_at: timestamp("created_at").defaultNow().notNull(),
-  description: text("description"),  // รายละเอียดเพิ่มเติมเกี่ยวกับธุรกรรม
+  description: text("description"),  
 });
 
 

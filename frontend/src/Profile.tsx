@@ -1,5 +1,5 @@
 import React, { useEffect, ChangeEvent, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import Layout from "./Layout";
 import axios from "axios";
 import { Button, Form, Image, Row, Col } from "react-bootstrap";
@@ -9,6 +9,7 @@ interface UserProfile {
   username: string;
   email: string;
 }
+
 interface Photo {
   id: string;
   path: string;
@@ -43,11 +44,10 @@ const Profile: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null); // State for current user
   const [error, setError] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
-  // const [profilePics, setProfilePics] = useState<ProfilePicture[]>([]);
   const [myProPic, setMyProPic] = useState("");
   const [isEdit, setIsEdit] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
-  // const [success, setSuccess] = useState<string | null>(null);
+  const navigate = useNavigate(); // For navigation
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -73,7 +73,6 @@ const Profile: React.FC = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      // setSuccess("File uploaded successfully!");
       setError(null);
       if (userId) {
         fetchProfilePicture();
@@ -82,7 +81,6 @@ const Profile: React.FC = () => {
       setIsUpload(false);
     } catch (error) {
       console.error("Error uploading file:", error);
-      // setSuccess(null);
       setError("Failed to upload file.");
     }
   };
@@ -143,9 +141,7 @@ const Profile: React.FC = () => {
   const fetchProfilePicture = async () => {
     try {
       const { data } = await axios.get<ProfilePicture[]>("/api/profilePic/get");
-      // setProfilePics(data);
       setMyProfilePic(data);
-      console.log(myProPic);
     } catch (error) {
       console.error("Error fetching profile picture:", error);
       setError("Failed to fetch profile picture");
@@ -155,7 +151,6 @@ const Profile: React.FC = () => {
   const setMyProfilePic = (pics: ProfilePicture[]) => {
     if (userId) {
       const profilePicPath = pics.find((img) => img.user_id == userId)?.path;
-      console.log(profilePicPath);
       setMyProPic(profilePicPath || "");
     }
   };
@@ -184,7 +179,6 @@ const Profile: React.FC = () => {
   const handleDelete = async (filename: string) => {
     try {
       await axios.delete(`/api/photo/${filename}`);
-      // setSuccess("File deleted successfully!");
       setError(null);
 
       const updatedPhotos = photos.filter(
@@ -193,8 +187,13 @@ const Profile: React.FC = () => {
       setPhotos(updatedPhotos);
     } catch (error) {
       console.error("Error deleting file:", error);
-      // setSuccess(null);
       setError("Failed to delete file.");
+    }
+  };
+
+  const handleViewPurchasedPhotos = () => {
+    if (user) {
+      navigate("/purchased-photos", { state: { userId: user.id } });
     }
   };
 
@@ -234,11 +233,7 @@ const Profile: React.FC = () => {
           )
         )}
       </div>
-      <Button
-        variant="secondary"
-        className="mb-3"
-        onClick={() => handleUploadPic()}
-      >
+      <Button variant="secondary" className="mb-3" onClick={handleUploadPic}>
         Upload profile picture
       </Button>
       {isUpload && (
@@ -285,6 +280,13 @@ const Profile: React.FC = () => {
           Edit
         </Button>
       )}
+      <Button
+        variant="primary"
+        className="mb-3"
+        onClick={handleViewPurchasedPhotos}
+      >
+        View Purchased Photos
+      </Button>
       <Row>
         {photos
           .filter((photo) => photo.user_id == user?.id?.toString())

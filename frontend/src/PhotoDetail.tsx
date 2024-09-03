@@ -52,13 +52,11 @@ const PhotoDetail = () => {
   useEffect(() => {
     const fetchPhotoDetails = async () => {
       try {
-        // Fetch photo details
         const photoResponse = await axios.get<PhotoDetailProps>(
           `/api/photo/${id}`
         );
         setPhoto(photoResponse.data);
 
-        // Re-check purchase status after fetching photo details
         if (currentUser) {
           const purchaseResponse = await axios.get<{ purchased: boolean }>(
             `/api/photo/${id}/user/${currentUser.id}/status`
@@ -75,7 +73,7 @@ const PhotoDetail = () => {
     if (id && currentUser) {
       fetchPhotoDetails();
     }
-  }, [id, currentUser]); // Run when `id` or `currentUser` changes
+  }, [id, currentUser]);
 
   const handlePurchase = async () => {
     if (photo && currentUser) {
@@ -83,7 +81,7 @@ const PhotoDetail = () => {
         await axios.post(`/api/photo/${photo.id}/buy`, {
           userId: currentUser.id,
         });
-        setHasPurchased(true); // Update purchase status immediately
+        setHasPurchased(true);
       } catch (error) {
         console.error("Error purchasing photo:", error);
       }

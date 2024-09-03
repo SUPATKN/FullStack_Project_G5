@@ -444,6 +444,19 @@ app.post("/api/cart/add", async (req: Request, res: Response) => {
   }
 
   try {
+    // ตรวจสอบว่าผู้ใช้กำลังพยายามเพิ่มรูปของตัวเองหรือไม่
+    const photo = await dbClient.query.images.findFirst({
+      where: eq(images.id, Number(photo_id)),
+    });
+
+    if (!photo) {
+      return res.status(404).json({ error: "Photo not found" });
+    }
+
+    if (photo.user_id === Number(user_id)) {
+      return res.status(400).json({ error: "Cannot add your own photo to the cart" });
+    }
+
     // ค้นหา cart ที่มีอยู่แล้วสำหรับ user_id นี้
     let cart: CartType | undefined = await dbClient
       .select()
@@ -492,6 +505,22 @@ app.post("/api/cart/add", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+// API endpoint เพื่อทำการลบข้อมูลในตะกร้า
+app.post('/api/cart/clear', async (req, res) => {
+  const { userId } = req.body;
+  
+  try {
+    // ลบข้อมูลที่ตรงกับ userId
+    await carts.delete().where({ user_id: userId }).execute();
+    res.status(200).json({ message: "Cart cleared successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error clearing cart", error });
+  }
+});
+
+
 
 app.get("/api/cart/:id", async (req: Request, res: Response) => {
   const userId = req.params.id;
@@ -563,6 +592,7 @@ app.post('/api/generateQR', async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 // QR Code generation endpoint
 app.post('/api/generateQR', async (req: Request, res: Response) => {
   const amount = parseFloat(req.body.amount);
@@ -675,7 +705,6 @@ app.get("/api/photo/:photoId/user/:userId/status", async (req: Request, res: Res
   }
 
   try {
-    // ตรวจสอบว่าผู้ใช้ได้ซื้อรูปภาพนี้แล้ว
     const ownership = await dbClient.query.image_ownerships.findFirst({
       where: and(
         eq(image_ownerships.user_id, userId),
@@ -683,7 +712,6 @@ app.get("/api/photo/:photoId/user/:userId/status", async (req: Request, res: Res
       ),
     });
 
-    // ตอบกลับสถานะการซื้อ
     res.status(200).json({
       purchased: !!ownership,
     });
@@ -703,40 +731,31 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
   }
 
   try {
-    // ตรวจสอบว่าผู้ใช้ได้ซื้อภาพนี้แล้วหรือไม่
-    const ownership = await dbClient.query.image_ownerships.findFirst({
-      where: and(
-        eq(image_ownerships.user_id, userId),
-        eq(image_ownerships.image_id, photoId)
-      ),
-    });
-
-    if (ownership) {
-      return res.status(400).json({ error: "You already own this photo" });
-    }
-
-    // Fetch the photo details
     const photo = await dbClient.query.images.findFirst({
       where: eq(images.id, photoId),
     });
+
     if (!photo) {
       return res.status(404).json({ error: "Photo not found" });
     }
 
-    // Fetch the buyer details
+    // ตรวจสอบว่าผู้ใช้กำลังพยายามซื้อรูปของตัวเองหรือไม่
+    if (photo.user_id === Number(userId)) {
+      return res.status(400).json({ error: "Cannot buy your own photo" });
+    }
+
     const buyer = await dbClient.query.users.findFirst({
       where: eq(users.id, userId),
     });
+
     if (!buyer) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Check if the buyer has sufficient funds
     if (buyer.coin < photo.price) {
       return res.status(400).json({ error: "Insufficient funds" });
     }
 
-    // Fetch the seller details
     const seller = await dbClient.query.users.findFirst({
       where: eq(users.id, photo.user_id),
     });
@@ -744,20 +763,16 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Seller not found" });
     }
 
-    // Process the transaction
     await dbClient.transaction(async (trx) => {
-      // Update the buyer's and seller's coin balances
       await trx.update(users).set({ coin: buyer.coin - photo.price }).where(eq(users.id, userId));
       await trx.update(users).set({ coin: seller.coin + photo.price }).where(eq(users.id, photo.user_id));
 
-      // Record the purchase in image_ownerships
       await trx.insert(image_ownerships).values({
         user_id: userId,
         image_id: photoId,
         purchased_at: new Date(),
       });
 
-      // Record the transaction for the buyer
       await trx.insert(coin_transactions).values({
         user_id: userId,
         amount: -photo.price,
@@ -765,7 +780,6 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
         description: `Purchased photo ${photoId}`,
       });
 
-      // Record the transaction for the seller
       await trx.insert(coin_transactions).values({
         user_id: photo.user_id,
         amount: photo.price,
@@ -781,3 +795,37 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
   }
 });
 
+
+
+// Get all photos purchased by a specific user
+app.get("/api/user/:userId/purchased-photos", async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
+
+  try {
+    // ค้นหารูปภาพที่ผู้ใช้ได้ซื้อ
+    const purchasedPhotos = await dbClient
+      .select({
+        id: images.id,
+        path: images.path,
+        price: images.price,
+        purchased_at:image_ownerships.purchased_at,
+      })
+      .from(image_ownerships) // หรือตารางที่เก็บข้อมูลการซื้อ
+      .leftJoin(images, eq(image_ownerships.image_id, images.id))
+      .where(eq(image_ownerships.user_id, Number(userId)))
+      .execute();
+
+    if (purchasedPhotos.length === 0) {
+      return res.json([]); // Return an empty array if no photos are purchased
+    }
+
+    res.json(purchasedPhotos);
+  } catch (error) {
+    console.error("Error fetching purchased photos:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
