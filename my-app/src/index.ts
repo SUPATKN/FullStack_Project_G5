@@ -4,12 +4,25 @@ import path from "path";
 import multer from "multer";
 import cors from "cors";
 import helmet from "helmet";
+import bcrypt from "bcrypt";
+import morgan from "morgan";
 import { hash, compare } from "bcrypt";
 import jwt from "jsonwebtoken";
+import passportIns from "./auth/passport";
 import QRCode from "qrcode";
 import generatePayload from "promptpay-qr";
 import { dbClient, dbConn } from "@db/client";
-import { images, users, likes, comments ,carts,cart_items,ProfilePicture,coin_transactions,image_ownerships} from "@db/schema";
+import {
+  images,
+  users,
+  likes,
+  comments,
+  carts,
+  cart_items,
+  ProfilePicture,
+  coin_transactions,
+  image_ownerships,
+} from "@db/schema";
 import { and, eq } from "drizzle-orm";
 
 type CartType = {
@@ -31,6 +44,9 @@ app.use(
 
 app.use(helmet());
 app.use(express.json());
+app.use(express.static("public"));
+app.use(morgan("dev", { immediate: true }));
+app.use(passportIns.initialize());
 
 //for store photo
 const storage1 = multer.diskStorage({
@@ -71,6 +87,8 @@ app.use(
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World");
 });
+
+//AUTH
 
 app.post(
   "/api/upload",
@@ -162,7 +180,15 @@ app.post("/api/register", async (req: Request, res: Response) => {
     if (existingUser) {
       return res.status(400).json({ error: "Email already in use" });
     }
-    const hashedPassword = await hash(password, 10);
+
+    const saltRounds = 10;
+    let hashedPassword = "";
+    hashedPassword = await new Promise((resolve, reject) => {
+      bcrypt.hash(password, saltRounds, function (err, hash) {
+        if (err) reject(err);
+        resolve(hash);
+      });
+    });
 
     await dbClient.insert(users).values({
       username,
@@ -176,6 +202,22 @@ app.post("/api/register", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.post(
+  "/api/login",
+  passportIns.authenticate("local", { session: false }),
+  function (req, res) {
+    // setSessionInfoAfterLogin(req, "CREDENTIAL");
+    if (req?.user) {
+      res.status(200).json({
+        message: "Login successful",
+        user: req.user,
+      });
+    } else {
+      res.status(500).json({ error: "no user" });
+    }
+  }
+);
 
 app.post("/api/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -215,57 +257,57 @@ app.post("/api/login", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/api/user/:id", async (req: Request, res: Response) => {
-  const userId = req.params.id;
+// app.get("/api/user/:id", async (req: Request, res: Response) => {
+//   const userId = req.params.id;
 
-  try {
-    const user = await dbClient.query.users.findFirst({
-      where: eq(users.id, Number(userId)),
-    });
+//   try {
+//     const user = await dbClient.query.users.findFirst({
+//       where: eq(users.id, Number(userId)),
+//     });
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
 
-    res.status(200).json({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-    });
-  } catch (error) {
-    console.error("Error retrieving user information:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//     res.status(200).json({
+//       id: user.id,
+//       username: user.username,
+//       email: user.email,
+//     });
+//   } catch (error) {
+//     console.error("Error retrieving user information:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
-app.get("/api/profile", async (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ error: "Authorization header missing" });
-  }
+// app.get("/api/profile", async (req: Request, res: Response) => {
+//   const authHeader = req.headers.authorization;
+//   if (!authHeader) {
+//     return res.status(401).json({ error: "Authorization header missing" });
+//   }
 
-  const token = authHeader.split(" ")[1];
+//   const token = authHeader.split(" ")[1];
 
-  try {
-    const decoded = jwt.verify(token, "YOUR_SECRET_KEY") as { userId: number };
-    const user = await dbClient.query.users.findFirst({
-      where: eq(users.id, decoded.userId),
-    });
+//   try {
+//     const decoded = jwt.verify(token, "YOUR_SECRET_KEY") as { userId: number };
+//     const user = await dbClient.query.users.findFirst({
+//       where: eq(users.id, decoded.userId),
+//     });
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
 
-    res.status(200).json({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-    });
-  } catch (error) {
-    console.error("Error retrieving user profile:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//     res.status(200).json({
+//       id: user.id,
+//       username: user.username,
+//       email: user.email,
+//     });
+//   } catch (error) {
+//     console.error("Error retrieving user profile:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 app.post("/api/likes", async (req: Request, res: Response) => {
   const { photo_id, user_id } = req.body;
@@ -454,7 +496,9 @@ app.post("/api/cart/add", async (req: Request, res: Response) => {
     }
 
     if (photo.user_id === Number(user_id)) {
-      return res.status(400).json({ error: "Cannot add your own photo to the cart" });
+      return res
+        .status(400)
+        .json({ error: "Cannot add your own photo to the cart" });
     }
 
     // ค้นหา cart ที่มีอยู่แล้วสำหรับ user_id นี้
@@ -506,21 +550,18 @@ app.post("/api/cart/add", async (req: Request, res: Response) => {
   }
 });
 
-
 // API endpoint เพื่อทำการลบข้อมูลในตะกร้า
-app.post('/api/cart/clear', async (req, res) => {
-  const { userId } = req.body;
-  
-  try {
-    // ลบข้อมูลที่ตรงกับ userId
-    await carts.delete().where({ user_id: userId }).execute();
-    res.status(200).json({ message: "Cart cleared successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error clearing cart", error });
-  }
-});
+// app.post('/api/cart/clear', async (req, res) => {
+//   const { userId } = req.body;
 
-
+//   try {
+//     // ลบข้อมูลที่ตรงกับ userId
+//     await carts.delete().where({ user_id: userId }).execute();
+//     res.status(200).json({ message: "Cart cleared successfully" });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error clearing cart", error });
+//   }
+// });
 
 app.get("/api/cart/:id", async (req: Request, res: Response) => {
   const userId = req.params.id;
@@ -561,30 +602,30 @@ app.get("/api/cart/:id", async (req: Request, res: Response) => {
   }
 });
 
-app.post('/api/generateQR', async (req: Request, res: Response) => {
+app.post("/api/generateQR", async (req: Request, res: Response) => {
   const amount = parseFloat(req.body.amount); // Get amount from request body
-  const mobileNumber = '0885755068';
+  const mobileNumber = "0885755068";
   const payload = generatePayload(mobileNumber, { amount });
   const option = {
     color: {
-      dark: '#000',
-      light: '#fff'
-    }
+      dark: "#000",
+      light: "#fff",
+    },
   };
 
   try {
     QRCode.toDataURL(payload, option, (err, url) => {
       if (err) {
-        console.error('QR Code generation failed:', err);
+        console.error("QR Code generation failed:", err);
         return res.status(400).json({
           RespCode: 400,
-          RespMessage: 'QR Code generation failed: ' + err.message
+          RespMessage: "QR Code generation failed: " + err.message,
         });
       }
       res.status(200).json({
         RespCode: 200,
-        RespMessage: 'QR Code generated successfully',
-        Result: url
+        RespMessage: "QR Code generated successfully",
+        Result: url,
       });
     });
   } catch (error) {
@@ -594,30 +635,30 @@ app.post('/api/generateQR', async (req: Request, res: Response) => {
 });
 
 // QR Code generation endpoint
-app.post('/api/generateQR', async (req: Request, res: Response) => {
+app.post("/api/generateQR", async (req: Request, res: Response) => {
   const amount = parseFloat(req.body.amount);
-  const mobileNumber = '0885755068';
+  const mobileNumber = "0885755068";
   const payload = generatePayload(mobileNumber, { amount });
   const option = {
     color: {
-      dark: '#000',
-      light: '#fff'
-    }
+      dark: "#000",
+      light: "#fff",
+    },
   };
 
   try {
     QRCode.toDataURL(payload, option, (err, url) => {
       if (err) {
-        console.error('QR Code generation failed:', err);
+        console.error("QR Code generation failed:", err);
         return res.status(400).json({
           RespCode: 400,
-          RespMessage: 'QR Code generation failed: ' + err.message
+          RespMessage: "QR Code generation failed: " + err.message,
         });
       }
       res.status(200).json({
         RespCode: 200,
-        RespMessage: 'QR Code generated successfully',
-        Result: url
+        RespMessage: "QR Code generated successfully",
+        Result: url,
       });
     });
   } catch (error) {
@@ -651,8 +692,6 @@ app.get("/api/coin/:id", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 app.get("/api/coin/transactions/:id", async (req: Request, res: Response) => {
   const userId = parseInt(req.params.id, 10);
@@ -696,31 +735,33 @@ app.get("/api/photo/:id", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/api/photo/:photoId/user/:userId/status", async (req: Request, res: Response) => {
-  const photoId = parseInt(req.params.photoId, 10);
-  const userId = parseInt(req.params.userId, 10);
+app.get(
+  "/api/photo/:photoId/user/:userId/status",
+  async (req: Request, res: Response) => {
+    const photoId = parseInt(req.params.photoId, 10);
+    const userId = parseInt(req.params.userId, 10);
 
-  if (isNaN(photoId) || isNaN(userId)) {
-    return res.status(400).json({ error: "Invalid photo ID or user ID" });
+    if (isNaN(photoId) || isNaN(userId)) {
+      return res.status(400).json({ error: "Invalid photo ID or user ID" });
+    }
+
+    try {
+      const ownership = await dbClient.query.image_ownerships.findFirst({
+        where: and(
+          eq(image_ownerships.user_id, userId),
+          eq(image_ownerships.image_id, photoId)
+        ),
+      });
+
+      res.status(200).json({
+        purchased: !!ownership,
+      });
+    } catch (error) {
+      console.error("Error checking purchase status:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   }
-
-  try {
-    const ownership = await dbClient.query.image_ownerships.findFirst({
-      where: and(
-        eq(image_ownerships.user_id, userId),
-        eq(image_ownerships.image_id, photoId)
-      ),
-    });
-
-    res.status(200).json({
-      purchased: !!ownership,
-    });
-  } catch (error) {
-    console.error("Error checking purchase status:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
+);
 
 app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
   const photoId = parseInt(req.params.photoId, 10);
@@ -764,8 +805,14 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
     }
 
     await dbClient.transaction(async (trx) => {
-      await trx.update(users).set({ coin: buyer.coin - photo.price }).where(eq(users.id, userId));
-      await trx.update(users).set({ coin: seller.coin + photo.price }).where(eq(users.id, photo.user_id));
+      await trx
+        .update(users)
+        .set({ coin: buyer.coin - photo.price })
+        .where(eq(users.id, userId));
+      await trx
+        .update(users)
+        .set({ coin: seller.coin + photo.price })
+        .where(eq(users.id, photo.user_id));
 
       await trx.insert(image_ownerships).values({
         user_id: userId,
@@ -795,37 +842,38 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
   }
 });
 
-
-
 // Get all photos purchased by a specific user
-app.get("/api/user/:userId/purchased-photos", async (req: Request, res: Response) => {
-  const userId = req.params.userId;
+app.get(
+  "/api/user/:userId/purchased-photos",
+  async (req: Request, res: Response) => {
+    const userId = req.params.userId;
 
-  if (!userId) {
-    return res.status(400).json({ error: "User ID is required" });
-  }
-
-  try {
-    // ค้นหารูปภาพที่ผู้ใช้ได้ซื้อ
-    const purchasedPhotos = await dbClient
-      .select({
-        id: images.id,
-        path: images.path,
-        price: images.price,
-        purchased_at:image_ownerships.purchased_at,
-      })
-      .from(image_ownerships) // หรือตารางที่เก็บข้อมูลการซื้อ
-      .leftJoin(images, eq(image_ownerships.image_id, images.id))
-      .where(eq(image_ownerships.user_id, Number(userId)))
-      .execute();
-
-    if (purchasedPhotos.length === 0) {
-      return res.json([]); // Return an empty array if no photos are purchased
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
     }
 
-    res.json(purchasedPhotos);
-  } catch (error) {
-    console.error("Error fetching purchased photos:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    try {
+      // ค้นหารูปภาพที่ผู้ใช้ได้ซื้อ
+      const purchasedPhotos = await dbClient
+        .select({
+          id: images.id,
+          path: images.path,
+          price: images.price,
+          purchased_at: image_ownerships.purchased_at,
+        })
+        .from(image_ownerships) // หรือตารางที่เก็บข้อมูลการซื้อ
+        .leftJoin(images, eq(image_ownerships.image_id, images.id))
+        .where(eq(image_ownerships.user_id, Number(userId)))
+        .execute();
+
+      if (purchasedPhotos.length === 0) {
+        return res.json([]); // Return an empty array if no photos are purchased
+      }
+
+      res.json(purchasedPhotos);
+    } catch (error) {
+      console.error("Error fetching purchased photos:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   }
-});
+);
