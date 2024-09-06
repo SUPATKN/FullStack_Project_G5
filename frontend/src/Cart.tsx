@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Row, Col, Button, Card, Spinner, Alert } from "react-bootstrap";
 import Layout from "./Layout";
+import "./global.css";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState<
@@ -16,6 +17,7 @@ const Cart = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  // Fetch the items in the user's cart
   const fetchCartItems = async () => {
     try {
       if (me) {
@@ -29,6 +31,7 @@ const Cart = () => {
     }
   };
 
+  // Fetch the current user profile
   const fetchMe = async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -51,23 +54,71 @@ const Cart = () => {
     }
   };
 
+  // Fetch user profile on component mount
   useEffect(() => {
     fetchMe();
   }, []);
 
+  // Fetch cart items when user profile is available
   useEffect(() => {
     if (me) {
       fetchCartItems();
     }
   }, [me]);
 
-  // Calculate total price
-  const totalPrice = cartItems.reduce((acc, item) => acc + item.price, 0);
+  // Handle deletion of an item from the cart
+  const handleDelete = async (photoId: string) => {
+    try {
+      setLoading(true);
+      setError(null);
 
+      // Ensure user is authenticated
+      if (!me) {
+        setError("User not authenticated.");
+        return;
+      }
+
+      // Make the DELETE request to the API
+      const response = await axios.delete(`/api/cart/remove`, {
+        data: { user_id: me.id, photo_id: photoId },
+      });
+
+      if (response.status === 200) {
+        // Update the cart items state
+        setCartItems((prevItems) =>
+          prevItems.filter((item) => item.id !== photoId)
+        );
+        setSuccess("Item removed from cart successfully.");
+      } else {
+        throw new Error(
+          `Failed to delete item. Status code: ${response.status}`
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting item from cart:", error);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unknown error occurred.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle checkout process with confirmation
   const handleCheckout = async () => {
     if (!me) {
       setError("User not authenticated.");
       return;
+    }
+
+    const confirmed = window.confirm(
+      "Are you sure you want to proceed with the purchase?"
+    );
+
+    if (!confirmed) {
+      return; // Exit the function if the user cancels
     }
 
     setLoading(true);
@@ -75,15 +126,18 @@ const Cart = () => {
     setSuccess(null);
 
     try {
-      // Send purchase requests
-      const purchasePromises = cartItems.map((item) =>
-        axios.post(`/api/photo/${item.id}/buy`, { userId: me.id })
-      );
+      if (cartItems.length === 0) {
+        setError("No items in the cart.");
+        setLoading(false);
+        return;
+      }
 
-      await Promise.all(purchasePromises);
+      await axios.post("/api/cart/checkout", {
+        user_id: me.id,
+        items: cartItems.map((item) => item.id), // ส่งไอเท็มทั้งหมดในรถเข็น
+      });
 
-      // Clear cart items on success
-      setCartItems([]);
+      fetchCartItems(); // Refresh cart items after successful checkout
       setSuccess("Purchase successful!");
     } catch (error) {
       console.error("Error processing purchase:", error);
@@ -92,6 +146,9 @@ const Cart = () => {
       setLoading(false);
     }
   };
+
+  // Calculate total price of all items
+  const totalPrice = cartItems.reduce((acc, item) => acc + item.price, 0);
 
   return (
     <Layout>
@@ -102,15 +159,26 @@ const Cart = () => {
             <Row>
               {cartItems.map((photo) => (
                 <Col key={photo.id} xs={12} md={6} lg={4} className="mb-4">
-                  <Card>
+                  <Card className="h-100">
                     <Card.Img
                       variant="top"
                       src={`/api/${photo.path}`}
                       alt={`Image ${photo.id}`}
                       crossOrigin="anonymous"
                     />
-                    <Card.Body>
-                      <Card.Text>Price: ${photo.price.toFixed(2)}</Card.Text>
+                    <Card.Body className="d-flex flex-column justify-content-between">
+                      <Card.Text className="mb-3">
+                        Price: ${photo.price.toFixed(2)}
+                      </Card.Text>
+                      <div className="d-flex justify-content-end">
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => handleDelete(photo.id)}
+                        >
+                          Delete
+                        </Button>
+                      </div>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -133,6 +201,7 @@ const Cart = () => {
                 variant="primary"
                 onClick={handleCheckout}
                 disabled={loading}
+                className="w-100"
               >
                 {loading ? (
                   <Spinner animation="border" />
