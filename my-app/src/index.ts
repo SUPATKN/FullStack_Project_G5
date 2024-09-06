@@ -133,22 +133,50 @@ app.post("/api/register", async (req: Request, res: Response) => {
   }
 });
 
-app.post(
-  "/api/login",
-  passportIns.authenticate("local"),
-  function (req, res) {
-    setSessionInfoAfterLogin(req, "CREDENTIAL");
+// app.post(
+//   "/api/login",
+//   passportIns.authenticate("local"),
+//   function (req, res) {
+//     setSessionInfoAfterLogin(req, "CREDENTIAL");
 
-    if (req?.user) {
-      res.status(200).json({
-        message: "Login successful",
-        user: req.user,
-      });
-    } else {
-      res.status(500).json({ error: "no user" });
-    }
-  }
-);
+//     if (req?.user) {
+//       res.status(200).json({
+//         message: "Login successful",
+//         user: req.user,
+//       });
+//     } else {
+//       res.status(500).json({ error: "no user" });
+//     }
+//   }
+// );
+
+// app.get("/api/profile", async (req: Request, res: Response) => {
+//   // Check if session is available
+//   if (!req.session || !req.session.user) {
+//     return res.status(401).json({ error: "User not authenticated" });
+//   }
+
+//   const userId = req.session.user.id;
+
+//   try {
+//     const user = await dbClient.query.users.findFirst({
+//       where: eq(users.id, userId),
+//     });
+
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
+
+//     res.status(200).json({
+//       id: user.id,
+//       username: user.username,
+//       email: user.email,
+//     });
+//   } catch (error) {
+//     console.error("Error retrieving user profile:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 app.post(
   "/api/upload",
@@ -227,78 +255,56 @@ app.delete("/api/photo/:filename", async (req: Request, res: Response) => {
 });
 
 
-// app.post("/api/login", async (req: Request, res: Response) => {
-//   const { email, password } = req.body;
+app.post("/api/login", async (req: Request, res: Response) => {
+  const { email, password } = req.body;
 
-//   if (!email || !password) {
-//     return res.status(400).json({ error: "Email and password are required" });
-//   }
-
-//   try {
-//     const user = await dbClient.query.users.findFirst({
-//       where: eq(users.email, email),
-//     });
-//     if (!user) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
-
-//     const isMatch = await compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
-
-//     const token = jwt.sign({ userId: user.id }, "YOUR_SECRET_KEY", {
-//       expiresIn: "1h",
-//     });
-
-//     res.status(200).json({
-//       message: "Login successful",
-//       accessToken: token,
-//       user: {
-//         username: user.username,
-//         email: user.email,
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Error logging in user:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-// app.get("/api/user/:id", async (req: Request, res: Response) => {
-//   const userId = req.params.id;
-
-//   try {
-//     const user = await dbClient.query.users.findFirst({
-//       where: eq(users.id, Number(userId)),
-//     });
-
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
-
-//     res.status(200).json({
-//       id: user.id,
-//       username: user.username,
-//       email: user.email,
-//     });
-//   } catch (error) {
-//     console.error("Error retrieving user information:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-app.get("/api/profile", async (req: Request, res: Response) => {
-  // Check if session is available
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ error: "User not authenticated" });
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
   }
-
-  const userId = req.session.user.id;
 
   try {
     const user = await dbClient.query.users.findFirst({
-      where: eq(users.id, userId),
+      where: eq(users.email, email),
+    });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    const isMatch = await compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    const token = jwt.sign({ userId: user.id }, "YOUR_SECRET_KEY", {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+      accessToken: token,
+      user: {
+        username: user.username,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Error logging in user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/profile", async (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: "Authorization header missing" });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, "YOUR_SECRET_KEY") as { userId: number };
+    const user = await dbClient.query.users.findFirst({
+      where: eq(users.id, decoded.userId),
     });
 
     if (!user) {
@@ -315,6 +321,32 @@ app.get("/api/profile", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+app.get("/api/user/:id", async (req: Request, res: Response) => {
+  const userId = req.params.id;
+
+  try {
+    const user = await dbClient.query.users.findFirst({
+      where: eq(users.id, Number(userId)),
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    });
+  } catch (error) {
+    console.error("Error retrieving user information:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 app.post("/api/likes", async (req: Request, res: Response) => {
   const { photo_id, user_id } = req.body;
