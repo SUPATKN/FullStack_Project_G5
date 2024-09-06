@@ -6,6 +6,10 @@ import cors from "cors";
 import helmet from "helmet";
 import bcrypt from "bcrypt";
 import morgan from "morgan";
+import sessionIns, {
+  setSessionInfoAfterLogin,
+  formatSession,
+} from "./auth/session";
 import { hash, compare } from "bcrypt";
 import jwt from "jsonwebtoken";
 import passportIns from "./auth/passport";
@@ -33,12 +37,13 @@ type CartType = {
 };
 
 const app = express();
-
+app.use(sessionIns);
 app.use(
   cors({
     origin: "http://localhost:5899",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // Allow credentials (cookies)
   })
 );
 
@@ -47,6 +52,7 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(morgan("dev", { immediate: true }));
 app.use(passportIns.initialize());
+app.use(passportIns.session());
 
 //for store photo
 const storage1 = multer.diskStorage({
@@ -84,11 +90,65 @@ app.use(
   express.static(path.join(__dirname, "../profile_picture"))
 );
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World");
+app.get("/", async (req, res, next) => {
+  const sessions = await formatSession(req);
 });
 
 //AUTH
+
+app.post("/api/register", async (req: Request, res: Response) => {
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  try {
+    const existingUser = await dbClient.query.users.findFirst({
+      where: eq(users.email, email),
+    });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already in use" });
+    }
+
+    const saltRounds = 10;
+    let hashedPassword = "";
+    hashedPassword = await new Promise((resolve, reject) => {
+      bcrypt.hash(password, saltRounds, function (err, hash) {
+        if (err) reject(err);
+        resolve(hash);
+      });
+    });
+
+    await dbClient.insert(users).values({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post(
+  "/api/login",
+  passportIns.authenticate("local"),
+  function (req, res) {
+    setSessionInfoAfterLogin(req, "CREDENTIAL");
+
+    if (req?.user) {
+      res.status(200).json({
+        message: "Login successful",
+        user: req.user,
+      });
+    } else {
+      res.status(500).json({ error: "no user" });
+    }
+  }
+);
 
 app.post(
   "/api/upload",
@@ -166,96 +226,44 @@ app.delete("/api/photo/:filename", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/api/register", async (req: Request, res: Response) => {
-  const { username, email, password } = req.body;
 
-  if (!username || !email || !password) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
+// app.post("/api/login", async (req: Request, res: Response) => {
+//   const { email, password } = req.body;
 
-  try {
-    const existingUser = await dbClient.query.users.findFirst({
-      where: eq(users.email, email),
-    });
-    if (existingUser) {
-      return res.status(400).json({ error: "Email already in use" });
-    }
+//   if (!email || !password) {
+//     return res.status(400).json({ error: "Email and password are required" });
+//   }
 
-    const saltRounds = 10;
-    let hashedPassword = "";
-    hashedPassword = await new Promise((resolve, reject) => {
-      bcrypt.hash(password, saltRounds, function (err, hash) {
-        if (err) reject(err);
-        resolve(hash);
-      });
-    });
+//   try {
+//     const user = await dbClient.query.users.findFirst({
+//       where: eq(users.email, email),
+//     });
+//     if (!user) {
+//       return res.status(401).json({ error: "Invalid email or password" });
+//     }
 
-    await dbClient.insert(users).values({
-      username,
-      email,
-      password: hashedPassword,
-    });
+//     const isMatch = await compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(401).json({ error: "Invalid email or password" });
+//     }
 
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//     const token = jwt.sign({ userId: user.id }, "YOUR_SECRET_KEY", {
+//       expiresIn: "1h",
+//     });
 
-app.post(
-  "/api/login",
-  passportIns.authenticate("local", { session: false }),
-  function (req, res) {
-    // setSessionInfoAfterLogin(req, "CREDENTIAL");
-    if (req?.user) {
-      res.status(200).json({
-        message: "Login successful",
-        user: req.user,
-      });
-    } else {
-      res.status(500).json({ error: "no user" });
-    }
-  }
-);
-
-app.post("/api/login", async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
-  }
-
-  try {
-    const user = await dbClient.query.users.findFirst({
-      where: eq(users.email, email),
-    });
-    if (!user) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
-
-    const isMatch = await compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
-
-    const token = jwt.sign({ userId: user.id }, "YOUR_SECRET_KEY", {
-      expiresIn: "1h",
-    });
-
-    res.status(200).json({
-      message: "Login successful",
-      accessToken: token,
-      user: {
-        username: user.username,
-        email: user.email,
-      },
-    });
-  } catch (error) {
-    console.error("Error logging in user:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//     res.status(200).json({
+//       message: "Login successful",
+//       accessToken: token,
+//       user: {
+//         username: user.username,
+//         email: user.email,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error logging in user:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 // app.get("/api/user/:id", async (req: Request, res: Response) => {
 //   const userId = req.params.id;
@@ -280,34 +288,33 @@ app.post("/api/login", async (req: Request, res: Response) => {
 //   }
 // });
 
-// app.get("/api/profile", async (req: Request, res: Response) => {
-//   const authHeader = req.headers.authorization;
-//   if (!authHeader) {
-//     return res.status(401).json({ error: "Authorization header missing" });
-//   }
+app.get("/api/profile", async (req: Request, res: Response) => {
+  // Check if session is available
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ error: "User not authenticated" });
+  }
 
-//   const token = authHeader.split(" ")[1];
+  const userId = req.session.user.id;
 
-//   try {
-//     const decoded = jwt.verify(token, "YOUR_SECRET_KEY") as { userId: number };
-//     const user = await dbClient.query.users.findFirst({
-//       where: eq(users.id, decoded.userId),
-//     });
+  try {
+    const user = await dbClient.query.users.findFirst({
+      where: eq(users.id, userId),
+    });
 
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-//     res.status(200).json({
-//       id: user.id,
-//       username: user.username,
-//       email: user.email,
-//     });
-//   } catch (error) {
-//     console.error("Error retrieving user profile:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
+    res.status(200).json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    });
+  } catch (error) {
+    console.error("Error retrieving user profile:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 app.post("/api/likes", async (req: Request, res: Response) => {
   const { photo_id, user_id } = req.body;
@@ -473,8 +480,6 @@ app.get("/api/profilePic/get", async (req: Request, res: Response) => {
   }
 });
 
-
-
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
@@ -551,7 +556,6 @@ app.post("/api/cart/add", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 app.get("/api/cart/:id", async (req: Request, res: Response) => {
   const userId = req.params.id;
@@ -648,8 +652,14 @@ app.post("/api/cart/checkout", async (req: Request, res: Response) => {
         }
 
         // Update coins for buyer and seller
-        await trx.update(users).set({ coin: buyer.coin - photo.price }).where(eq(users.id, user_id));
-        await trx.update(users).set({ coin: seller.coin + photo.price }).where(eq(users.id, photo.user_id));
+        await trx
+          .update(users)
+          .set({ coin: buyer.coin - photo.price })
+          .where(eq(users.id, user_id));
+        await trx
+          .update(users)
+          .set({ coin: seller.coin + photo.price })
+          .where(eq(users.id, photo.user_id));
 
         // Insert ownership record
         await trx.insert(image_ownerships).values({
@@ -683,11 +693,10 @@ app.post("/api/cart/checkout", async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Checkout successful" });
   } catch (error) {
-    
-      return res.status(400).json({ error: "Insufficient funds" });
-      console.error("Error during checkout:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
+    return res.status(400).json({ error: "Insufficient funds" });
+    console.error("Error during checkout:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 app.delete("/api/cart/remove", async (req: Request, res: Response) => {
@@ -708,7 +717,9 @@ app.delete("/api/cart/remove", async (req: Request, res: Response) => {
     }
 
     if (photo.user_id === Number(user_id)) {
-      return res.status(400).json({ error: "Cannot remove your own photo from the cart" });
+      return res
+        .status(400)
+        .json({ error: "Cannot remove your own photo from the cart" });
     }
 
     // ค้นหา cart ที่มีอยู่แล้วสำหรับ user_id นี้
@@ -745,13 +756,14 @@ app.delete("/api/cart/remove", async (req: Request, res: Response) => {
       .set({ updated_at: new Date() })
       .where(eq(carts.cart_id, cart.cart_id));
 
-    res.status(200).json({ message: "Item removed from cart and cart updated successfully" });
+    res.status(200).json({
+      message: "Item removed from cart and cart updated successfully",
+    });
   } catch (error) {
     console.error("Error removing item from cart:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // QR Code generation endpoint
 app.post("/api/generateQR", async (req: Request, res: Response) => {
@@ -961,8 +973,6 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
   }
 });
 
-
-
 // Get all photos purchased by a specific user
 app.get(
   "/api/user/:userId/purchased-photos",
@@ -987,29 +997,30 @@ app.get(
         .where(eq(image_ownerships.user_id, Number(userId)))
         .execute();
 
-    if (purchasedPhotos.length === 0) {
-      return res.json([]);
-    }
+      if (purchasedPhotos.length === 0) {
+        return res.json([]);
+      }
 
-    res.json(purchasedPhotos);
-  } catch (error) {
-    console.error("Error fetching purchased photos:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+      res.json(purchasedPhotos);
+    } catch (error) {
+      console.error("Error fetching purchased photos:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   }
-});
+);
 
 // Endpoint to get user stats
 // Get aggregated likes
 app.get("/api/getcountlikes", async (req: Request, res: Response) => {
   try {
     const likes = await dbClient.query.likes.findMany();
-    console.log("Raw likes data:", likes);  // Log raw data for debugging
+    console.log("Raw likes data:", likes); // Log raw data for debugging
 
     const likeCounts = likes.reduce((acc: Record<number, number>, like) => {
       acc[like.user_id] = (acc[like.user_id] || 0) + 1;
       return acc;
     }, {});
-    console.log("Aggregated like counts:", likeCounts);  // Log aggregated data for debugging
+    console.log("Aggregated like counts:", likeCounts); // Log aggregated data for debugging
 
     res.json(likeCounts);
   } catch (error) {
@@ -1017,7 +1028,6 @@ app.get("/api/getcountlikes", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // app.get("/api/getreceivedlikes", async (req: Request, res: Response) => {
 //   try {
@@ -1033,18 +1043,19 @@ app.get("/api/getcountlikes", async (req: Request, res: Response) => {
 //   }
 // });
 
-
-
 app.get("/api/getcountcomments", async (req: Request, res: Response) => {
   try {
     const comments = await dbClient.query.comments.findMany();
-    console.log("Raw comments data:", comments);  // Log raw data for debugging
+    console.log("Raw comments data:", comments); // Log raw data for debugging
 
-    const commentCounts = comments.reduce((acc: Record<number, number>, comment) => {
-      acc[comment.user_id] = (acc[comment.user_id] || 0) + 1;
-      return acc;
-    }, {});
-    console.log("Aggregated comment counts:", commentCounts);  // Log aggregated data for debugging
+    const commentCounts = comments.reduce(
+      (acc: Record<number, number>, comment) => {
+        acc[comment.user_id] = (acc[comment.user_id] || 0) + 1;
+        return acc;
+      },
+      {}
+    );
+    console.log("Aggregated comment counts:", commentCounts); // Log aggregated data for debugging
 
     res.json(commentCounts);
   } catch (error) {
@@ -1066,6 +1077,3 @@ app.get("/api/getcountcomments", async (req: Request, res: Response) => {
 //     res.status(500).json({ error: "Internal Server Error" });
 //   }
 // });
-
-
-

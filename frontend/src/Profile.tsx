@@ -74,9 +74,7 @@ const Profile: React.FC = () => {
         },
       });
       setError(null);
-      if (userId) {
-        fetchProfilePicture();
-      }
+      fetchProfilePicture(); // Update the profile picture after upload
       setSelectedImage("");
       setIsUpload(false);
     } catch (error) {
@@ -86,45 +84,22 @@ const Profile: React.FC = () => {
   };
 
   const fetchCurrentUser = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      setError("No access token found");
-      return;
-    }
-
     try {
-      const response = await axios.get<UserProfile>(
-        "http://localhost:3000/api/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get<UserProfile>("/api/profile", {
+        withCredentials: true,
+      });
       setCurrentUser(response.data);
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        setError(
-          error.response?.data.error || "Failed to fetch current user profile"
-        );
-      } else {
-        setError("An unexpected error occurred");
-      }
+    } catch (error) {
+      setError("Failed to fetch current user profile");
     }
   };
 
   const fetchUserProfile = async (id: number) => {
     try {
-      const response = await axios.get<UserProfile>(
-        `http://localhost:3000/api/user/${id}`
-      );
+      const response = await axios.get<UserProfile>(`/api/user/${id}`);
       setUser(response.data);
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        setError(error.response?.data.error || "Failed to fetch user profile");
-      } else {
-        setError("An unexpected error occurred");
-      }
+    } catch (error) {
+      setError("Failed to fetch user profile");
     }
   };
 
@@ -133,7 +108,6 @@ const Profile: React.FC = () => {
       const { data } = await axios.get<Photo[]>("/api/photo");
       setPhotos(data);
     } catch (error) {
-      console.error("Error fetching photos:", error);
       setError("Failed to fetch photos");
     }
   };
@@ -143,7 +117,6 @@ const Profile: React.FC = () => {
       const { data } = await axios.get<ProfilePicture[]>("/api/profilePic/get");
       setMyProfilePic(data);
     } catch (error) {
-      console.error("Error fetching profile picture:", error);
       setError("Failed to fetch profile picture");
     }
   };
@@ -186,7 +159,6 @@ const Profile: React.FC = () => {
       );
       setPhotos(updatedPhotos);
     } catch (error) {
-      console.error("Error deleting file:", error);
       setError("Failed to delete file.");
     }
   };
@@ -241,11 +213,7 @@ const Profile: React.FC = () => {
           <Form>
             <Form.Group controlId="formFile" className="mb-3">
               <Form.Label>Select Image</Form.Label>
-              <Form.Control
-                type="file"
-                onChange={handleFileChange}
-                data-cy="file-input"
-              />
+              <Form.Control type="file" onChange={handleFileChange} />
             </Form.Group>
             {selectedImage && (
               <div className="mb-3">
@@ -255,16 +223,11 @@ const Profile: React.FC = () => {
                   alt="Selected Image"
                   width="200"
                   thumbnail
-                  data-cy="image-preview"
                 />
               </div>
             )}
           </Form>
-          <Button
-            variant="primary"
-            onClick={handleUpload}
-            data-cy="upload-button"
-          >
+          <Button variant="primary" onClick={handleUpload}>
             Upload
           </Button>
         </div>
@@ -272,11 +235,7 @@ const Profile: React.FC = () => {
 
       <h1>My photos</h1>
       {currentUser?.id === user?.id && (
-        <Button
-          variant="secondary"
-          className="mb-3"
-          onClick={() => handleEdit()}
-        >
+        <Button variant="secondary" className="mb-3" onClick={handleEdit}>
           Edit
         </Button>
       )}
