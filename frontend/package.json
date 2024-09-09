@@ -15,7 +15,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@picocss/pico": "^2.0.6",
-    "@tanstack/react-query": "^5.55.0",
+    "@tanstack/react-query": "^5.55.2",
     "@types/react-bootstrap": "^0.32.37",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",

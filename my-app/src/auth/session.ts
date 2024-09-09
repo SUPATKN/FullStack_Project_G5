@@ -4,7 +4,7 @@ import connectPgSimple from "connect-pg-simple";
 import { v4 as uuidv4 } from "uuid";
 import { type Request } from "express";
 import dayjs from "dayjs";
-import { getAllUserSessions } from "@db/repositories.js";
+import { getAllUserSessions } from "@db/repositories";
 import { type Details } from "express-useragent";
 import { type ProviderType } from "@db/schema";
 import { NODE_ENV } from "@/utils/env";

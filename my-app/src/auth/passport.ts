@@ -1,9 +1,9 @@
 import passportIns from "passport";
-import { dbClient } from "@db/client.js";
+import { dbClient } from "@db/client";
 import { eq } from "drizzle-orm";
-import { users } from "@db/schema.js";
-import { local } from "./passportLocal.js";
-import { google } from "./passportOAuthGoogle.js";
+import { users } from "@db/schema";
+import { local } from "./passportLocal";
+import { google } from "./passportOAuthGoogle";
 
 passportIns.use(local);
 passportIns.use("google", google);
