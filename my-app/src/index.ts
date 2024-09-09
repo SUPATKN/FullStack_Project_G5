@@ -101,9 +101,6 @@ app.use("/api/slip", express.static(path.join(__dirname, "../slips")));
 
 
 
-const upload_slip = multer({ storage: storage3 });
-app.use("/api/slip", express.static(path.join(__dirname, "../slips")));
-
 
 
 
