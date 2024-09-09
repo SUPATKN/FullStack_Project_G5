@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 import QRCode from "qrcode";
 import generatePayload from "promptpay-qr";
 import { dbClient, dbConn } from "@db/client";
-import { images, users, likes, comments ,carts,cart_items,ProfilePicture,coin_transactions,image_ownerships} from "@db/schema";
+import { images, users, likes, comments ,carts,cart_items,ProfilePicture,coin_transactions,image_ownerships,slips, orders,orders_history} from "@db/schema";
 import { and, eq } from "drizzle-orm";
 
 type CartType = {
@@ -58,15 +58,32 @@ const storage2 = multer.diskStorage({
   },
 });
 
+//for slip picture
+const storage3 = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../slips"));
+  },
+  filename: function (req, file, cb) {
+    const timestamp = new Date().toISOString().replace(/[-T:\.Z]/g, "");
+    const originalName = file.originalname.replace(/\s+/g, "_");
+    const newFilename = `${timestamp}-${originalName}`;
+    cb(null, newFilename);
+  },
+});
+
 const upload = multer({ storage: storage1 });
 app.use("/api/images", express.static(path.join(__dirname, "../images")));
 
 const upload_profilePic = multer({ storage: storage2 });
-
 app.use(
   "/api/profilePic",
   express.static(path.join(__dirname, "../profile_picture"))
 );
+
+const upload_slip = multer({ storage: storage3 });
+app.use("/api/slip", express.static(path.join(__dirname, "../slips")));
+
+
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World");
@@ -646,6 +663,7 @@ app.post("/api/cart/checkout", async (req: Request, res: Response) => {
     }
 });
 
+
 app.delete("/api/cart/remove", async (req: Request, res: Response) => {
   const { user_id, photo_id } = req.body;
 
@@ -945,7 +963,6 @@ app.get("/api/user/:userId/purchased-photos", async (req: Request, res: Response
   }
 });
 
-// Endpoint to get user stats
 // Get aggregated likes
 app.get("/api/getcountlikes", async (req: Request, res: Response) => {
   try {
@@ -965,23 +982,6 @@ app.get("/api/getcountlikes", async (req: Request, res: Response) => {
   }
 });
 
-
-// app.get("/api/getreceivedlikes", async (req: Request, res: Response) => {
-//   try {
-//     const likes = await dbClient.query.likes.findMany();
-//     const receivedLikes = likes.reduce((acc: Record<number, number>, like) => {
-//       acc[like.user_id] = (acc[like.user_id] || 0) + 1;
-//       return acc;
-//     }, {});
-//     res.json(receivedLikes);
-//   } catch (error) {
-//     console.error("Error retrieving received likes from the database:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-
-
 app.get("/api/getcountcomments", async (req: Request, res: Response) => {
   try {
     const comments = await dbClient.query.comments.findMany();
@@ -1000,19 +1000,309 @@ app.get("/api/getcountcomments", async (req: Request, res: Response) => {
   }
 });
 
-// app.get("/api/getreceivedcomments", async (req: Request, res: Response) => {
-//   try {
-//     const comments = await dbClient.query.comments.findMany();
-//     const receivedComments = comments.reduce((acc: Record<number, number>, comment) => {
-//       acc[comment.user_id] = (acc[comment.user_id] || 0) + 1;
-//       return acc;
-//     }, {});
-//     res.json(receivedComments);
-//   } catch (error) {
-//     console.error("Error retrieving received comments from the database:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
+app.post('/api/selectPriceAndQuantity', async (req, res) => {
+  const { price, quantity, user_id } = req.body;
+
+  console.log('Price:', price);
+  console.log('Quantity:', quantity);
+  console.log('User_Id:', user_id);
+
+  try {
+    // Convert price to string if necessary
+    const formattedPrice = parseFloat(price).toFixed(2); // Format price as a decimal with 2 places
+
+    await dbClient.insert(orders).values({
+      user_id: Number(user_id),
+      price: formattedPrice, // Keep price as a string in decimal format
+      quantity: Number(quantity),
+      status: 'pending',
+      created_at: new Date(),
+    });
+
+    res.status(201).json({ message: "Orders added successfully" });
+  } catch (error) {
+    console.error("Error inserting order into the database:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
+// Route to handle slip upload
+app.post(
+  "/api/uploadSlip",
+  upload_slip.single("slip"),
+  async (req: Request, res: Response) => {
+    const filePath = req.file?.filename;
+    const { amount, coins, user_id } = req.body;
+    console.log("Prcie: ",coins)
 
+    // Validate inputs
+    if (!filePath) {
+      return res.status(400).json({ success: false, message: "File upload failed" });
+    }
+    
+    if (!user_id) {
+      return res.status(400).json({ success: false, message: "User ID is required" });
+    }
+
+    try {
+
+      // Check if a slip already exists for the user
+      const existingSlip = await dbClient
+        .select()
+        .from(slips)
+        .where(eq(slips.user_id,Number(user_id)))
+        .limit(1)
+        .execute();
+
+      // If there is an existing slip, delete it
+      if (existingSlip.length > 0) {
+        const oldFilePath = existingSlip[0].slip_path; // Access the path from the result
+
+        if (oldFilePath) {
+          const fullPath = path.join(__dirname, "../slips", oldFilePath);
+
+          // Check if file exists before attempting to delete
+          if (fs.existsSync(fullPath)) {
+            fs.unlinkSync(fullPath);
+          }
+        }
+
+        // Delete the old slip record from the database
+        await dbClient
+          .delete(slips)
+          .where(eq(slips.user_id,Number(user_id)))
+          .execute();
+      }
+
+      // Insert the new slip record into the database
+      const result = await dbClient
+        .insert(slips)
+        .values({
+      user_id: Number(user_id),              // Ensure user_id is a number
+      amount: parseInt(amount, 10),          // Ensure amount is an integer
+      coins: parseInt(coins, 10),               // Convert price to string for insertion
+      slip_path: filePath,                   // File path for uploaded slip
+      status: 'pending',                     // Default status is pending
+      created_at: new Date(),                // Timestamp when slip is created
+      updated_at: new Date(),                // Timestamp when slip is updated
+      admin_note: 'up slip',                 // Default admin note
+        })
+        .returning({ slip_id: slips.slip_id, slip_path: slips.slip_path })
+        .execute();
+
+      // Respond with the new file path
+      res.json({ success: true, slipId: result[0].slip_id, filePath: result[0].slip_path });
+    } catch (error) {
+      console.error("Error saving file path to the database:", error);
+      res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+  }
+);
+
+
+app.get("/api/slips/get", async (req: Request, res: Response) => {
+  try {
+    const result = await dbClient.query.slips.findMany();
+
+    if (!result) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(result);
+  } catch (error) {
+    console.error("Error retrieving images from the database:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+app.get("/api/slips", async (req: Request, res: Response) => {
+  try {
+    const result = await dbClient.query.slips.findMany();
+    res.json(result);
+  } catch (error) {
+    console.error("Error retrieving images from the database:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/slips/:slipId", async (req: Request, res: Response) => {
+  const slipId = parseInt(req.params.slipId, 10);
+
+  if (isNaN(slipId)) {
+    return res.status(400).json({ error: "Invalid slip ID" });
+  }
+
+  try {
+    const slip = await dbClient.query.slips.findFirst({
+      where: eq(slips.slip_id, slipId),
+    });
+
+    if (!slip) {
+      return res.status(404).json({ error: "Slip not found" });
+    }
+
+    res.status(200).json(slip);
+  } catch (error) {
+    console.error("Error retrieving slip details:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Approve Slip
+app.post("/api/slips/approve/:slipId", async (req: Request, res: Response) => {
+  const slipId = parseInt(req.params.slipId, 10);
+
+  if (isNaN(slipId)) {
+    return res.status(400).json({ error: "Invalid slip ID" });
+  }
+
+  try {
+    // Fetch the slip
+    const slip = await dbClient.query.slips.findFirst({
+      where: eq(slips.slip_id, slipId),
+    });
+
+    if (!slip || slip.status !== "pending") {
+      return res.status(404).json({ error: "Slip not found or already processed" });
+    }
+
+    // Fetch the user
+    const user = await dbClient.query.users.findFirst({
+      where: eq(users.id, slip.user_id),
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Fetch the associated order
+    const order = await dbClient.query.orders.findFirst({
+      where: eq(orders.user_id, slip.user_id),
+      // Assumes you want the latest order, adjust if needed
+      // orderBy: { created_at: "desc" },
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    // Update user coins based on the approved slip
+    await dbClient
+      .update(users)
+      .set({ coin: user.coin + slip.coins })
+      .where(eq(users.id, slip.user_id))
+      .execute();
+
+    // Insert the order into orders_history
+    await dbClient
+      .insert(orders_history)
+      .values({
+        user_id: slip.user_id,
+        order_id: order.order_id, 
+        coins: slip.coins,
+        price: slip.amount,
+        status: "Approved", 
+        created_at: new Date(), 
+      })
+      .execute();
+
+    // Delete the slip after approving
+    await dbClient
+      .delete(slips)
+      .where(eq(slips.slip_id, slipId))
+      .execute();
+
+    res.status(200).json({ message: "Slip approved, coins added, and order recorded" });
+  } catch (error) {
+    console.error("Error approving slip:", error);
+    res.status(500).json({ error: "Failed to approve slip" });
+  }
+});
+
+
+// Reject Slip
+app.post("/api/slips/reject/:slipId", async (req: Request, res: Response) => {
+  const slipId = parseInt(req.params.slipId, 10);
+
+  if (isNaN(slipId)) {
+    return res.status(400).json({ error: "Invalid slip ID" });
+  }
+
+  try {
+    // Fetch the slip
+    const slip = await dbClient.query.slips.findFirst({
+      where: eq(slips.slip_id, slipId),
+    });
+
+    if (!slip || slip.status !== "pending") {
+      return res.status(404).json({ error: "Slip not found or already processed" });
+    }
+
+    // Fetch the user
+    const user = await dbClient.query.users.findFirst({
+      where: eq(users.id, slip.user_id),
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Fetch the associated order
+    const order = await dbClient.query.orders.findFirst({
+      where: eq(orders.user_id, slip.user_id),
+      // Assumes you want the latest order, adjust if needed
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    // Insert the order into orders_history with status "rejected"
+    await dbClient
+      .insert(orders_history)
+      .values({
+        user_id: slip.user_id,
+        order_id: order.order_id, // Use the found order_id
+        coins: slip.coins,
+        price: slip.amount, // Assuming slip.amount corresponds to the price
+        status: "Rejected",
+        created_at: new Date(), // or use timestamp if preferred
+      })
+      .execute();
+
+    // Delete the slip upon rejection
+    await dbClient
+      .delete(slips)
+      .where(eq(slips.slip_id, slipId))
+      .execute();
+
+    res.status(200).json({ message: "Slip rejected, order recorded in history" });
+  } catch (error) {
+    console.error("Error rejecting slip:", error);
+    res.status(500).json({ error: "Failed to reject slip" });
+  }
+});
+
+
+// Endpoint สำหรับดึงประวัติของคำสั่งซื้อ
+app.get('/api/orders/history', async (req: Request, res: Response) => {
+  try {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    // ดึงรายการคำสั่งซื้อของผู้ใช้จากฐานข้อมูล
+    const ordersHistory = await dbClient
+      .select()
+      .from(orders_history)
+      .where(eq(orders_history.user_id,Number(user_id)))
+      .orderBy((orders_history.create_at))
+      .execute();
+
+    res.status(200).json(ordersHistory);
+  } catch (error) {
+    console.error('Error fetching order history:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});

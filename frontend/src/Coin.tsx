@@ -1,13 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "./Layout";
 import "./global.css";
 import Logo from "./Logowithbg.png";
-import CoinCard from "./CoinCard"; // Ensure CoinCard is imported correctly
+import CoinCard from "./CoinCard";
+
+interface User {
+  id: number;
+  username: string;
+  email: string;
+}
 
 const Coin = () => {
   const [selectedPrice, setSelectedPrice] = useState<number | null>(null);
+  const [selectedQuantity, setSelecteQuantity] = useState<number | null>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  const [slipFile, setSlipFile] = useState<File | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const cardsData = [
     { price: 9.99, quantity: 100 },
@@ -21,7 +30,84 @@ const Coin = () => {
     { price: 299.99, quantity: 50000 },
   ];
 
-  const handleCheckout = async () => {
+  const fetchUser = async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      // setError("No access token found");
+      return;
+    }
+
+    try {
+      const response = await axios.get<User>(
+        "http://localhost:3000/api/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setUser(response.data);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        // setError(error.response?.data.error || "Failed to fetch user profile");
+      } else {
+        // setError("An unexpected error occurred");
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const handleUploadSlip = async () => {
+    if (!slipFile) {
+      alert("Please upload your payment slip.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("amount", selectedPrice?.toString() || "");
+    formData.append("coins", selectedQuantity?.toString() || "");
+    formData.append("slip", slipFile); // The key should be "slip" to match Multer config
+    formData.append("user_id", user?.id.toString() || "");
+
+    try {
+      const response = await axios.post("/api/uploadSlip", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success) {
+        alert("Slip uploaded successfully!");
+      } else {
+        alert("Failed to upload slip.");
+      }
+    } catch (error) {
+      console.error("Error uploading slip:", error);
+      alert("An error occurred while uploading the slip.");
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSlipFile(event.target.files[0]);
+    }
+  };
+
+  const handlePriceSelect = (price: number, quantity: number) => {
+    if (!user) {
+      alert("User is not logged in.");
+      return;
+    }
+
+    // Just set the selected price, do not send it to the server yet
+    setSelectedPrice(price);
+    setSelecteQuantity(quantity);
+  };
+
+  const handleGenerateQR = async () => {
     if (selectedPrice === null) {
       alert("Please select a price.");
       return;
@@ -34,6 +120,33 @@ const Coin = () => {
 
       if (response.data.RespCode === 200) {
         setQrCodeUrl(response.data.Result);
+
+        // Now send the selected price and quantity after QR code is generated
+        if (user) {
+          const user_id = user.id;
+          const selectedCard = cardsData.find(
+            (card) => card.price === selectedPrice
+          );
+
+          if (selectedCard) {
+            axios
+              .post("/api/selectPriceAndQuantity", {
+                price: selectedPrice,
+                quantity: selectedCard.quantity,
+                user_id,
+              })
+              .then((response) => {
+                if (response.data.success) {
+                  console.log("Price and quantity selected successfully");
+                } else {
+                  console.error("Failed to select price and quantity");
+                }
+              })
+              .catch((error) => {
+                console.error("Error selecting price and quantity:", error);
+              });
+          }
+        }
       } else {
         alert("Failed to generate QR Code.");
       }
@@ -57,11 +170,13 @@ const Coin = () => {
               <div className="col-md-8">
                 <div className="row">
                   {cardsData.map((card, index) => (
-                    <div className="col-md-4 mb-4" key={index}>
+                    <div className="col-12 col-md-4 mb-4" key={index}>
                       <CoinCard
                         quantity={card.quantity}
                         price={card.price}
-                        onClick={() => setSelectedPrice(card.price)}
+                        onClick={() =>
+                          handlePriceSelect(card.price, card.quantity)
+                        }
                       />
                     </div>
                   ))}
@@ -79,12 +194,15 @@ const Coin = () => {
                       <p className="text-muted">No price selected</p>
                     )}
                   </div>
+
                   <button
-                    className="btn btn-primary w-100"
-                    onClick={handleCheckout}
+                    className="btn btn-primary w-100 mb-4"
+                    onClick={handleGenerateQR}
+                    disabled={qrCodeUrl !== null}
                   >
-                    Checkout
+                    Generate QR Code
                   </button>
+
                   {qrCodeUrl && (
                     <div className="mt-4 text-center">
                       <h4 className="mb-3">Generated QR Code</h4>
@@ -94,8 +212,24 @@ const Coin = () => {
                         className="img-fluid"
                       />
                       <p className="mt-2 text-muted">
-                        Amount:฿ {selectedPrice?.toFixed(2)}
+                        Amount: ฿{selectedPrice?.toFixed(2)}
                       </p>
+
+                      <h4 className="mb-4">Upload Payment Slip</h4>
+                      <div className="mb-3">
+                        <input
+                          type="file"
+                          className="form-control"
+                          onChange={handleFileChange}
+                          accept="image/*"
+                        />
+                      </div>
+                      <button
+                        className="btn btn-success w-100"
+                        onClick={handleUploadSlip}
+                      >
+                        Upload Slip
+                      </button>
                     </div>
                   )}
                 </div>

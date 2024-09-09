@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Image, Row, Col, Form, Button } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import Layout from "./Layout";
 // import { format } from "date-fns";
@@ -33,6 +34,10 @@ const Gallery = () => {
   const [me, setMe] = useState<UserProfile | null>(null);
   // const [error, setError] = useState<string | null>(null);
   // const [success, setSuccess] = useState<string | null>(null);
+
+  const [cartItems, setCartItems] = useState<
+    { id: string; path: string; user_id: string; price: number }[]
+  >([]);
 
   const navigate = useNavigate();
 
@@ -189,29 +194,62 @@ const Gallery = () => {
     }
   };
 
+  const fetchCartItems = async () => {
+    if (me) {
+      try {
+        const { data } = await axios.get<
+          { id: string; path: string; user_id: string; price: number }[]
+        >(`/api/cart/${me.id}`);
+        setCartItems(data);
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (me) {
+      fetchCartItems(); // Fetch cart items when the user profile is available
+    }
+  }, [me]);
+
   const handleAddToCart = async (photoId: string) => {
     if (!me) {
       console.error("User is not logged in");
       return;
     }
 
-    try {
-      const photo = photos.find((photo) => photo.id === photoId);
+    const photo = photos.find((photo) => photo.id === photoId);
 
-      if (photo && photo.user_id === me.id.toString()) {
-        alert("You cannot add your own photo to the cart");
-        return;
-      }
+    if (!photo) {
+      return;
+    }
+
+    // Check if the photo is already in the cart
+    const alreadyInCart = cartItems.some((item) => item.id === photoId);
+
+    if (alreadyInCart) {
+      alert("This item is already in your cart.");
+      return;
+    }
+
+    if (photo.user_id === me.id.toString()) {
+      alert("You cannot add your own photo to the cart.");
+      return;
+    }
+
+    try {
       const response = await axios.post("/api/cart/add", {
         user_id: me.id,
         photo_id: photoId,
       });
+
       alert(response.data.message); // Display success message
+      fetchCartItems(); // Refresh cart items after successful addition
     } catch (error) {
       console.error("Error adding photo to cart:", error);
     }
   };
-
   return (
     <Layout>
       <h3 className="mb-4 text-center">GALLERY</h3>

@@ -16,6 +16,7 @@ import Coin from "./Coin";
 import PhotoDetail from "./PhotoDetail";
 import PurchasedPhotos from "./PurchasedPhotos";
 import ProfileAdmin from "./ProfileAdmin";
+import SlipViewPage from "./SlipViewPage";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -36,6 +37,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/photo/:id" element={<PhotoDetail />} />
           <Route path="/purchased-photos" element={<PurchasedPhotos />} />
           <Route path="/profileadmin" element={<ProfileAdmin />} />
+          <Route path="/slip/:slipId" element={<SlipViewPage />} />
         </Routes>
       </Router>
     </AuthProvider>
