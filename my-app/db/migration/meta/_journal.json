@@ -245,6 +245,38 @@
       "version": "7",
       "when": 1725770062789,
       "tag": "0033_clean_hitman",
+      "idx": 29,
+      "version": "7",
+      "when": 1725616853204,
+      "tag": "0029_ambiguous_excalibur",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1725646221377,
+      "tag": "0030_curious_xavin",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1725651239621,
+      "tag": "0031_lean_solo",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1725697093104,
+      "tag": "0032_gigantic_molecule_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1725697166989,
+      "tag": "0033_nostalgic_amphibian",
       "breakpoints": true
     },
     {
@@ -252,6 +284,8 @@
       "version": "7",
       "when": 1725770308442,
       "tag": "0034_lowly_tempest",
+      "when": 1725699744425,
+      "tag": "0034_outgoing_pepper_potts",
       "breakpoints": true
     },
     {
@@ -259,6 +293,43 @@
       "version": "7",
       "when": 1725770619594,
       "tag": "0035_round_puppet_master",
+      "when": 1725700340605,
+      "tag": "0035_curious_spitfire",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1725702816581,
+      "tag": "0036_chemical_the_professor",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1725705455971,
+      "tag": "0037_silly_victor_mancha",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1725706437127,
+      "tag": "0038_nervous_sprite",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1725707625895,
+      "tag": "0039_harsh_jazinda",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1725860474247,
+      "tag": "0040_superb_gorilla_man",
       "breakpoints": true
     }
   ]

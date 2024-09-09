@@ -923,3 +923,17 @@ a:hover {
   cursor: pointer;
   accent-color: green; /* Sets the color of the checkbox */
 }
+
+.alert {
+  max-width: 400px;
+  margin: 0 auto 20px;
+}
+
+/* button {
+  width: 100%;
+  margin-top: 10px;
+} */
+
+.custom-margin {
+  margin-right: 10px;
+}

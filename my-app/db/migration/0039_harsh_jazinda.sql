@@ -1,0 +1,1 @@
+ALTER TABLE "orders_history" ALTER COLUMN "price" SET DATA TYPE integer;
