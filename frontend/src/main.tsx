@@ -9,17 +9,20 @@ import Login from "./Login";
 import Register from "./Register";
 import ForgotPassword from "./Forget";
 import Profile from "./Profile";
-import { AuthProvider } from "./AuthContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Cart from "./Cart";
 import Coin from "./Coin";
 import PhotoDetail from "./PhotoDetail";
 import PurchasedPhotos from "./PurchasedPhotos";
 import ProfileAdmin from "./ProfileAdmin";
+axios.defaults.withCredentials = true;
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <AuthProvider>
+    <QueryClientProvider client={queryClient}>
       <Router>
         <Routes>
           <Route path="/" element={<Gallery />} />
@@ -38,6 +41,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/profileadmin" element={<ProfileAdmin />} />
         </Routes>
       </Router>
-    </AuthProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );

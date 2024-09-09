@@ -14,6 +14,7 @@ import { hash, compare } from "bcrypt";
 import jwt from "jsonwebtoken";
 import passportIns from "./auth/passport";
 import QRCode from "qrcode";
+import * as useragent from "express-useragent";
 import generatePayload from "promptpay-qr";
 import { dbClient, dbConn } from "@db/client";
 import {
@@ -27,7 +28,7 @@ import {
   coin_transactions,
   image_ownerships,
 } from "@db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 
 type CartType = {
   cart_id: number;
@@ -37,7 +38,7 @@ type CartType = {
 };
 
 const app = express();
-app.use(sessionIns);
+
 app.use(
   cors({
     origin: "http://localhost:5899",
@@ -51,8 +52,10 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.static("public"));
 app.use(morgan("dev", { immediate: true }));
+app.use(sessionIns);
 app.use(passportIns.initialize());
 app.use(passportIns.session());
+app.use(useragent.express());
 
 //for store photo
 const storage1 = multer.diskStorage({
@@ -90,11 +93,18 @@ app.use(
   express.static(path.join(__dirname, "../profile_picture"))
 );
 
-app.get("/", async (req, res, next) => {
-  const sessions = await formatSession(req);
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
 });
-
 //AUTH
+
+app.get("/api/me", async (req, res, next) => {
+  console.log("User:", req.user);
+  const sessions = await formatSession(req);
+  const user = req?.user ?? null;
+  res.json({ sessions, user });
+});
 
 app.post("/api/register", async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
@@ -133,22 +143,42 @@ app.post("/api/register", async (req: Request, res: Response) => {
   }
 });
 
-// app.post(
-//   "/api/login",
-//   passportIns.authenticate("local"),
-//   function (req, res) {
-//     setSessionInfoAfterLogin(req, "CREDENTIAL");
+app.post("/api/login", passportIns.authenticate("local"), function (req, res) {
+  setSessionInfoAfterLogin(req, "CREDENTIAL");
+  console.log("Session after login:", req.session);
+  console.log("User after login:", req.user); // ตรวจสอบข้อมูลผู้ใช้
+  res.status(200).json("Login Successful");
+});
 
-//     if (req?.user) {
-//       res.status(200).json({
-//         message: "Login successful",
-//         user: req.user,
-//       });
-//     } else {
-//       res.status(500).json({ error: "no user" });
-//     }
-//   }
-// );
+app.get("/api/logout", function (req, res, next) {
+  // req.logout will not delete the session in db. It will generate new one for the already-logout user.
+  // When the user login again, it will generate new session with the user id.
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    // If you want to delete the session in DB, you can use this function.
+    req.session.destroy(function (err) {
+      if (err) {
+        return next(err);
+      }
+      res.redirect("/");
+    });
+  });
+});
+
+app.get("/api/login/oauth/google", passportIns.authenticate("google"));
+
+app.get(
+  "/callback/google",
+  passportIns.authenticate("google", { failureRedirect: "/login" }),
+  function (req, res) {
+    console.log("----------Callback--------------");
+    setSessionInfoAfterLogin(req, "GOOGLE");
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5899";
+    res.redirect(`http://localhost:5899?login=success`);
+  }
+);
 
 // app.get("/api/profile", async (req: Request, res: Response) => {
 //   // Check if session is available
@@ -254,44 +284,43 @@ app.delete("/api/photo/:filename", async (req: Request, res: Response) => {
   }
 });
 
+// app.post("/api/login", async (req: Request, res: Response) => {
+//   const { email, password } = req.body;
 
-app.post("/api/login", async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+//   if (!email || !password) {
+//     return res.status(400).json({ error: "Email and password are required" });
+//   }
 
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
-  }
+//   try {
+//     const user = await dbClient.query.users.findFirst({
+//       where: eq(users.email, email),
+//     });
+//     if (!user) {
+//       return res.status(401).json({ error: "Invalid email or password" });
+//     }
 
-  try {
-    const user = await dbClient.query.users.findFirst({
-      where: eq(users.email, email),
-    });
-    if (!user) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
+//     const isMatch = await compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(401).json({ error: "Invalid email or password" });
+//     }
 
-    const isMatch = await compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
+//     const token = jwt.sign({ userId: user.id }, "YOUR_SECRET_KEY", {
+//       expiresIn: "1h",
+//     });
 
-    const token = jwt.sign({ userId: user.id }, "YOUR_SECRET_KEY", {
-      expiresIn: "1h",
-    });
-
-    res.status(200).json({
-      message: "Login successful",
-      accessToken: token,
-      user: {
-        username: user.username,
-        email: user.email,
-      },
-    });
-  } catch (error) {
-    console.error("Error logging in user:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//     res.status(200).json({
+//       message: "Login successful",
+//       accessToken: token,
+//       user: {
+//         username: user.username,
+//         email: user.email,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error logging in user:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 app.get("/api/profile", async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
@@ -322,7 +351,6 @@ app.get("/api/profile", async (req: Request, res: Response) => {
   }
 });
 
-
 app.get("/api/user/:id", async (req: Request, res: Response) => {
   const userId = req.params.id;
 
@@ -339,14 +367,14 @@ app.get("/api/user/:id", async (req: Request, res: Response) => {
       id: user.id,
       username: user.username,
       email: user.email,
+      avatarURL: user.avatarURL,
+      coin: user.coin,
     });
   } catch (error) {
     console.error("Error retrieving user information:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 app.post("/api/likes", async (req: Request, res: Response) => {
   const { photo_id, user_id } = req.body;
@@ -448,45 +476,35 @@ app.post(
     try {
       // Check if a profile picture already exists for the user
       const existingProfilePic = await dbClient
-        .select()
-        .from(ProfilePicture)
-        .where(eq(ProfilePicture.user_id, Number(userId)))
+        .select({
+          avatarURL: users.avatarURL,
+        })
+        .from(users)
+        .where(eq(users.id, userId)) // Make sure you check the correct user's profile pic
         .limit(1)
         .execute();
 
       // If there is an existing profile picture, delete it
       if (existingProfilePic.length > 0) {
-        const oldFilePath = existingProfilePic[0].path; // Access the path from the result
+        const oldFilePath = existingProfilePic[0].avatarURL;
+        const result = oldFilePath?.replace("/api/profilePic/", "");
 
-        if (oldFilePath) {
-          // Check if oldFilePath is not null or undefined
-          const fullPath = path.join(
-            __dirname,
-            "../profile_picture",
-            oldFilePath
-          );
+        if (result) {
+          const fullPath = path.join(__dirname, "../profile_picture", result);
 
-          // Check if file exists before attempting to delete
           if (fs.existsSync(fullPath)) {
             fs.unlinkSync(fullPath);
           }
         }
-
-        await dbClient
-          .delete(ProfilePicture) // Specify the table to delete from
-          .where(eq(ProfilePicture.user_id, Number(userId)))
-          .execute();
       }
 
-      // Insert the new profile picture
+      // Update the new profile picture
       await dbClient
-        .insert(ProfilePicture)
-        .values({
-          path: filePath,
-          user_id: Number(userId),
-          created_at: new Date(),
+        .update(users)
+        .set({
+          avatarURL: `/api/profilePic/${filePath}`,
         })
-        .returning({ id: ProfilePicture.id, path: ProfilePicture.path })
+        .where(eq(users.id, userId))
         .execute();
 
       res.json({ filePath });
@@ -496,26 +514,6 @@ app.post(
     }
   }
 );
-
-app.get("/api/profilePic/get", async (req: Request, res: Response) => {
-  const userId = req.params.id;
-  try {
-    const result = await dbClient.query.ProfilePicture.findMany();
-
-    if (!result) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    res.json(result);
-  } catch (error) {
-    console.error("Error retrieving images from the database:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
 
 app.post("/api/cart/add", async (req: Request, res: Response) => {
   const { user_id, photo_id } = req.body;

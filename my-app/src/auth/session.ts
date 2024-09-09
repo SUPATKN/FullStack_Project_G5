@@ -10,6 +10,8 @@ import { type ProviderType } from "@db/schema";
 import { NODE_ENV } from "@/utils/env";
 import { connectionString } from "@db/utils";
 
+console.log("NODE_ENV:", NODE_ENV); // เพิ่มบรรทัดนี้เพื่อตรวจสอบค่า NODE_ENV
+
 const generateSessionKey = (req: Request) => {
   const userId = req.user?.id ?? uuidv4();
   const randomId = uuidv4();

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Button, Image } from "react-bootstrap";
 import Layout from "./Layout";
+import useAuth from "./hook/useAuth";
 
 interface PhotoDetailProps {
   id: number;
@@ -11,42 +12,18 @@ interface PhotoDetailProps {
   price: number;
 }
 
-interface UserProfile {
-  id: number;
-  username: string;
-  email: string;
-}
 
 const PhotoDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [photo, setPhoto] = useState<PhotoDetailProps | null>(null);
   const [hasPurchased, setHasPurchased] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+  const { user: currentUser, refetch } = useAuth();
 
   // Fetch current user when component mounts
   useEffect(() => {
-    const fetchCurrentUser = async () => {
-      const token = localStorage.getItem("accessToken");
-      if (!token) return;
-
-      try {
-        const response = await axios.get<UserProfile>(
-          "http://localhost:3000/api/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setCurrentUser(response.data);
-      } catch (error: unknown) {
-        console.error("Error fetching current user:", error);
-      }
-    };
-
-    fetchCurrentUser();
-  }, []); // Dependency array is empty, so this only runs once on mount
+    refetch();
+  }, [currentUser]); // Dependency array is empty, so this only runs once on mount
 
   // Fetch photo details and purchase status when `id` or `currentUser` changes
   useEffect(() => {
@@ -74,6 +51,133 @@ const PhotoDetail = () => {
       fetchPhotoDetails();
     }
   }, [id, currentUser]);
+
+
+  // const fetchUsers = async () => {
+  //   try {
+  //     const { data } = await axios.get<{ id: string; username: string }[]>(
+  //       "/api/allusers"
+  //     );
+  //     setUsers(data);
+  //   } catch (error) {
+  //     console.error("Error fetching users:", error);
+  //   }
+  // };
+
+  // const fetchLikes = async () => {
+  //   try {
+  //     const { data } = await axios.get<{ photo_id: number; user_id: number }[]>(
+  //       "/api/getlikes"
+  //     );
+  //     setLikes(data);
+  //   } catch (error) {
+  //     console.error("Error fetching likes:", error);
+  //   }
+  // };
+
+  // const fetchComments = async () => {
+  //   try {
+  //     const { data } = await axios.get<Comment[]>("/api/getcomments");
+  //     setComments(data);
+  //   } catch (error) {
+  //     console.error("Error fetching comments:", error);
+  //   }
+  // };
+
+  // const handleLike = async (photo_id: string, user_id: string) => {
+  //   const alreadyLiked = likes.some(
+  //     (like) =>
+  //       like.photo_id === parseInt(photo_id) &&
+  //       like.user_id === parseInt(user_id)
+  //   );
+  //   if (alreadyLiked) {
+  //     try {
+  //       await axios.delete("/api/unlikes", { data: { photo_id, user_id } });
+  //       await fetchLikes(); // Refresh likes after the unlike action
+  //     } catch (error) {
+  //       console.error("Error", error);
+  //     }
+  //   } else {
+  //     try {
+  //       await axios.post("/api/likes", { photo_id, user_id });
+  //       await fetchLikes(); // Refresh likes after the like action
+  //     } catch (error) {
+  //       console.error("Error", error);
+  //     }
+  //   }
+  // };
+
+  // const handleCommentSubmit = async (photoId: string) => {
+  //   const comment = newComments[photoId];
+  //   if (!comment) {
+  //     // setError("Comment cannot be empty");
+  //     return;
+  //   }
+
+  //   try {
+  //     await axios.post("/api/comments", {
+  //       photo_id: photoId,
+  //       user_id: me?.id,
+  //       content: comment,
+  //     });
+  //     setNewComments((prev) => ({ ...prev, [photoId]: "" }));
+  //     await fetchComments(); // Refresh comments after submitting a new comment
+  //   } catch (error) {
+  //     console.error("Error submitting comment:", error);
+  //   }
+  // };
+
+  // const handleCommentChange = (photoId: string, content: string) => {
+  //   setNewComments((prev) => ({ ...prev, [photoId]: content }));
+  // };
+
+  // useEffect(() => {
+  //   refetch();
+  //   fetchUsers();
+  //   fetchImages();
+  //   fetchLikes();
+  //   fetchComments();
+  // }, [me]);
+
+  // const getUsername = (userId: string) => {
+  //   const user = users.find((user) => user.id === userId);
+  //   return user ? user.username : "Unknown User";
+  // };
+
+  // const getLikeCount = (photoId: string) => {
+  //   return likes.filter((like) => like.photo_id === parseInt(photoId)).length;
+  // };
+
+  // const handleUsernameClick = (userId: string) => {
+  //   const user = users.find((user) => user.id === userId);
+  //   if (user) {
+  //     navigate(`/profile/${userId}`, { state: { user } });
+  //   }
+  // };
+
+  // const handleAddToCart = async (photoId: string) => {
+  //   if (!me) {
+  //     console.error("User is not logged in");
+  //     return;
+  //   }
+
+  //   try {
+  //     const photo = photos.find((photo) => photo.id === photoId);
+
+  //     if (photo && photo.user_id === me.id.toString()) {
+  //       alert("You cannot add your own photo to the cart");
+  //       return;
+  //     }
+  //     const response = await axios.post("/api/cart/add", {
+  //       user_id: me.id,
+  //       photo_id: photoId,
+  //     });
+  //     alert(response.data.message); // Display success message
+  //   } catch (error) {
+  //     console.error("Error adding photo to cart:", error);
+  //   }
+  // };
+
 
   const handlePurchase = async () => {
     if (photo && currentUser) {

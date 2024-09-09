@@ -42,7 +42,7 @@ const Register: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   return (
     <Layout>

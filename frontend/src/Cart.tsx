@@ -3,16 +3,13 @@ import axios from "axios";
 import { Row, Col, Button, Card, Spinner, Alert } from "react-bootstrap";
 import Layout from "./Layout";
 import "./global.css";
+import useAuth from "./hook/useAuth";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState<
     { id: string; path: string; user_id: string; price: number }[]
   >([]);
-  const [me, setMe] = useState<{
-    id: number;
-    username: string;
-    email: string;
-  } | null>(null);
+  const { user: me, refetch } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -31,33 +28,11 @@ const Cart = () => {
     }
   };
 
-  // Fetch the current user profile
-  const fetchMe = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      return;
-    }
-
-    try {
-      const response = await axios.get<{
-        id: number;
-        username: string;
-        email: string;
-      }>("http://localhost:3000/api/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setMe(response.data);
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-    }
-  };
 
   // Fetch user profile on component mount
   useEffect(() => {
-    fetchMe();
-  }, []);
+    refetch()
+  }, [me]);
 
   // Fetch cart items when user profile is available
   useEffect(() => {

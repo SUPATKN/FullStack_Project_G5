@@ -3,37 +3,39 @@ import { Link } from "react-router-dom";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import Logo from "./LogoPreflight.png";
 import "./global.css";
-import { useAuth } from "./AuthContext";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import axios from "axios";
+import useAuth from "./hook/useAuth";
 
-interface User {
-  id: number;
-  username: string;
-  email: string;
-}
+// interface User {
+//   id: number;
+//   username: string;
+//   email: string;
+// }
 
-interface NavBarProps {
-  user: User | null;
-}
+// interface NavBarProps {
+//   user: User | null;
+// }
 
-const NavBar: React.FC<NavBarProps> = ({ user }) => {
-  const { isAuthenticated, logout } = useAuth();
-  const [coin, setCoin] = useState<number>(0);
+const NavBar: React.FC = () => {
+  const { user, refetch } = useAuth();
 
-  useEffect(() => {
-    if (user && isAuthenticated) {
-      axios
-        .get(`/api/coin/${user.id}`)
-        .then((response) => {
-          setCoin(response.data.coin);
-        })
-        .catch((error) => {
-          console.error("Error fetching coin balance:", error);
-        });
+  // const [coin, setCoin] = useState<number>(0);
+
+  // useEffect(() => {
+  //   if (user) {
+  //     setCoin(user.coin);
+  //     console.log(user);
+  //   }
+  // }, [user]);
+  const handleLogout = async () => {
+    try {
+      await axios.get("/api/logout"); // ส่ง request ไปที่ backend เพื่อ logout
+      refetch();
+    } catch (error) {
+      console.error("Logout failed", error);
     }
-  }, [user, isAuthenticated]);
-
+  };
   return (
     <Navbar
       bg="grey"
@@ -74,7 +76,7 @@ const NavBar: React.FC<NavBarProps> = ({ user }) => {
             </Nav.Link>
           </Nav>
           <Nav className="ms-auto">
-            {!isAuthenticated ? (
+            {!user ? (
               <>
                 <Nav.Link
                   as={Link}
@@ -150,7 +152,7 @@ const NavBar: React.FC<NavBarProps> = ({ user }) => {
                       className="bi bi-coin"
                       style={{ marginRight: "5px", color: "#ffffff" }}
                     ></i>{" "}
-                    {coin}
+                    {user.coin}
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
@@ -218,7 +220,7 @@ const NavBar: React.FC<NavBarProps> = ({ user }) => {
                 <Nav.Link
                   as={Link}
                   to="/"
-                  onClick={logout}
+                  onClick={handleLogout}
                   style={{
                     fontSize: "15px",
                     backgroundColor: "#ff0000",

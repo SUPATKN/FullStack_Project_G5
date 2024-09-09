@@ -4,6 +4,7 @@ import axios from "axios";
 import { Image, Row, Col, Form, Button } from "react-bootstrap";
 
 import Layout from "./Layout";
+import useAuth from "./hook/useAuth";
 // import { format } from "date-fns";
 
 interface UserProfile {
@@ -30,7 +31,7 @@ const Gallery = () => {
   );
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComments, setNewComments] = useState<{ [key: string]: string }>({});
-  const [me, setMe] = useState<UserProfile | null>(null);
+  const { user: me, refetch } = useAuth();
   // const [error, setError] = useState<string | null>(null);
   // const [success, setSuccess] = useState<string | null>(null);
 
@@ -58,32 +59,6 @@ const Gallery = () => {
       setPhotos(data);
     } catch (error) {
       console.error("Error fetching images:", error);
-    }
-  };
-
-  const fetchMe = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      // setError("No access token found");
-      return;
-    }
-
-    try {
-      const response = await axios.get<UserProfile>(
-        "http://localhost:3000/api/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setMe(response.data);
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        // setError(error.response?.data.error || "Failed to fetch user profile");
-      } else {
-        // setError("An unexpected error occurred");
-      }
     }
   };
 
@@ -166,12 +141,12 @@ const Gallery = () => {
   };
 
   useEffect(() => {
-    fetchMe();
+    refetch();
     fetchUsers();
     fetchImages();
     fetchLikes();
     fetchComments();
-  }, []);
+  }, [me]);
 
   const getUsername = (userId: string) => {
     const user = users.find((user) => user.id === userId);
@@ -234,7 +209,7 @@ const Gallery = () => {
                 {likes.some(
                   (like) =>
                     like.photo_id === parseInt(photo.id) &&
-                    like.user_id === me.id
+                    like.user_id === parseInt(me.id)
                 )
                   ? "Unlike"
                   : "Like"}

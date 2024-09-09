@@ -8,6 +8,7 @@ import {
   timestamp,
   json,
   unique,
+  boolean,
   primaryKey,
 } from "drizzle-orm/pg-core";
 
@@ -15,7 +16,9 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: varchar("username", { length: 50 }).notNull(),
   email: varchar("email", { length: 100 }).unique().notNull(),
+  isAdmin: boolean("is_admin").notNull().default(false),
   password: text("password").notNull(),
+  avatarURL: text("avatar_url"),
   coin: integer("coin").default(0).notNull(),
 });
 
@@ -25,7 +28,7 @@ export const accountsTable = pgTable(
     id: serial("id") // PostgreSQL serial type for auto-incrementing IDs
       .notNull()
       .unique(),
-    userId: text("user_id").notNull(), // Foreign key or reference to users table
+    userId: integer("user_id").notNull(), // Foreign key or reference to users table
     provider: text("provider", {
       enum: ["GOOGLE"], // Enum type to specify provider values
     }).notNull(),
@@ -40,6 +43,10 @@ export const accountsTable = pgTable(
     };
   }
 );
+
+export const usersRelations = relations(users, ({ many }) => ({
+  accounts: many(accountsTable),
+}));
 
 export const accountsRelations = relations(accountsTable, ({ one }) => ({
   user: one(users, {
@@ -155,3 +162,7 @@ export const coin_transactions = pgTable("coin_transactions", {
 });
 
 export type ProviderType = "GOOGLE";
+
+type UTI = typeof users.$inferInsert;
+type ATI = typeof accountsTable.$inferInsert;
+export type UserData = UTI & ATI;

@@ -2,12 +2,7 @@ import { useState, ChangeEvent, useEffect } from "react";
 import axios from "axios";
 import { Form, Button, Image, Alert } from "react-bootstrap";
 import Layout from "./Layout";
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-}
+import useAuth from "./hook/useAuth";
 
 const Upload = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -17,7 +12,7 @@ const Upload = () => {
   >([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const { user, refetch } = useAuth();
 
   // New state for free image and price
   const [isFree, setIsFree] = useState<boolean>(true);
@@ -77,34 +72,8 @@ const Upload = () => {
     }
   };
 
-  const fetchUser = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      setError("No access token found");
-      return;
-    }
-
-    try {
-      const response = await axios.get<User>(
-        "http://localhost:3000/api/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setUser(response.data);
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        setError(error.response?.data.error || "Failed to fetch user profile");
-      } else {
-        setError("An unexpected error occurred");
-      }
-    }
-  };
-
   useEffect(() => {
-    fetchUser();
+    refetch();
     fetchImages();
   }, []);
 
