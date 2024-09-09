@@ -3,10 +3,10 @@ import {
   type VerifyCallback,
 } from "passport-oauth2";
 import axios from "axios";
-import { GoogleUserInfo } from "@/types/google.js";
-import { google as gg } from "../utils/env.js";
-import { type UserData } from "@db/schema.js";
-import { handleUserData } from "@db/repositories.js";
+import { GoogleUserInfo } from "@/types/google";
+import { google as gg } from "../utils/env";
+import { type UserData } from "@db/schema";
+import { handleUserData } from "@db/repositories";
 
 export const google = new OAuthStrategy(
   {

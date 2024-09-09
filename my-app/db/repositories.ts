@@ -1,7 +1,7 @@
 import { eq, like } from "drizzle-orm";
-import { dbClient } from "@db/client.js";
-import { sessionsTable, users, UserData } from "@db/schema.js";
-import { type ProviderType, accountsTable } from "@db/schema.js";
+import { dbClient } from "@db/client";
+import { sessionsTable, users, UserData } from "@db/schema";
+import { type ProviderType, accountsTable } from "@db/schema";
 import bcrypt from "bcrypt";
 
 async function getUserFromId(id: number) {

@@ -1,8 +1,8 @@
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
-import { dbClient } from "@db/client.js";
+import { dbClient } from "@db/client";
 import { eq } from "drizzle-orm";
-import { users } from "@db/schema.js";
+import { users } from "@db/schema";
 
 export const local = new LocalStrategy(
   {
