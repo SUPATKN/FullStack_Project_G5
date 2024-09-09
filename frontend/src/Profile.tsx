@@ -161,6 +161,7 @@ const Profile: React.FC = () => {
   return (
     <Layout>
       <div>
+        {/* profile */}
         <h2>Profile</h2>
         <div className="mt-3">
           {user?.avatarURL ? (
@@ -181,7 +182,6 @@ const Profile: React.FC = () => {
             />
           )}
         </div>
-
         {error ? (
           <p>{error}</p>
         ) : (
