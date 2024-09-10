@@ -111,6 +111,8 @@ app.use(
 const upload_slip = multer({ storage: storage3 });
 app.use("/api/slip", express.static(path.join(__dirname, "../slips")));
 
+
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
@@ -208,8 +210,10 @@ app.post(
   async (req: Request, res: Response) => {
     const filePath = `/images/${req.file?.filename}`;
     const userId = req.body.user_id;
-    const isFree = req.body.isFree === "true"; // รับค่าเป็น string แล้วเปลี่ยนเป็น boolean
-    const price = isFree ? 0 : parseInt(req.body.price, 10) || 0; // กำหนดราคาเป็น 0 หากฟรี
+    const isFree = req.body.isFree === "true"; // Convert string to boolean
+    const price = isFree ? 0 : parseInt(req.body.price, 10) || 0; // Default to 0 if free
+    const title = req.body.title || ""; // Default to empty string if not provided
+    const description = req.body.description || ""; // Default to empty string if not provided
 
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
@@ -223,10 +227,12 @@ app.post(
           user_id: Number(userId),
           price: price,
           created_at: new Date(),
+          title: title,
+          description: description
         })
         .returning({ id: images.id, path: images.path });
 
-      res.json({ filePath });
+      res.json({ filePath, id: result[0].id });
     } catch (error) {
       console.error("Error saving file path to the database:", error);
       res.status(500).json({ error: "Internal Server Error" });
@@ -375,6 +381,30 @@ app.post("/api/comments", async (req: Request, res: Response) => {
     res.status(201).json({ message: "Like added successfully" });
   } catch (error) {
     console.error("Error adding like:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// delete comment
+app.delete("/api/deletecomment", async (req: Request, res: Response) => {
+  const { photo_id, user_id } = req.body;
+
+  if (!photo_id || !user_id) {
+    return res.status(400).json({ error: "Photo ID and User ID are required" });
+  }
+
+  try {
+    await dbClient
+      .delete(comments)
+      .where(
+        and(
+          eq(comments.photo_id, Number(photo_id)),
+          eq(comments.user_id, Number(user_id))
+        )
+      );
+    res.status(200).json({ message: "comment deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting like:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -1473,5 +1503,193 @@ app.get("/api/album/:album_id/photos", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching album photos:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get('/api/transactions', async (req: Request, res: Response) => {
+  try {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    // ดึงรายการคำสั่งซื้อของผู้ใช้จากฐานข้อมูล
+    const transections = await dbClient
+      .select()
+      .from(coin_transactions)
+      .where(eq(coin_transactions.user_id,Number(user_id)))
+      .orderBy((coin_transactions.created_at))
+      .execute();
+
+    res.status(200).json(transections);
+  } catch (error) {
+    console.error("Error fetching order history:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/create_album", async (req: Request, res: Response) => {
+  const { user_id, title, description } = req.body;
+
+  if (!user_id) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
+
+  try {
+    // รอให้ insert สำเร็จ
+    await dbClient.insert(albums).values({
+      user_id: user_id,
+      title: title,
+      description: description,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+
+    // ส่ง response กลับไปหากสำเร็จ
+    res.status(200).json({ message: "Album created successfully" });
+  } catch (error) {
+    console.error("Error creating album:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/albums/:user_id", async (req: Request, res: Response) => {
+  const { user_id } = req.params;
+
+  if (!user_id) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
+
+  try {
+    const userAlbums = await dbClient
+      .select()
+      .from(albums)
+      .where(eq(albums.user_id, Number(user_id)))
+      .execute();
+
+    // Return an empty array if no albums are found
+    res.status(200).json(userAlbums);
+  } catch (error) {
+    console.error("Error fetching albums:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.delete("/api/album/:album_id", async (req: Request, res: Response) => {
+  const { album_id } = req.params;
+
+  if (!album_id) {
+    return res.status(400).json({ error: "Album ID is required" });
+  }
+
+  try {
+    const result = await dbClient
+      .delete(albums)
+      .where(eq(albums.album_id, Number(album_id)))
+      .execute();
+
+    res.status(200).json({ message: "Album deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting album:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/album/add_photo", async (req: Request, res: Response) => {
+  const { album_id, photo_id } = req.body;
+
+  if (!album_id || !photo_id) {
+    return res
+      .status(400)
+      .json({ error: "Album ID and Photo ID are required" });
+  }
+
+  try {
+    // Check if the photo is already in the album
+    const existingPhotoInAlbum = await dbClient
+      .select()
+      .from(photo_albums)
+      .where(
+        and(
+          eq(photo_albums.album_id, Number(album_id)),
+          eq(photo_albums.photo_id, Number(photo_id))
+        )
+      )
+      .execute();
+
+    if (existingPhotoInAlbum.length > 0) {
+      return res
+        .status(409)
+        .json({ error: "Photo already exists in this album" });
+    }
+
+    // If the photo is not in the album, insert it
+    await dbClient.insert(photo_albums).values({
+      photo_id: Number(photo_id),
+      album_id: Number(album_id),
+    });
+
+    res.status(200).json({ message: "Photo added to album successfully" });
+  } catch (error) {
+    console.error("Error adding photo to album:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/album/:album_id/photos", async (req: Request, res: Response) => {
+  const { album_id } = req.params;
+
+  console.log(album_id);
+
+  if (!album_id) {
+    return res.status(400).json({ error: "Album ID is required" });
+  }
+
+  try {
+    const albumPhotos = await dbClient
+      .select({
+        id: images.id,
+        path: images.path,
+        user_id: images.user_id,
+        price: images.price,
+        created_at: images.created_at,
+      })
+      .from(photo_albums)
+      .where(eq(photo_albums.album_id, Number(album_id)))
+      .innerJoin(images, eq(photo_albums.photo_id, images.id))
+      .execute();
+
+    if (albumPhotos.length === 0) {
+      return res.status(404).json({ message: "No photos found in this album" });
+    }
+
+    res.status(200).json(albumPhotos);
+  } catch (error) {
+    console.error("Error fetching album photos:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get('/api/transactions', async (req: Request, res: Response) => {
+  try {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    // ดึงรายการคำสั่งซื้อของผู้ใช้จากฐานข้อมูล
+    const transections = await dbClient
+      .select()
+      .from(coin_transactions)
+      .where(eq(coin_transactions.user_id,Number(user_id)))
+      .orderBy((coin_transactions.created_at))
+      .execute();
+
+    res.status(200).json(transections);
+  } catch (error) {
+    console.error('Error fetching order history:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });

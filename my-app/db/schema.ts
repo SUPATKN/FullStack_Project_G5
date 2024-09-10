@@ -56,7 +56,7 @@ export const accountsRelations = relations(accountsTable, ({ one }) => ({
   }),
 }));
 
-export const sessionsTable = pgTable("sessions", {
+export const sessionsTable = pgTable("sessions", {  
   sid: text("sid").primaryKey(),
   expired: timestamp("expire", { withTimezone: true }),
   sess: json("sess"),
@@ -72,6 +72,8 @@ export const images = pgTable("images", {
     }),
   created_at: timestamp("created_at").defaultNow().notNull(),
   price: integer("price").default(0).notNull(),
+  title:text("title"),
+  description:text("description"),
 });
 
 export const ProfilePicture = pgTable("ProfilePicture", {

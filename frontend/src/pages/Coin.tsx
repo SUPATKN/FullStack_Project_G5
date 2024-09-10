@@ -4,19 +4,14 @@ import Layout from "../Layout";
 import "../global.css";
 import Logo from "../Logowithbg.png";
 import CoinCard from "./CoinCard";
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-}
+import useAuth from "./hook/useAuth";
 
 const Coin = () => {
   const [selectedPrice, setSelectedPrice] = useState<number | null>(null);
   const [selectedQuantity, setSelecteQuantity] = useState<number | null>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [slipFile, setSlipFile] = useState<File | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const { user, refetch } = useAuth();
 
   const cardsData = [
     { price: 9.99, quantity: 100 },
@@ -30,34 +25,8 @@ const Coin = () => {
     { price: 299.99, quantity: 50000 },
   ];
 
-  const fetchUser = async () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      // setError("No access token found");
-      return;
-    }
-
-    try {
-      const response = await axios.get<User>(
-        "http://localhost:3000/api/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setUser(response.data);
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        // setError(error.response?.data.error || "Failed to fetch user profile");
-      } else {
-        // setError("An unexpected error occurred");
-      }
-    }
-  };
-
   useEffect(() => {
-    fetchUser();
+    refetch();
   }, []);
 
   const handleUploadSlip = async () => {

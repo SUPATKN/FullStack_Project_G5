@@ -7,8 +7,6 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import axios from "axios";
 import useAuth from "../hook/useAuth";
 
-
-
 const NavBar: React.FC = () => {
   const { user, refetch } = useAuth();
 
