@@ -1,8 +1,7 @@
 import { eq, like } from "drizzle-orm";
 import { dbClient } from "@db/client";
-import { sessionsTable, users, UserData } from "@db/schema";
-import { type ProviderType, accountsTable } from "@db/schema";
-import bcrypt from "bcrypt";
+import { sessionsTable, users, UserData ,type ProviderType, accountsTable } from "@db/schema";
+
 
 async function getUserFromId(id: number) {
   return dbClient.query.users.findFirst({
@@ -111,13 +110,21 @@ export async function handleUserData(uData: UserData) {
         .where(eq(accountsTable.id, check.accountId ?? 0));
     }
     // Update user avatar so that I know which provider I am using right now. In production, I should let user update own avatar.
-    if (uData?.avatarURL) {
-      await dbClient
-        .update(users)
-        .set({ avatarURL: uData.avatarURL })
-        .where(eq(users.id, check.userId ?? 0));
-    }
+    // if (uData?.avatarURL) {
+    //   await dbClient
+    //     .update(users)
+    //     .set({ avatarURL: uData.avatarURL })
+    //     .where(eq(users.id, check.userId ?? 0));
+    // }
     // Returning user
     return getUserFromId(check.user?.id ?? 0);
   }
+}
+
+
+export async function deleteSession(sid: string) {
+  return await dbClient
+    .delete(sessionsTable)
+    .where(eq(sessionsTable.sid, sid))
+    .returning();
 }

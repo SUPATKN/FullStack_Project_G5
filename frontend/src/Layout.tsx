@@ -1,6 +1,6 @@
 // Layout.tsx
 import React from "react";
-import NavBar from "./Navbar";
+import NavBar from "./components/Navbar";
 import { Container } from "react-bootstrap";
 
 import useAuth from "./hook/useAuth";

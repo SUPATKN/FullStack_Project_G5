@@ -1,1 +1,0 @@
-ALTER TABLE "images" ADD COLUMN "price" numeric(10, 2) ;

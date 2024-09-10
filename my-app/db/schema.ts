@@ -68,7 +68,7 @@ export const images = pgTable("images", {
   user_id: integer("user_id")
     .notNull()
     .references(() => users.id, {
-      onDelete: "cascade", 
+      onDelete: "cascade",
     }),
   created_at: timestamp("created_at").defaultNow().notNull(),
   price: integer("price").default(0).notNull(),
@@ -137,7 +137,7 @@ export const cart_items = pgTable("cart_items", {
     .references(() => carts.cart_id),
   photo_id: integer("photo_id")
     .notNull()
-    .references(() => images.id),
+    .references(() => images.id, { onDelete: "cascade" }),
 });
 
 export const image_ownerships = pgTable("image_ownerships", {
@@ -170,7 +170,7 @@ export const slips = pgTable("slips", {
   amount: integer("amount").notNull(),
   coins: integer("coins").notNull(),
   slip_path: text("slip_path").notNull(),
-  status: varchar("status", { length: 20 }).notNull().default('pending'),
+  status: varchar("status", { length: 20 }).notNull().default("pending"),
   created_at: timestamp("created_at").defaultNow().notNull(),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
   admin_note: text("admin_note"),
@@ -183,7 +183,7 @@ export const orders = pgTable("orders", {
     .references(() => users.id, { onDelete: "cascade" }),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(), // ราคาเหรียญที่สั่งซื้อ
   quantity: integer("quantity").notNull(), // จำนวนเหรียญที่สั่งซื้อ
-  status: varchar("status", { length: 20 }).notNull().default('pending'), // สถานะการสั่งซื้อ: pending, approved, rejected
+  status: varchar("status", { length: 20 }).notNull().default("pending"), // สถานะการสั่งซื้อ: pending, approved, rejected
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -197,10 +197,29 @@ export const orders_history = pgTable("orders_history", {
     .references(() => orders.order_id, { onDelete: "cascade" }), // Foreign key reference to orders table
   coins: integer("coins").notNull(), // จำนวนเหรียญที่ซื้อ
   price: integer("price").notNull(), // ราคาเหรียญที่ซื้อ
-  status: varchar("status", { length: 20 }).notNull().default(''),
+  status: varchar("status", { length: 20 }).notNull().default(""),
   create_at: timestamp("create_at").defaultNow().notNull(), // วันที่ซื้อ
 });
 
+export const albums = pgTable("albums", {
+  album_id: serial("album_id").primaryKey(),
+  user_id: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const photo_albums = pgTable("photo_albums", {
+  photo_id: integer("photo_id")
+    .notNull()
+    .references(() => images.id, { onDelete: "cascade" }),
+  album_id: integer("album_id")
+    .notNull()
+    .references(() => albums.album_id, { onDelete: "cascade" }),
+});
 
 export type ProviderType = "GOOGLE";
 

@@ -1,1 +1,0 @@
-ALTER TABLE "images" ALTER COLUMN "price" SET NOT NULL;

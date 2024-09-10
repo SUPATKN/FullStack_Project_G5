@@ -10,14 +10,27 @@ import sessionIns, {
   setSessionInfoAfterLogin,
   formatSession,
 } from "./auth/session";
-import { hash, compare } from "bcrypt";
-import jwt from "jsonwebtoken";
 import passportIns from "./auth/passport";
 import QRCode from "qrcode";
+import { deleteSession } from "@db/repositories";
 import * as useragent from "express-useragent";
 import generatePayload from "promptpay-qr";
 import { dbClient, dbConn } from "@db/client";
-import { images, users, likes, comments ,carts,cart_items,ProfilePicture,coin_transactions,image_ownerships,slips, orders,orders_history} from "@db/schema";
+import {
+  images,
+  users,
+  likes,
+  comments,
+  carts,
+  cart_items,
+  coin_transactions,
+  image_ownerships,
+  slips,
+  orders,
+  orders_history,
+  albums,
+  photo_albums,
+} from "@db/schema";
 import { and, eq, isNotNull } from "drizzle-orm";
 
 type CartType = {
@@ -98,12 +111,6 @@ app.use(
 const upload_slip = multer({ storage: storage3 });
 app.use("/api/slip", express.static(path.join(__dirname, "../slips")));
 
-
-
-
-
-
-
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
@@ -111,7 +118,6 @@ app.listen(port, () => {
 //AUTH
 
 app.get("/api/me", async (req, res, next) => {
-  console.log("User:", req.user);
   const sessions = await formatSession(req);
   const user = req?.user ?? null;
   res.json({ sessions, user });
@@ -156,8 +162,6 @@ app.post("/api/register", async (req: Request, res: Response) => {
 
 app.post("/api/login", passportIns.authenticate("local"), function (req, res) {
   setSessionInfoAfterLogin(req, "CREDENTIAL");
-  console.log("Session after login:", req.session);
-  console.log("User after login:", req.user); // ตรวจสอบข้อมูลผู้ใช้
   res.status(200).json("Login Successful");
 });
 
@@ -182,7 +186,9 @@ app.get("/api/login/oauth/google", passportIns.authenticate("google"));
 
 app.get(
   "/callback/google",
-  passportIns.authenticate("google", { failureRedirect: "/login" }),
+  passportIns.authenticate("google", {
+    failureRedirect: `http://localhost:5899/login`,
+  }),
   function (req, res) {
     console.log("----------Callback--------------");
     setSessionInfoAfterLogin(req, "GOOGLE");
@@ -191,33 +197,10 @@ app.get(
   }
 );
 
-// app.get("/api/profile", async (req: Request, res: Response) => {
-//   // Check if session is available
-//   if (!req.session || !req.session.user) {
-//     return res.status(401).json({ error: "User not authenticated" });
-//   }
-
-//   const userId = req.session.user.id;
-
-//   try {
-//     const user = await dbClient.query.users.findFirst({
-//       where: eq(users.id, userId),
-//     });
-
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
-
-//     res.status(200).json({
-//       id: user.id,
-//       username: user.username,
-//       email: user.email,
-//     });
-//   } catch (error) {
-//     console.error("Error retrieving user profile:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
+app.delete("/session", async function (req, res, next) {
+  const sid = (req?.query?.sid ?? "") as string;
+  const request = await deleteSession(sid);
+});
 
 app.post(
   "/api/upload",
@@ -291,73 +274,6 @@ app.delete("/api/photo/:filename", async (req: Request, res: Response) => {
     res.json({ message: "File deleted successfully" });
   } catch (error) {
     console.error("Error deleting file:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// app.post("/api/login", async (req: Request, res: Response) => {
-//   const { email, password } = req.body;
-
-//   if (!email || !password) {
-//     return res.status(400).json({ error: "Email and password are required" });
-//   }
-
-//   try {
-//     const user = await dbClient.query.users.findFirst({
-//       where: eq(users.email, email),
-//     });
-//     if (!user) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
-
-//     const isMatch = await compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
-
-//     const token = jwt.sign({ userId: user.id }, "YOUR_SECRET_KEY", {
-//       expiresIn: "1h",
-//     });
-
-//     res.status(200).json({
-//       message: "Login successful",
-//       accessToken: token,
-//       user: {
-//         username: user.username,
-//         email: user.email,
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Error logging in user:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-app.get("/api/profile", async (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ error: "Authorization header missing" });
-  }
-
-  const token = authHeader.split(" ")[1];
-
-  try {
-    const decoded = jwt.verify(token, "YOUR_SECRET_KEY") as { userId: number };
-    const user = await dbClient.query.users.findFirst({
-      where: eq(users.id, decoded.userId),
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.status(200).json({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-    });
-  } catch (error) {
-    console.error("Error retrieving user profile:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -740,7 +656,6 @@ app.post("/api/cart/checkout", async (req: Request, res: Response) => {
   }
 });
 
-
 app.delete("/api/cart/remove", async (req: Request, res: Response) => {
   const { user_id, photo_id } = req.body;
 
@@ -1070,7 +985,6 @@ app.get("/api/getcountlikes", async (req: Request, res: Response) => {
   }
 });
 
-
 // app.get("/api/getreceivedlikes", async (req: Request, res: Response) => {
 //   try {
 //     const likes = await dbClient.query.likes.findMany();
@@ -1084,8 +998,6 @@ app.get("/api/getcountlikes", async (req: Request, res: Response) => {
 //     res.status(500).json({ error: "Internal Server Error" });
 //   }
 // });
-
-
 
 app.get("/api/getcountcomments", async (req: Request, res: Response) => {
   try {
@@ -1108,12 +1020,12 @@ app.get("/api/getcountcomments", async (req: Request, res: Response) => {
   }
 });
 
-app.post('/api/selectPriceAndQuantity', async (req, res) => {
+app.post("/api/selectPriceAndQuantity", async (req, res) => {
   const { price, quantity, user_id } = req.body;
 
-  console.log('Price:', price);
-  console.log('Quantity:', quantity);
-  console.log('User_Id:', user_id);
+  console.log("Price:", price);
+  console.log("Quantity:", quantity);
+  console.log("User_Id:", user_id);
 
   try {
     // Convert price to string if necessary
@@ -1123,7 +1035,7 @@ app.post('/api/selectPriceAndQuantity', async (req, res) => {
       user_id: Number(user_id),
       price: formattedPrice, // Keep price as a string in decimal format
       quantity: Number(quantity),
-      status: 'pending',
+      status: "pending",
       created_at: new Date(),
     });
 
@@ -1134,7 +1046,6 @@ app.post('/api/selectPriceAndQuantity', async (req, res) => {
   }
 });
 
-
 // Route to handle slip upload
 app.post(
   "/api/uploadSlip",
@@ -1142,24 +1053,27 @@ app.post(
   async (req: Request, res: Response) => {
     const filePath = req.file?.filename;
     const { amount, coins, user_id } = req.body;
-    console.log("Prcie: ",coins)
+    console.log("Prcie: ", coins);
 
     // Validate inputs
     if (!filePath) {
-      return res.status(400).json({ success: false, message: "File upload failed" });
+      return res
+        .status(400)
+        .json({ success: false, message: "File upload failed" });
     }
-    
+
     if (!user_id) {
-      return res.status(400).json({ success: false, message: "User ID is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "User ID is required" });
     }
 
     try {
-
       // Check if a slip already exists for the user
       const existingSlip = await dbClient
         .select()
         .from(slips)
-        .where(eq(slips.user_id,Number(user_id)))
+        .where(eq(slips.user_id, Number(user_id)))
         .limit(1)
         .execute();
 
@@ -1179,7 +1093,7 @@ app.post(
         // Delete the old slip record from the database
         await dbClient
           .delete(slips)
-          .where(eq(slips.user_id,Number(user_id)))
+          .where(eq(slips.user_id, Number(user_id)))
           .execute();
       }
 
@@ -1187,27 +1101,32 @@ app.post(
       const result = await dbClient
         .insert(slips)
         .values({
-      user_id: Number(user_id),              // Ensure user_id is a number
-      amount: parseInt(amount, 10),          // Ensure amount is an integer
-      coins: parseInt(coins, 10),               // Convert price to string for insertion
-      slip_path: filePath,                   // File path for uploaded slip
-      status: 'pending',                     // Default status is pending
-      created_at: new Date(),                // Timestamp when slip is created
-      updated_at: new Date(),                // Timestamp when slip is updated
-      admin_note: 'up slip',                 // Default admin note
+          user_id: Number(user_id), // Ensure user_id is a number
+          amount: parseInt(amount, 10), // Ensure amount is an integer
+          coins: parseInt(coins, 10), // Convert price to string for insertion
+          slip_path: filePath, // File path for uploaded slip
+          status: "pending", // Default status is pending
+          created_at: new Date(), // Timestamp when slip is created
+          updated_at: new Date(), // Timestamp when slip is updated
+          admin_note: "up slip", // Default admin note
         })
         .returning({ slip_id: slips.slip_id, slip_path: slips.slip_path })
         .execute();
 
       // Respond with the new file path
-      res.json({ success: true, slipId: result[0].slip_id, filePath: result[0].slip_path });
+      res.json({
+        success: true,
+        slipId: result[0].slip_id,
+        filePath: result[0].slip_path,
+      });
     } catch (error) {
       console.error("Error saving file path to the database:", error);
-      res.status(500).json({ success: false, message: "Internal Server Error" });
+      res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
     }
   }
 );
-
 
 app.get("/api/slips/get", async (req: Request, res: Response) => {
   try {
@@ -1270,7 +1189,9 @@ app.post("/api/slips/approve/:slipId", async (req: Request, res: Response) => {
     });
 
     if (!slip || slip.status !== "pending") {
-      return res.status(404).json({ error: "Slip not found or already processed" });
+      return res
+        .status(404)
+        .json({ error: "Slip not found or already processed" });
     }
 
     // Fetch the user
@@ -1305,27 +1226,25 @@ app.post("/api/slips/approve/:slipId", async (req: Request, res: Response) => {
       .insert(orders_history)
       .values({
         user_id: slip.user_id,
-        order_id: order.order_id, 
+        order_id: order.order_id,
         coins: slip.coins,
         price: slip.amount,
-        status: "Approved", 
-        created_at: new Date(), 
+        status: "Approved",
+        create_at: new Date(),
       })
       .execute();
 
     // Delete the slip after approving
-    await dbClient
-      .delete(slips)
-      .where(eq(slips.slip_id, slipId))
-      .execute();
+    await dbClient.delete(slips).where(eq(slips.slip_id, slipId)).execute();
 
-    res.status(200).json({ message: "Slip approved, coins added, and order recorded" });
+    res
+      .status(200)
+      .json({ message: "Slip approved, coins added, and order recorded" });
   } catch (error) {
     console.error("Error approving slip:", error);
     res.status(500).json({ error: "Failed to approve slip" });
   }
 });
-
 
 // Reject Slip
 app.post("/api/slips/reject/:slipId", async (req: Request, res: Response) => {
@@ -1342,7 +1261,9 @@ app.post("/api/slips/reject/:slipId", async (req: Request, res: Response) => {
     });
 
     if (!slip || slip.status !== "pending") {
-      return res.status(404).json({ error: "Slip not found or already processed" });
+      return res
+        .status(404)
+        .json({ error: "Slip not found or already processed" });
     }
 
     // Fetch the user
@@ -1373,44 +1294,184 @@ app.post("/api/slips/reject/:slipId", async (req: Request, res: Response) => {
         coins: slip.coins,
         price: slip.amount, // Assuming slip.amount corresponds to the price
         status: "Rejected",
-        created_at: new Date(), // or use timestamp if preferred
+        create_at: new Date(), // or use timestamp if preferred
       })
       .execute();
 
     // Delete the slip upon rejection
-    await dbClient
-      .delete(slips)
-      .where(eq(slips.slip_id, slipId))
-      .execute();
+    await dbClient.delete(slips).where(eq(slips.slip_id, slipId)).execute();
 
-    res.status(200).json({ message: "Slip rejected, order recorded in history" });
+    res
+      .status(200)
+      .json({ message: "Slip rejected, order recorded in history" });
   } catch (error) {
     console.error("Error rejecting slip:", error);
     res.status(500).json({ error: "Failed to reject slip" });
   }
 });
 
-
 // Endpoint สำหรับดึงประวัติของคำสั่งซื้อ
-app.get('/api/orders/history', async (req: Request, res: Response) => {
+app.get("/api/orders/history", async (req: Request, res: Response) => {
   try {
     const { user_id } = req.query;
 
     if (!user_id) {
-      return res.status(400).json({ error: 'User ID is required' });
+      return res.status(400).json({ error: "User ID is required" });
     }
 
     // ดึงรายการคำสั่งซื้อของผู้ใช้จากฐานข้อมูล
     const ordersHistory = await dbClient
       .select()
       .from(orders_history)
-      .where(eq(orders_history.user_id,Number(user_id)))
-      .orderBy((orders_history.create_at))
+      .where(eq(orders_history.user_id, Number(user_id)))
+      .orderBy(orders_history.create_at)
       .execute();
 
     res.status(200).json(ordersHistory);
   } catch (error) {
-    console.error('Error fetching order history:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching order history:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/create_album", async (req: Request, res: Response) => {
+  const { user_id, title, description } = req.body;
+
+  if (!user_id) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
+
+  try {
+    // รอให้ insert สำเร็จ
+    await dbClient.insert(albums).values({
+      user_id: user_id,
+      title: title,
+      description: description,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+
+    // ส่ง response กลับไปหากสำเร็จ
+    res.status(200).json({ message: "Album created successfully" });
+  } catch (error) {
+    console.error("Error creating album:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/albums/:user_id", async (req: Request, res: Response) => {
+  const { user_id } = req.params;
+
+  if (!user_id) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
+
+  try {
+    const userAlbums = await dbClient
+      .select()
+      .from(albums)
+      .where(eq(albums.user_id, Number(user_id)))
+      .execute();
+
+    // Return an empty array if no albums are found
+    res.status(200).json(userAlbums);
+  } catch (error) {
+    console.error("Error fetching albums:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.delete("/api/album/:album_id", async (req: Request, res: Response) => {
+  const { album_id } = req.params;
+
+  if (!album_id) {
+    return res.status(400).json({ error: "Album ID is required" });
+  }
+
+  try {
+    const result = await dbClient
+      .delete(albums)
+      .where(eq(albums.album_id, Number(album_id)))
+      .execute();
+
+    res.status(200).json({ message: "Album deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting album:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/album/add_photo", async (req: Request, res: Response) => {
+  const { album_id, photo_id } = req.body;
+
+  if (!album_id || !photo_id) {
+    return res
+      .status(400)
+      .json({ error: "Album ID and Photo ID are required" });
+  }
+
+  try {
+    // Check if the photo is already in the album
+    const existingPhotoInAlbum = await dbClient
+      .select()
+      .from(photo_albums)
+      .where(
+        and(
+          eq(photo_albums.album_id, Number(album_id)),
+          eq(photo_albums.photo_id, Number(photo_id))
+        )
+      )
+      .execute();
+
+    if (existingPhotoInAlbum.length > 0) {
+      return res
+        .status(409)
+        .json({ error: "Photo already exists in this album" });
+    }
+
+    // If the photo is not in the album, insert it
+    await dbClient.insert(photo_albums).values({
+      photo_id: Number(photo_id),
+      album_id: Number(album_id),
+    });
+
+    res.status(200).json({ message: "Photo added to album successfully" });
+  } catch (error) {
+    console.error("Error adding photo to album:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/album/:album_id/photos", async (req: Request, res: Response) => {
+  const { album_id } = req.params;
+
+  console.log(album_id);
+
+  if (!album_id) {
+    return res.status(400).json({ error: "Album ID is required" });
+  }
+
+  try {
+    const albumPhotos = await dbClient
+      .select({
+        id: images.id,
+        path: images.path,
+        user_id: images.user_id,
+        price: images.price,
+        created_at: images.created_at,
+      })
+      .from(photo_albums)
+      .where(eq(photo_albums.album_id, Number(album_id)))
+      .innerJoin(images, eq(photo_albums.photo_id, images.id))
+      .execute();
+
+    if (albumPhotos.length === 0) {
+      return res.status(404).json({ message: "No photos found in this album" });
+    }
+
+    res.status(200).json(albumPhotos);
+  } catch (error) {
+    console.error("Error fetching album photos:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });

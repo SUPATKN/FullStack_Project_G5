@@ -1,1 +1,0 @@
-ALTER TABLE "likes" ADD CONSTRAINT "likes_photo_id_user_id_unique" UNIQUE("photo_id","user_id");

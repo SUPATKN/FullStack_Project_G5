@@ -111,3 +111,13 @@ export interface User {
   createdAt: Date;
   coin: number;
 }
+
+export interface Album {
+  album_id: number;
+  user_id: number;
+  title: string;
+  description: string;
+  password: string;
+  created_at: Date;
+  updated_at: Date;
+}
