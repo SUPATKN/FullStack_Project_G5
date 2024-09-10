@@ -4,19 +4,28 @@ import { Form, Button, Image, Alert } from "react-bootstrap";
 import Layout from "./Layout";
 import useAuth from "./hook/useAuth";
 
+interface Photo {
+  id: string;
+  user_id: string;
+  path: string;
+  price?: number;
+  title: string;
+  description: string;
+}
+
 const Upload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>("");
-  const [photos, setPhotos] = useState<
-    { id: string; path: string; user_id: string; price?: number }[]
-  >([]);
+  const [photos, setPhotos] = useState<Photo[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const { user, refetch } = useAuth();
 
-  // New state for free image and price
+  // New states for free image, price, title, and description
   const [isFree, setIsFree] = useState<boolean>(true);
   const [price, setPrice] = useState<number | "">(0);
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -37,11 +46,23 @@ const Upload = () => {
       return;
     }
 
+    if (title.trim() === "") {
+      setError("Please provide a title for the image.");
+      return;
+    }
+
+    if (description.trim() === "") {
+      setError("Please provide a description for the image.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("image", file);
     formData.append("user_id", user?.id?.toString() || "");
     formData.append("isFree", isFree.toString());
     formData.append("price", isFree ? "" : price.toString());
+    formData.append("title", title);
+    formData.append("description", description);
 
     try {
       await axios.post("/api/upload", formData, {
@@ -54,6 +75,8 @@ const Upload = () => {
       fetchImages();
       setSelectedImage("");
       setPrice(0); // Reset price after upload
+      setTitle("");
+      setDescription("");
     } catch (error) {
       console.error("Error uploading file:", error);
       setSuccess(null);
@@ -64,7 +87,14 @@ const Upload = () => {
   const fetchImages = async () => {
     try {
       const { data } = await axios.get<
-        { id: string; path: string; user_id: string; price?: number }[]
+        {
+          id: string;
+          path: string;
+          user_id: string;
+          price?: number;
+          title: string;
+          description: string;
+        }[]
       >("/api/photo");
       setPhotos(data);
     } catch (error) {
@@ -109,6 +139,27 @@ const Upload = () => {
             />
           </div>
         )}
+        <Form.Group controlId="formTitle" className="mb-3">
+          <Form.Label>Title</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            data-cy="title-input"
+          />
+        </Form.Group>
+        <Form.Group controlId="formDescription" className="mb-3">
+          <Form.Label>Description</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            placeholder="Enter description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            data-cy="description-input"
+          />
+        </Form.Group>
         <Form.Group controlId="formIsFree" className="mb-3">
           <Form.Check
             type="checkbox"
@@ -125,6 +176,7 @@ const Upload = () => {
               placeholder="Enter price"
               value={price}
               onChange={(e) => setPrice(Number(e.target.value))}
+              data-cy="price-input"
             />
           </Form.Group>
         )}
@@ -146,34 +198,6 @@ const Upload = () => {
           {success}
         </Alert>
       )}
-      {/* Uncomment and adjust the following if you have a deletion feature */}
-      {/* <h3 className="my-4">Uploaded Images</h3>
-      <Row>
-        {photos
-          .filter((photo) => photo.user_id === user?.id?.toString())
-          .map((photo) => (
-            <Col key={photo.id} xs={12} md={4} lg={3} className="mb-4">
-              <div className="position-relative">
-                <Image
-                  crossOrigin="anonymous"
-                  src={`/api/${photo.path}`}
-                  alt={`Image ${photo.id}`}
-                  thumbnail
-                  className="w-100"
-                  data-cy={`photo-${photo.id}`}
-                />
-                <Button
-                  variant="danger"
-                  className="position-absolute top-0 end-0 m-2"
-                  onClick={() => handleDelete(photo.path.split("/").pop()!)}
-                  data-cy={`delete-button-${photo.id}`}
-                >
-                  Delete
-                </Button>
-              </div>
-            </Col>
-          ))}
-      </Row> */}
     </Layout>
   );
 };

@@ -157,6 +157,7 @@ const Profile: React.FC = () => {
       navigate("/purchased-photos", { state: { userId: user.id } });
     }
   };
+  console.log(user?.avatarURL);
 
   return (
     <Layout>

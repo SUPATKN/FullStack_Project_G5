@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import Logo from "./LogoPreflight.png";
@@ -7,27 +7,9 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import axios from "axios";
 import useAuth from "./hook/useAuth";
 
-// interface User {
-//   id: number;
-//   username: string;
-//   email: string;
-// }
-
-// interface NavBarProps {
-//   user: User | null;
-// }
-
 const NavBar: React.FC = () => {
   const { user, refetch } = useAuth();
 
-  // const [coin, setCoin] = useState<number>(0);
-
-  // useEffect(() => {
-  //   if (user) {
-  //     setCoin(user.coin);
-  //     console.log(user);
-  //   }
-  // }, [user]);
   const handleLogout = async () => {
     try {
       await axios.get("/api/logout"); // ส่ง request ไปที่ backend เพื่อ logout

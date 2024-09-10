@@ -937,3 +937,32 @@ a:hover {
 .custom-margin {
   margin-right: 10px;
 }
+
+/* เพิ่มไปที่ไฟล์ CSS ของคุณ */
+.username-clickable {
+  cursor: pointer;
+}
+.username-clickable:hover {
+  color: #0056b3; /* เปลี่ยนสีเมื่อ hover */
+}
+
+.custom-comment-box {
+  width: 20%; /* Adjust the width as needed */
+  height: 30px; /* Adjust the height as needed */
+}
+
+.centered-links {
+  text-align: center;
+  margin-top: 20px;
+}
+.centered-links a {
+  text-decoration: none;
+  color: blue;
+  margin: 0 10px;
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+.centered-links a:hover {
+  color: darkblue;
+  cursor: pointer;
+}

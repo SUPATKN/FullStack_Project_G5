@@ -100,10 +100,6 @@ app.use("/api/slip", express.static(path.join(__dirname, "../slips")));
 
 
 
-
-
-
-
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
@@ -191,42 +187,16 @@ app.get(
   }
 );
 
-// app.get("/api/profile", async (req: Request, res: Response) => {
-//   // Check if session is available
-//   if (!req.session || !req.session.user) {
-//     return res.status(401).json({ error: "User not authenticated" });
-//   }
-
-//   const userId = req.session.user.id;
-
-//   try {
-//     const user = await dbClient.query.users.findFirst({
-//       where: eq(users.id, userId),
-//     });
-
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
-
-//     res.status(200).json({
-//       id: user.id,
-//       username: user.username,
-//       email: user.email,
-//     });
-//   } catch (error) {
-//     console.error("Error retrieving user profile:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
 app.post(
   "/api/upload",
   upload.single("image"),
   async (req: Request, res: Response) => {
     const filePath = `/images/${req.file?.filename}`;
     const userId = req.body.user_id;
-    const isFree = req.body.isFree === "true"; // รับค่าเป็น string แล้วเปลี่ยนเป็น boolean
-    const price = isFree ? 0 : parseInt(req.body.price, 10) || 0; // กำหนดราคาเป็น 0 หากฟรี
+    const isFree = req.body.isFree === "true"; // Convert string to boolean
+    const price = isFree ? 0 : parseInt(req.body.price, 10) || 0; // Default to 0 if free
+    const title = req.body.title || ""; // Default to empty string if not provided
+    const description = req.body.description || ""; // Default to empty string if not provided
 
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
@@ -240,10 +210,12 @@ app.post(
           user_id: Number(userId),
           price: price,
           created_at: new Date(),
+          title: title,
+          description: description
         })
         .returning({ id: images.id, path: images.path });
 
-      res.json({ filePath });
+      res.json({ filePath, id: result[0].id });
     } catch (error) {
       console.error("Error saving file path to the database:", error);
       res.status(500).json({ error: "Internal Server Error" });
@@ -459,6 +431,30 @@ app.post("/api/comments", async (req: Request, res: Response) => {
     res.status(201).json({ message: "Like added successfully" });
   } catch (error) {
     console.error("Error adding like:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// delete comment
+app.delete("/api/deletecomment", async (req: Request, res: Response) => {
+  const { photo_id, user_id } = req.body;
+
+  if (!photo_id || !user_id) {
+    return res.status(400).json({ error: "Photo ID and User ID are required" });
+  }
+
+  try {
+    await dbClient
+      .delete(comments)
+      .where(
+        and(
+          eq(comments.photo_id, Number(photo_id)),
+          eq(comments.user_id, Number(user_id))
+        )
+      );
+    res.status(200).json({ message: "comment deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting like:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -1309,7 +1305,7 @@ app.post("/api/slips/approve/:slipId", async (req: Request, res: Response) => {
         coins: slip.coins,
         price: slip.amount,
         status: "Approved", 
-        created_at: new Date(), 
+        create_at: new Date(), 
       })
       .execute();
 
@@ -1373,7 +1369,7 @@ app.post("/api/slips/reject/:slipId", async (req: Request, res: Response) => {
         coins: slip.coins,
         price: slip.amount, // Assuming slip.amount corresponds to the price
         status: "Rejected",
-        created_at: new Date(), // or use timestamp if preferred
+        create_at: new Date(), // or use timestamp if preferred
       })
       .execute();
 
@@ -1409,6 +1405,29 @@ app.get('/api/orders/history', async (req: Request, res: Response) => {
       .execute();
 
     res.status(200).json(ordersHistory);
+  } catch (error) {
+    console.error('Error fetching order history:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/api/transactions', async (req: Request, res: Response) => {
+  try {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    // ดึงรายการคำสั่งซื้อของผู้ใช้จากฐานข้อมูล
+    const transections = await dbClient
+      .select()
+      .from(coin_transactions)
+      .where(eq(coin_transactions.user_id,Number(user_id)))
+      .orderBy((coin_transactions.created_at))
+      .execute();
+
+    res.status(200).json(transections);
   } catch (error) {
     console.error('Error fetching order history:', error);
     res.status(500).json({ error: 'Internal Server Error' });
