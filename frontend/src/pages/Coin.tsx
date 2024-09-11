@@ -4,7 +4,7 @@ import Layout from "../Layout";
 import "../global.css";
 import Logo from "../Logowithbg.png";
 import CoinCard from "./CoinCard";
-import useAuth from "./hook/useAuth";
+import useAuth from "../hook/useAuth";
 
 const Coin = () => {
   const [selectedPrice, setSelectedPrice] = useState<number | null>(null);

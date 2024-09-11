@@ -2,6 +2,7 @@ import React, { FC, useState } from "react";
 import axios from "axios";
 import Layout from "../../Layout";
 import { useNavigate, useLocation } from "react-router-dom";
+import useAuth from "../../hook/useAuth";
 
 const Login: FC = () => {
   const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ const Login: FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, refetch } = useAuth();
 
   // Handle query parameters from URL
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
@@ -40,7 +42,14 @@ const Login: FC = () => {
       const response = await axios.post("/api/login", { email, password });
 
       if (response.status === 200) {
-        navigate("/");
+        // เรียก refetch เพื่ออัพเดตข้อมูลผู้ใช้หลังจากการล็อกอินเสร็จ
+        const { data: updatedAuth } = await refetch(); // ดึงข้อมูล user ใหม่จาก refetch
+
+        if (updatedAuth?.user?.isAdmin) {
+          navigate("/profileadmin");
+        } else {
+          navigate("/");
+        }
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
