@@ -7,6 +7,7 @@ import useAuth from "../../hook/useAuth";
 import { User, Album } from "../../types/api";
 import CreateAlbumForm from "./CreateAlbumForm"; // นำเข้าฟอร์ม
 import SelectAlbumModal from "../../components/SelectAlbumModal"; // Import modal component
+import "../global.css";
 
 interface Photo {
   id: string;
@@ -45,6 +46,7 @@ const Profile: React.FC = () => {
 
   const [showSelectAlbumModal, setShowSelectAlbumModal] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState<string>("");
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const navigate = useNavigate(); // For navigation
 
@@ -244,7 +246,151 @@ const Profile: React.FC = () => {
       navigate("/purchased-photos", { state: { userId: user.id } });
     }
   };
-  console.log(user?.avatarURL);
+
+  const handleExportAlbum = async (albumId: string) => {
+    try {
+      const album = albums.find((a) => a.album_id.toString() === albumId);
+      if (!album) {
+        alert("Album not found.");
+        return;
+      }
+
+      const albumPhotos = albumPhotosMap[albumId];
+      if (!albumPhotos || albumPhotos.length === 0) {
+        alert("No photos to export in this album.");
+        return;
+      }
+
+      // สร้าง canvas และกำหนดขนาด
+      const canvas = document.createElement("canvas");
+      const canvasWidth = 1080; // ความกว้างของ canvas
+      const canvasHeight = 1920; // ความสูงของ canvas
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        console.error("Failed to get canvas context.");
+        return;
+      }
+
+      // กำหนดพื้นหลังเป็นสีเทาอ่อน
+      ctx.fillStyle = "#b9b9b9b9"; // สีพื้นหลัง
+      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+      // วาดชื่อ album และชื่อ user ที่ด้านบนของ canvas
+      ctx.fillStyle = "#000"; // สีข้อความเป็นสีดำ
+      ctx.font = "bold 36px 'Press Start 2P', cursive"; // ใช้ฟอนต์พิกเซลสำหรับชื่อ album
+      ctx.textAlign = "center";
+      ctx.fillText(`${album.title}`, canvasWidth / 2, 50); // วาดชื่อ album
+
+      ctx.font = "28px Arial"; // ขนาดฟอนต์ใหญ่ขึ้นสำหรับชื่อ user
+      ctx.fillText(`${user?.username || "Unknown"}`, canvasWidth / 2, 90); // วาดชื่อ user
+      ctx.font = "60px Arial";
+
+      ctx.fillText(
+        `----------------------------------------------------`,
+        canvasWidth / 2,
+        150
+      );
+
+      // กำหนดขนาดของ container แบบคงที่
+      const containerWidth = 500; // ความกว้างของ container
+      const containerHeight = 500; // ความสูงของ container
+      const padding = 20; // ระยะห่างระหว่าง container
+
+      // กำหนดตำแหน่งที่แน่นอนสำหรับรูปภาพ
+      const positions = [
+        { x: padding, y: 100 + padding }, // ตำแหน่งของภาพที่ 1
+        { x: padding + containerWidth + padding, y: 100 + padding }, // ตำแหน่งของภาพที่ 2
+        { x: padding, y: 100 + padding + containerHeight + padding }, // ตำแหน่งของภาพที่ 3
+        {
+          x: padding + containerWidth + padding,
+          y: 100 + padding + containerHeight + padding,
+        }, // ตำแหน่งของภาพที่ 4
+        { x: padding, y: 100 + 2 * (containerHeight + padding) }, // ตำแหน่งของภาพที่ 5
+        {
+          x: padding + containerWidth + padding,
+          y: 100 + 2 * (containerHeight + padding),
+        }, // ตำแหน่งของภาพที่ 6
+      ];
+
+      await Promise.all(
+        albumPhotos.slice(0, 6).map(async (photo, i) => {
+          try {
+            // ดึงภาพจาก server
+            const response = await fetch(`/api/${photo.path}`);
+            const blob = await response.blob();
+            const imageBitmap = await createImageBitmap(blob);
+
+            // คำนวณขนาดภาพเพื่อให้พอดีกับ container แบบคงที่
+            const scale = Math.min(
+              containerWidth / imageBitmap.width,
+              containerHeight / imageBitmap.height
+            );
+            const width = imageBitmap.width * scale;
+            const height = imageBitmap.height * scale;
+
+            // คำนวณตำแหน่งของภาพให้แสดงได้พอดี
+            const offsetX = (containerWidth - width) / 2;
+            const offsetY = (containerHeight - height) / 2;
+
+            // ตำแหน่งของภาพ
+            const pos = positions[i];
+
+            // วาดภาพใน container
+            ctx.drawImage(
+              imageBitmap,
+              pos.x + offsetX,
+              pos.y + offsetY,
+              width,
+              height
+            );
+          } catch (error) {
+            console.error(
+              `Failed to fetch or render image: ${photo.path}`,
+              error
+            );
+          }
+        })
+      );
+
+      // ดึงวันที่และเวลาปัจจุบัน
+      const now = new Date();
+      const date = now.toLocaleDateString(); // วันที่ในรูปแบบท้องถิ่น
+      const time = now.toLocaleTimeString(); // เวลาปัจจุบันในรูปแบบท้องถิ่น
+
+      // แสดงวันที่, เวลา, และเวลาที่ใช้ในการสร้าง canvas
+      ctx.fillStyle = "#000"; // สีข้อความเป็นสีดำ
+      ctx.font = "24px Arial"; // ขนาดฟอนต์ใหญ่ขึ้นสำหรับข้อมูลเวลา
+      ctx.textAlign = "center";
+      ctx.fillText(`Date: ${date}`, canvasWidth / 2, canvasHeight - 120); // แสดงวันที่
+      ctx.fillText(`Time: ${time}`, canvasWidth / 2, canvasHeight - 90); // แสดงเวลา
+
+      ctx.font = "60px Arial";
+
+      ctx.fillText(
+        `----------------------------------------------------`,
+        canvasWidth / 2,
+        canvasHeight - 40
+      );
+
+      // สร้าง URL ของภาพที่ได้จาก canvas
+      const previewUrl = canvas.toDataURL("image/png");
+      setPreviewImage(previewUrl);
+    } catch (error) {
+      console.error("Error exporting album:", error);
+    }
+  };
+
+  const handleDownload = () => {
+    if (previewImage) {
+      const link = document.createElement("a");
+      link.download = "album-preview.png";
+      link.href = previewImage;
+      link.click();
+    }
+  };
 
   return (
     <Layout>
@@ -408,9 +554,16 @@ const Profile: React.FC = () => {
           >
             View Photos
           </Button>
+          {/* เพิ่มปุ่ม Export Album */}
+          <Button
+            variant="success"
+            onClick={() => handleExportAlbum(album.album_id.toString())} // เรียกฟังก์ชันสำหรับ export
+            className="ms-2"
+          >
+            Export Album
+          </Button>
           <div className="mt-3">
             {albumPhotosMap[album.album_id]?.map((photo) => {
-              console.log("Photo object:", photo); // Debug log
               return (
                 <div key={photo.id} className="m-2">
                   <Image
@@ -418,14 +571,8 @@ const Profile: React.FC = () => {
                     thumbnail
                     width={100}
                     height={100}
-                    onClick={() => {
-                      console.log(`Photo clicked: ${photo.id}`); // Debug log
-                      handlePhotoClick(photo.id);
-                    }}
-                    onContextMenu={(e) => {
-                      console.log(`Context menu opened: ${photo.id}`); // Debug log
-                      handlePhotoContextMenu(e, photo.id);
-                    }}
+                    onClick={() => handlePhotoClick(photo.id)}
+                    onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
                     style={{ cursor: "pointer" }}
                   />
                 </div>
@@ -441,6 +588,17 @@ const Profile: React.FC = () => {
           photo_id={selectedPhotoId}
           onClose={() => setShowSelectAlbumModal(false)}
         />
+      )}
+      {previewImage && (
+        <div>
+          <h3>Album Preview:</h3>
+          <img
+            src={previewImage}
+            alt="Album Preview"
+            style={{ maxWidth: "100%", maxHeight: "500px" }}
+          />
+          <Button onClick={handleDownload}>Download Preview</Button>
+        </div>
       )}
     </Layout>
   );
