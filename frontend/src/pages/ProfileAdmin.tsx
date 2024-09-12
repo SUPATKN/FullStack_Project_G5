@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Spinner, Alert, Image, Modal } from "react-bootstrap";
+import { Button, Spinner, Alert, Image, Modal } from "react-bootstrap";
 import Layout from "../Layout";
 import { useNavigate } from "react-router-dom";
 import { Bar } from "react-chartjs-2";
@@ -90,8 +90,7 @@ const Admin = () => {
   const [selectedSlip, setSelectedSlip] = useState<Slip | null>(null);
   const [showPhotoModal, setShowPhotoModal] = useState<boolean>(false);
   const [showSlipModal, setShowSlipModal] = useState<boolean>(false);
-  const [showOrderHistoryModal, setShowOrderHistoryModal] =
-    useState<boolean>(false);
+  const [showOrderHistoryModal, setShowOrderHistoryModal] =useState<boolean>(false);
   const [showTransactionsModal, setShowTransactionsModal] =
     useState<boolean>(false);
   const [selectedUserName, setSelectedUserName] = useState<string | null>(null);
@@ -321,6 +320,18 @@ const Admin = () => {
     4
   );
 
+    // useEffect(() => {
+    //   if (showTransactionsModal) {
+    //     document.body.classList.add("overflow-hidden");
+    //   } else {
+    //     document.body.classList.remove("overflow-hidden");
+    //   }
+  
+    //   return () => {
+    //     document.body.classList.remove("overflow-hidden");
+    //   };
+    // }, [showTransactionsModal]);
+
   return (
     <Layout>
       <h2 className="flex items-center justify-center text-[24px] text-black">ADMIN DASHBOARD</h2>
@@ -366,7 +377,7 @@ const Admin = () => {
               <tbody>
                 {slips.map((slip) => (
                   <tr key={slip.slip_id} className="text-center">
-                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap rounded-tl-lg">
                       {slip.slip_id}
                     </td>
                     <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap">
@@ -393,7 +404,7 @@ const Admin = () => {
                           className="cursor-pointer"
                         />
                     </td>
-                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap rounded-tr-lg">
                       <Button
                           variant="success"
                           className="custom-margin"
@@ -432,7 +443,7 @@ const Admin = () => {
                   <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
                     Email
                   </th>
-                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap rounded-tr-lg">
                     Profile
                   </th>
                 </tr>
@@ -440,7 +451,7 @@ const Admin = () => {
               <tbody>
                 {users.map((user) => (
                   <tr key={user.id} className="text-center">
-                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tl-lg">
                       {user.id}
                     </td>
                     <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
@@ -449,13 +460,13 @@ const Admin = () => {
                     <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
                       {user.email}
                     </td>
-                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tr-lg">
                       <button
-                          className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
-                          onClick={() => handleUsernameClick(user.id.toString())}
-                        >
-                          View Profile
-                        </button>
+                        className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
+                        onClick={() => handleUsernameClick(user.id.toString())}
+                      >
+                        View Profile
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -480,7 +491,7 @@ const Admin = () => {
                   <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
                     Photo
                   </th>
-                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap rounded-tr-lg">
                     Price
                   </th>
                 </tr>
@@ -488,7 +499,7 @@ const Admin = () => {
               <tbody>
                 {photos.map((photo) => (
                   <tr key={photo.id} className="text-center">
-                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tl-lg">
                       {photo.id}
                     </td>
                     <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
@@ -506,7 +517,7 @@ const Admin = () => {
                           className="cursor-pointer"
                         />
                     </td>
-                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tr-lg">
                       {photo.price}
                     </td>
                   </tr>
@@ -595,7 +606,7 @@ const Admin = () => {
                   <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
                     Email
                   </th>
-                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap rounded-tr-lg">
                     Actions
                   </th>
                 </tr>
@@ -603,7 +614,7 @@ const Admin = () => {
               <tbody>
                 {users.map((user) => (
                   <tr key={user.id} className="text-center">
-                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tl-lg">
                       {user.id}
                     </td>
                     <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
@@ -612,7 +623,7 @@ const Admin = () => {
                     <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
                       {user.email}
                     </td>
-                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tr-lg">
                       <button
                           className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
                           onClick={() =>handleShowOrderHistory(user.id, user.username)}
@@ -644,7 +655,7 @@ const Admin = () => {
                   <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
                     Email
                   </th>
-                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap rounded-tr-lg">
                     Actions
                   </th>
                 </tr>
@@ -652,7 +663,7 @@ const Admin = () => {
               <tbody>
                 {users.map((user) => (
                   <tr key={user.id} className="text-center">
-                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tl-lg">
                       {user.id}
                     </td>
                     <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
@@ -661,7 +672,7 @@ const Admin = () => {
                     <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
                       {user.email}
                     </td>
-                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tr-lg">
                       <button
                           className="bg-[#ff8833] text-white w-[200px] h-[30px] rounded-md"
                           onClick={() =>handleShowTransactions(user.id, user.username)}
@@ -676,104 +687,140 @@ const Admin = () => {
           </div>
 
           {/* Order Transactions Modal */}
-          {selectedUserName && (
-            <Modal
-              show={showTransactionsModal}
-              onHide={() => setShowTransactionsModal(false)}
-            >
-              <Modal.Header closeButton>
-                <Modal.Title>
+          {showTransactionsModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ">
+            <div className="bg-white p-5 h-[600px] w-[700px] rounded-md shadow-md border">
+              <div className="flex items-center justify-between">
+                <h2 className="text-black text-[24px] font-medium ml-5">
                   Transactions History for{" "}
                   <span style={{ color: "green" }}>{selectedUserName}</span>
-                </Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Table striped bordered hover>
+                </h2>
+                <button
+                  onClick={() => setShowTransactionsModal(false)}
+                  className="p-2 bg-red-700 text-white rounded-md"
+                >
+                  Close
+                </button>
+              </div>
+              <div className="overflow-hidden rounded-lg border shadow-md bg-white mt-4">
+                <table className="table-auto mx-auto w-[600px] border-collapse">
                   <thead>
-                    <tr>
-                      <th>USER ID</th>
-                      <th>Price</th>
-                      <th>Type</th>
-                      <th>Descriptions</th>
-                      <th>Created At</th>
+                    <tr className="text-center">
+                      <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap rounded-tl-[8px]">
+                        USER ID
+                      </th>
+                      <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap">
+                        Price
+                      </th>
+                      <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap">
+                        Type
+                      </th>
+                      <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap">
+                        Descriptions
+                      </th>
+                      <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap rounded-tr-[8px]">
+                        Created At
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {Transactions.map((trans) => (
-                      <tr key={trans.user_id}>
-                        <td>{trans.user_id}</td>
-                        <td>{trans.amount}</td>
-                        <td>{trans.transaction_type}</td>
-                        <td>{trans.description}</td>
-                        <td>{new Date(trans.created_at).toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowTransactionsModal(false)}
-                >
-                  Close
-                </Button>
-              </Modal.Footer>
-            </Modal>
-          )}
-
-          {/* Order History Modal */}
-          {selectedUserName && (
-            <Modal
-              show={showOrderHistoryModal}
-              onHide={() => setShowOrderHistoryModal(false)}
-            >
-              <Modal.Header closeButton>
-                <Modal.Title>
-                  Order History for{" "}
-                  <span style={{ color: "green" }}>{selectedUserName}</span>
-                </Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Table striped bordered hover>
-                  <thead>
-                    <tr>
-                      <th>History Order ID</th>
-                      <th>Price</th>
-                      <th>Coins</th>
-                      <th>Status</th>
-                      <th>Created At</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orderHistory.map((order_history) => (
-                      <tr key={order_history.history_id}>
-                        <td>{order_history.history_id}</td>
-                        <td>{order_history.price}</td>
-                        <td>{order_history.coins}</td>
-                        <td>{order_history.status}</td>
-                        <td>
-                          {new Date(order_history.create_at).toLocaleString()}
+                      <tr key={trans.user_id} className="text-center">
+                        <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap rounded-tl-lg">
+                          {trans.user_id}
+                        </td>
+                        <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap">
+                          {trans.amount}
+                        </td>
+                        <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap">
+                          {trans.transaction_type}
+                        </td>
+                        <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap">
+                          {trans.description}
+                        </td>
+                        <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap rounded-tr-lg">
+                          {new Date(trans.created_at).toLocaleString()}
                         </td>
                       </tr>
                     ))}
                   </tbody>
-                </Table>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowOrderHistoryModal(false)}
-                >
-                  Close
-                </Button>
-              </Modal.Footer>
-            </Modal>
+                </table>
+              </div>
+            </div>
+          </div>
           )}
+
+
+
+
+          {/* Order History Modal */}
+          {showOrderHistoryModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-5 h-[600px] w-[700px] rounded-md shadow-md border">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-black text-[24px] font-medium ml-5">
+                    Order History for{" "}
+                    <span style={{ color: "green" }}>{selectedUserName}</span>
+                  </h2>
+                  <button
+                    onClick={() => setShowOrderHistoryModal(false)}
+                    className="p-2 bg-red-700 text-white rounded-md"
+                  >
+                    Close
+                  </button>
+                </div>
+                <div className="overflow-hidden rounded-lg border shadow-md bg-white mt-4">
+                  <table className="table-auto mx-auto w-[600px] border-collapse">
+                    <thead>
+                      <tr className="text-center">
+                        <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px] whitespace-nowrap rounded-tl-[8px]">
+                          History Order ID
+                        </th>
+                        <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px] whitespace-nowrap">
+                          Price
+                        </th>
+                        <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px] whitespace-nowrap">
+                          Coins
+                        </th>
+                        <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px] whitespace-nowrap">
+                          Status
+                        </th>
+                        <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px] whitespace-nowrap rounded-tr-[8px]">
+                          Created At
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orderHistory.map((order) => (
+                        <tr key={order.history_id} className="text-center">
+                          <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap rounded-tl-lg">
+                            {order.history_id}
+                          </td>
+                          <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap">
+                            {order.price}
+                          </td>
+                          <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap">
+                            {order.coins}
+                          </td>
+                          <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap">
+                            {order.status}
+                          </td>
+                          <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap rounded-tr-lg">
+                            {new Date(order.create_at).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
 
           {selectedPhoto && (
             <Modal show={showPhotoModal} onHide={handleClosePhotoModal}>
-              <Modal.Header closeButton>
+              <Modal.Header closeButton onClick={handleClosePhotoModal}>
                 <Modal.Title className="frontsize-15px">
                   <span style={{ fontSize: "18px" }}>Title: </span>
                   <span style={{ color: "green", fontSize: "18px" }}>
@@ -803,17 +850,17 @@ const Admin = () => {
                   </div>
                 </div>
               </Modal.Body>
-              <Modal.Footer>
+              {/* <Modal.Footer>
                 <Button variant="secondary" onClick={handleClosePhotoModal}>
                   Close
                 </Button>
-              </Modal.Footer>
+              </Modal.Footer> */}
             </Modal>
           )}
 
           {selectedSlip && (
             <Modal show={showSlipModal} onHide={handleCloseSlipModal}>
-              <Modal.Header closeButton>
+              <Modal.Header closeButton onClick={handleCloseSlipModal}>
                 <Modal.Title>Slip {selectedSlip.slip_id}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
@@ -824,11 +871,11 @@ const Admin = () => {
                   fluid
                 />
               </Modal.Body>
-              <Modal.Footer>
+              {/* <Modal.Footer>
                 <Button variant="secondary" onClick={handleCloseSlipModal}>
                   Close
                 </Button>
-              </Modal.Footer>
+              </Modal.Footer> */}
             </Modal>
           )}
         </div>
