@@ -34,3 +34,19 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+docker compose -f docker-compose-backend.yml --env-file ./.env.test up -d --force-recreate --build
+docker compose --env-file ./.env.test up -d --force-recreate --build
+npm run db:generate
+เปิด cmd
+    docker exec -it pf-img-db bash
+    psql -U postgres -d mydb
+        REVOKE CONNECT ON DATABASE mydb FROM public;
+        REVOKE ALL ON SCHEMA public FROM PUBLIC;
+        CREATE USER appuser WITH PASSWORD '1234';
+        CREATE SCHEMA drizzle;
+        GRANT ALL ON DATABASE mydb TO appuser;
+        GRANT ALL ON SCHEMA public TO appuser;
+        GRANT ALL ON SCHEMA drizzle TO appuser;
+npm run db:push
+npm run db:reset

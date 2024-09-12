@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Table, Button, Spinner, Alert, Image, Modal } from "react-bootstrap";
 import Layout from "../Layout";
 import { useNavigate } from "react-router-dom";
 import { Bar } from "react-chartjs-2";
+import { Hexagon } from 'lucide-react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -322,129 +323,192 @@ const Admin = () => {
 
   return (
     <Layout>
-      <h2>Admin Dashboard</h2>
+      <h2 className="flex items-center justify-center text-[24px] text-[#ff8833]">ADMIN DASHBOARD</h2>
       {loading ? (
         <Spinner animation="border" />
+        
       ) : error ? (
         <Alert variant="danger">{error}</Alert>
       ) : (
+
         <div>
-          <h4 className="mt-4">Payment Slips</h4>
-          <Table striped bordered hover>
+          <h4 className="mt-4 flex items-center text-black">
+            <Hexagon className="text-black w-10 h-10 mr-2"/>
+            Payment Slips
+          </h4>
+          <table className="table-auto mx-auto w-[1296px] border-collapse">
             <thead>
-              <tr>
-                <th>Slip ID</th>
-                <th>User ID</th>
-                <th>Amount</th>
-                <th>Coins</th>
-                <th>Status</th>
-                <th>Slip Image</th>
-                <th>Actions</th>
+              <tr className="text-center">
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap rounded-tl-[8px]">
+                  Slip ID
+                </th>
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[180px] whitespace-nowrap ">
+                  User ID
+                </th>
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap ">
+                  Amount
+                </th>
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap ">
+                  Coins
+                </th>
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap ">
+                  Status
+                </th>
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[190px] whitespace-nowrap ">
+                  Slip Image
+                </th>
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap rounded-tr-[8px]">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
               {slips.map((slip) => (
-                <tr key={slip.slip_id}>
-                  <td>{slip.slip_id}</td>
-                  <td>{slip.user_id}</td>
-                  <td>{slip.amount}</td>
-                  <td>{slip.coins}</td>
-                  <td>{slip.status}</td>
-                  <td>
-                    <Image
-                      crossOrigin="anonymous"
-                      src={`/api/slip/${slip.slip_path}`} // Updated path to match public directory
-                      alt={`Slip ${slip.slip_id}`}
-                      thumbnail
-                      width={100}
-                      height={100}
-                      onClick={() => handleShowSlip(slip)}
-                      style={{ cursor: "pointer" }}
-                    />
+                <tr key={slip.slip_id} className="text-center">
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
+                    {slip.slip_id}
                   </td>
-                  <td>
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
+                    {slip.user_id}
+                  </td>
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
+                    {slip.amount}
+                  </td>
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
+                    {slip.coins}
+                  </td>
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
+                    {slip.status}
+                  </td>
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
+                    <Image
+                        crossOrigin="anonymous"
+                        src={`/api/slip/${slip.slip_path}`}
+                        alt={`Slip ${slip.slip_id}`}
+                        thumbnail
+                        width={100}
+                        height={100}
+                        onClick={() => handleShowSlip(slip)}
+                        className="cursor-pointer"
+                      />
+                  </td>
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
                     <Button
-                      variant="success"
-                      className="custom-margin"
-                      onClick={() => handleApproveSlip(slip.slip_id)}
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      variant="danger"
-                      className="custom-margin"
-                      onClick={() => handleRejectSlip(slip.slip_id)}
-                    >
-                      Reject
-                    </Button>
+                        variant="success"
+                        className="custom-margin"
+                        onClick={() => handleApproveSlip(slip.slip_id)}
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        variant="danger"
+                        className="custom-margin"
+                        onClick={() => handleRejectSlip(slip.slip_id)}
+                      >
+                        Reject
+                      </Button>
                   </td>
                 </tr>
               ))}
             </tbody>
-          </Table>
+          </table>
 
-          <h4>Users</h4>
-          <Table striped bordered hover>
+          <h4 className="mt-4 flex items-center text-black">
+            <Hexagon className="text-black w-10 h-10 mr-2"/>
+            Users
+          </h4>
+          <table className="table-auto mx-auto w-[1296px] border-collapse">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Profile</th>
+              <tr className="text-center">
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
+                  ID
+                </th>
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                  Username
+                </th>
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                  Email
+                </th>
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                  Profile
+                </th>
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-                  <td>
+                <tr key={user.id} className="text-center">
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
+                    {user.id}
+                  </td>
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
+                    {user.username}
+                  </td>
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
+                    {user.email}
+                  </td>
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
                     <button
-                      onClick={() => handleUsernameClick(user.id.toString())}
-                    >
-                      View Profile
-                    </button>
-                  </td>{" "}
+                        className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
+                        onClick={() => handleUsernameClick(user.id.toString())}
+                      >
+                        View Profile
+                      </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
-          </Table>
-
-          <h4 className="mt-4">User Photos</h4>
-          <Table striped bordered hover>
+          </table>
+          
+          <h4 className="mt-4 flex items-center text-black">
+            <Hexagon className="text-black w-10 h-10 mr-2"/>
+            User Photos
+          </h4>
+          <table className="table-auto mx-auto w-[1296px] border-collapse">
             <thead>
-              <tr>
-                <th>Photo ID</th>
-                <th>User ID</th>
-                <th>Photo</th>
-                <th>Price</th>
+              <tr className="text-center">
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
+                  Photo ID
+                </th>
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                  User ID
+                </th>
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                  Photo
+                </th>
+                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                  Price
+                </th>
               </tr>
             </thead>
             <tbody>
               {photos.map((photo) => (
-                <tr key={photo.id}>
-                  <td>{photo.id}</td>
-                  <td>{photo.user_id}</td>
-
-                  <td>
-                    <Image
-                      crossOrigin="anonymous"
-                      src={`/api/${photo.path}`}
-                      alt={`Image ${photo.id}`}
-                      thumbnail
-                      width={100}
-                      height={100}
-                      onClick={() => handleShowPhoto(photo)}
-                      style={{ cursor: "pointer" }}
-                    />
+                <tr key={photo.id} className="text-center">
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
+                    {photo.id}
                   </td>
-                  <td>{photo.price}</td>
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
+                    {photo.user_id}
+                  </td>
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
+                    <Image
+                        crossOrigin="anonymous"
+                        src={`/api/${photo.path}`}
+                        alt={`Image ${photo.id}`}
+                        thumbnail
+                        width={100}
+                        height={100}
+                        onClick={() => handleShowPhoto(photo)}
+                        className="cursor-pointer flex items-center justify-center"
+                      />
+                  </td>
+                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
+                    {photo.price}
+                  </td>
                 </tr>
               ))}
             </tbody>
-          </Table>
-
+          </table>
+      
           {/* <h4 className="mt-4">User Stats</h4>
           <Table striped bordered hover>
             <thead>

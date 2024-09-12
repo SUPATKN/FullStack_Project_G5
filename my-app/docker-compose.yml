@@ -1,3 +1,23 @@
+# name: img-upload
+# services:
+#   postgres:
+#     image: postgres:16-alpine
+#     container_name: pf-img-db
+#     ports:
+#       - 5432:${POSTGRES_PORT}
+#     volumes:
+#       - pf-data:/var/lib/postgresql/data
+#     environment:
+#       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#       - POSTGRES_USER=${POSTGRES_USER}
+#       - POSTGRES_DB=${POSTGRES_DB}
+#     networks:
+#       - pf-net
+# volumes:
+#   pf-data:
+# networks:
+#   pf-net:
+
 name: img-upload
 services:
   postgres:
@@ -12,8 +32,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_DB=${POSTGRES_DB}
     networks:
-      - pf-net
+      - img-upload_pf-net
 volumes:
   pf-data:
 networks:
-  pf-net:
+   img-upload_pf-net:

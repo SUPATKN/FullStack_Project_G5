@@ -1,5 +1,7 @@
 import { defineConfig, HttpProxy, ProxyOptions } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
 
 const configureFn = (proxy: HttpProxy.Server, _options: ProxyOptions) => {
   proxy.on("error", (err, _req, _res) => {
@@ -20,6 +22,11 @@ const configureFn = (proxy: HttpProxy.Server, _options: ProxyOptions) => {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  css: {
+    postcss: {
+      plugins: [tailwindcss(), autoprefixer()],
+    },
+  },
   server: {
     port: 5899,
     proxy: {
