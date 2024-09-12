@@ -394,7 +394,7 @@ const Profile: React.FC = () => {
 
   return (
     <Layout>
-      <div>
+      <div className="flex flex-col items-center justify-center">
         {/* profile */}
         <h2>Profile</h2>
         <div className="mt-3">
@@ -420,7 +420,7 @@ const Profile: React.FC = () => {
           <p>{error}</p>
         ) : (
           user && (
-            <div className="mt-3">
+            <div className="mt-3 flex flex-col items-center justify-center">
               <h5>Hello, {user.username}</h5>
               <p>Email: {user.email}</p>
               <p>ID: {user.id}</p>
@@ -429,7 +429,7 @@ const Profile: React.FC = () => {
         )}
       </div>
       {currentUser?.id == userId && (
-        <Button variant="secondary" className="mb-3" onClick={handleUploadPic}>
+        <Button variant="secondary" className="mb-3 flex flex-col items-center justify-center" onClick={handleUploadPic}>
           Upload profile picture
         </Button>
       )}

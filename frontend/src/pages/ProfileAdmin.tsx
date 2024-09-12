@@ -323,7 +323,7 @@ const Admin = () => {
 
   return (
     <Layout>
-      <h2 className="flex items-center justify-center text-[24px] text-[#ff8833]">ADMIN DASHBOARD</h2>
+      <h2 className="flex items-center justify-center text-[24px] text-black">ADMIN DASHBOARD</h2>
       {loading ? (
         <Spinner animation="border" />
         
@@ -332,182 +332,188 @@ const Admin = () => {
       ) : (
 
         <div>
-          <h4 className="mt-4 flex items-center text-black">
-            <Hexagon className="text-black w-10 h-10 mr-2"/>
+          <h4 className="mt-4 flex items-center text-black text-2xl">
+            <Hexagon className="text-white w-10 h-10 mr-2"/>
             Payment Slips
           </h4>
-          <table className="table-auto mx-auto w-[1296px] border-collapse">
-            <thead>
-              <tr className="text-center">
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap rounded-tl-[8px]">
-                  Slip ID
-                </th>
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[180px] whitespace-nowrap ">
-                  User ID
-                </th>
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap ">
-                  Amount
-                </th>
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap ">
-                  Coins
-                </th>
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap ">
-                  Status
-                </th>
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[190px] whitespace-nowrap ">
-                  Slip Image
-                </th>
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap rounded-tr-[8px]">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {slips.map((slip) => (
-                <tr key={slip.slip_id} className="text-center">
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
-                    {slip.slip_id}
-                  </td>
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
-                    {slip.user_id}
-                  </td>
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
-                    {slip.amount}
-                  </td>
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
-                    {slip.coins}
-                  </td>
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
-                    {slip.status}
-                  </td>
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
-                    <Image
-                        crossOrigin="anonymous"
-                        src={`/api/slip/${slip.slip_path}`}
-                        alt={`Slip ${slip.slip_id}`}
-                        thumbnail
-                        width={100}
-                        height={100}
-                        onClick={() => handleShowSlip(slip)}
-                        className="cursor-pointer"
-                      />
-                  </td>
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap">
-                    <Button
-                        variant="success"
-                        className="custom-margin"
-                        onClick={() => handleApproveSlip(slip.slip_id)}
-                      >
-                        Approve
-                      </Button>
-                      <Button
-                        variant="danger"
-                        className="custom-margin"
-                        onClick={() => handleRejectSlip(slip.slip_id)}
-                      >
-                        Reject
-                      </Button>
-                  </td>
+          <div className="overflow-hidden rounded-lg border shadow-md bg-white">
+            <table className="table-auto mx-auto w-[1296px] border-collapse">
+              <thead>
+                <tr className="text-center">
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap rounded-tl-lg">
+                    Slip ID
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[180px] whitespace-nowrap ">
+                    User ID
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap ">
+                    Amount
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap ">
+                    Coins
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap ">
+                    Status
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[190px] whitespace-nowrap ">
+                    Slip Image
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap rounded-tr-lg">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {slips.map((slip) => (
+                  <tr key={slip.slip_id} className="text-center">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap">
+                      {slip.slip_id}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap">
+                      {slip.user_id}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap">
+                      {slip.amount}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap">
+                      {slip.coins}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap">
+                      {slip.status}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap">
+                      <Image
+                          crossOrigin="anonymous"
+                          src={`/api/slip/${slip.slip_path}`}
+                          alt={`Slip ${slip.slip_id}`}
+                          thumbnail
+                          width={100}
+                          height={100}
+                          onClick={() => handleShowSlip(slip)}
+                          className="cursor-pointer"
+                        />
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap">
+                      <Button
+                          variant="success"
+                          className="custom-margin"
+                          onClick={() => handleApproveSlip(slip.slip_id)}
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          variant="danger"
+                          className="custom-margin"
+                          onClick={() => handleRejectSlip(slip.slip_id)}
+                        >
+                          Reject
+                        </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          <h4 className="mt-4 flex items-center text-black">
-            <Hexagon className="text-black w-10 h-10 mr-2"/>
+          <h4 className="mt-4 flex items-center text-black text-2xl">
+            <Hexagon className="text-white w-10 h-10 mr-2"/>
             Users
           </h4>
-          <table className="table-auto mx-auto w-[1296px] border-collapse">
-            <thead>
-              <tr className="text-center">
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
-                  ID
-                </th>
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
-                  Username
-                </th>
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
-                  Email
-                </th>
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
-                  Profile
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id} className="text-center">
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
-                    {user.id}
-                  </td>
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
-                    {user.username}
-                  </td>
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
-                    {user.email}
-                  </td>
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
-                    <button
-                        className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
-                        onClick={() => handleUsernameClick(user.id.toString())}
-                      >
-                        View Profile
-                      </button>
-                  </td>
+          <div className="overflow-hidden rounded-lg border shadow-md bg-white">
+            <table className="table-auto mx-auto w-[1296px] border-collapse">
+              <thead>
+                <tr className="text-center">
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
+                    ID
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    Username
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    Email
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    Profile
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} className="text-center">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      {user.id}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      {user.username}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      {user.email}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      <button
+                          className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
+                          onClick={() => handleUsernameClick(user.id.toString())}
+                        >
+                          View Profile
+                        </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           
-          <h4 className="mt-4 flex items-center text-black">
-            <Hexagon className="text-black w-10 h-10 mr-2"/>
+          <h4 className="mt-4 flex items-center text-black text-2xl">
+            <Hexagon className="text-white w-10 h-10 mr-2"/>
             User Photos
           </h4>
-          <table className="table-auto mx-auto w-[1296px] border-collapse">
-            <thead>
-              <tr className="text-center">
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
-                  Photo ID
-                </th>
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
-                  User ID
-                </th>
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
-                  Photo
-                </th>
-                <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
-                  Price
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {photos.map((photo) => (
-                <tr key={photo.id} className="text-center">
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
-                    {photo.id}
-                  </td>
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
-                    {photo.user_id}
-                  </td>
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
-                    <Image
-                        crossOrigin="anonymous"
-                        src={`/api/${photo.path}`}
-                        alt={`Image ${photo.id}`}
-                        thumbnail
-                        width={100}
-                        height={100}
-                        onClick={() => handleShowPhoto(photo)}
-                        className="cursor-pointer flex items-center justify-center"
-                      />
-                  </td>
-                  <td className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap">
-                    {photo.price}
-                  </td>
+          <div className="overflow-hidden rounded-lg border shadow-md bg-white">
+            <table className="table-auto mx-auto w-[1296px] border-collapse">
+              <thead>
+                <tr className="text-center">
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
+                    Photo ID
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    User ID
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    Photo
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    Price
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {photos.map((photo) => (
+                  <tr key={photo.id} className="text-center">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      {photo.id}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      {photo.user_id}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap flex items-center justify-center">
+                      <Image
+                          crossOrigin="anonymous"
+                          src={`/api/${photo.path}`}
+                          alt={`Image ${photo.id}`}
+                          thumbnail
+                          width={100}
+                          height={100}
+                          onClick={() => handleShowPhoto(photo)}
+                          className="cursor-pointer"
+                        />
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      {photo.price}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
       
           {/* <h4 className="mt-4">User Stats</h4>
           <Table striped bordered hover>
@@ -528,8 +534,11 @@ const Admin = () => {
               ))}
             </tbody>
           </Table> */}
-          <h4 className="mt-4">User Stats Bar Graph</h4>
-          <div style={{ width: "80%", margin: "0 auto" }}>
+          <h4 className="mt-4 flex items-center text-black text-2xl">
+            <Hexagon className="text-white w-10 h-10 mr-2"/>
+            User Stats Bar Graph
+          </h4>
+          <div className="w-[80%] mx-auto">
             <Bar
               data={getBarGraphData()}
               options={{
@@ -569,70 +578,102 @@ const Admin = () => {
           </div>
 
           {/* Orders History */}
-          <h4 className="mt-4">Orders History</h4>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Actions</th> {/* New column for actions */}
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-
-                  <td>
-                    <Button
-                      variant="info"
-                      onClick={() =>
-                        handleShowOrderHistory(user.id, user.username)
-                      }
-                    >
-                      View Orders
-                    </Button>
-                  </td>
+          <h4 className="mt-4 flex items-center text-black text-2xl">
+            <Hexagon className="text-white w-10 h-10 mr-2"/>
+            Orders History
+          </h4>
+          <div className="overflow-hidden rounded-lg border shadow-md bg-white">
+            <table className="table-auto mx-auto w-[1296px] border-collapse">
+              <thead>
+                <tr className="text-center">
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
+                    ID
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    Username
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    Email
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} className="text-center">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      {user.id}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      {user.username}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      {user.email}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      <button
+                          className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
+                          onClick={() =>handleShowOrderHistory(user.id, user.username)}
+                        >
+                          View Orders
+                        </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {/* Transactions History */}
-          <h4 className="mt-4">Transactions History</h4>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Actions</th> {/* New column for actions */}
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-
-                  <td>
-                    <Button
-                      variant="info"
-                      onClick={() =>
-                        handleShowTransactions(user.id, user.username)
-                      }
-                    >
-                      View Transactions
-                    </Button>
-                  </td>
+          <h4 className="mt-4 flex items-center text-black text-2xl">
+            <Hexagon className="text-white w-10 h-10 mr-2"/>
+            Transactions History
+          </h4>
+          <div className="overflow-hidden rounded-lg border shadow-md bg-white">
+            <table className="table-auto mx-auto w-[1296px] border-collapse">
+              <thead>
+                <tr className="text-center">
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
+                    ID
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    Username
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    Email
+                  </th>
+                  <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} className="text-center">
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      {user.id}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      {user.username}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      {user.email}
+                    </td>
+                    <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      <button
+                          className="bg-[#ff8833] text-white w-[200px] h-[30px] rounded-md"
+                          onClick={() =>handleShowTransactions(user.id, user.username)}
+                        >
+                          View Transactions
+                        </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {/* Order Transactions Modal */}
           {selectedUserName && (
