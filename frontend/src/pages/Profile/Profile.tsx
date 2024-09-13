@@ -8,6 +8,8 @@ import { User, Album } from "../../types/api";
 import CreateAlbumForm from "./CreateAlbumForm"; // นำเข้าฟอร์ม
 import SelectAlbumModal from "../../components/SelectAlbumModal"; // Import modal component
 import "../global.css";
+import { Link } from "react-router-dom";
+import { SquarePen, ShoppingBag } from 'lucide-react';
 
 interface Photo {
   id: string;
@@ -59,11 +61,13 @@ const Profile: React.FC = () => {
       });
       console.log("Album created:", response.data);
       fetchUserAlbums(); // Refetch albums after creation
+      handleCloseCreateAlbum();
     } catch (error) {
       console.error("Error creating album:", error);
       setError("Failed to create album");
     }
   };
+  const handleCloseCreateAlbum = () => setCreateAlbum(false);
 
   const fetchUserAlbums = async () => {
     try {
@@ -392,214 +396,261 @@ const Profile: React.FC = () => {
     }
   };
 
+  const handleCloseUpload = () => setIsUpload(false);
   return (
     <Layout>
       <div className="flex flex-col items-center justify-center">
         {/* profile */}
-        <h2>Profile</h2>
-        <div className="mt-3">
-          {user?.avatarURL ? (
-            <Image
-              src={`${user.avatarURL}`}
-              alt="Profile Picture"
-              roundedCircle
-              width={150}
-              height={150}
-            />
+        <h2>MY PROFILE </h2>
+        <div className="w-[600px] h-[450px] bg-white border shadow-md rounded-lg">
+          {error ? (
+            <p>{error}</p>
           ) : (
-            <Image
-              src="https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
-              alt="Default Avatar"
-              roundedCircle
-              width={150}
-              height={150}
-            />
+            user && (
+              <div className="mt-3 flex flex-col items-center justify-center">
+                <h5>{user.username}</h5>
+                <p>Email: {user.email}</p>
+                <p>ID: {user.id}</p>
+                <p>COINS: {user.coin} coins</p>
+              </div>
+            )
           )}
-        </div>
-        {error ? (
-          <p>{error}</p>
-        ) : (
-          user && (
-            <div className="mt-3 flex flex-col items-center justify-center">
-              <h5>Hello, {user.username}</h5>
-              <p>Email: {user.email}</p>
-              <p>ID: {user.id}</p>
-            </div>
-          )
-        )}
-      </div>
-      {currentUser?.id == userId && (
-        <Button variant="secondary" className="mb-3 flex flex-col items-center justify-center" onClick={handleUploadPic}>
-          Upload profile picture
-        </Button>
-      )}
-      {isUpload && (
-        <div>
-          <Form>
-            <Form.Group controlId="formFile" className="mb-3">
-              <Form.Label>Select Image</Form.Label>
-              <Form.Control
-                type="file"
-                onChange={handleFileChange}
-                data-cy="file-input"
+          <div className="mt-3 flex items-center justify-center">
+            {user?.avatarURL ? (
+              <Image
+                src={`${user.avatarURL}`}
+                alt="Profile Picture"
+                className="w-36 h-36 rounded-full" 
+                width={150}
+                height={150}
               />
-            </Form.Group>
-            {selectedImage && (
-              <div className="mb-3">
-                <h3>Image Preview:</h3>
-                <Image
-                  src={selectedImage}
-                  alt="Selected Image"
-                  width="200"
-                  thumbnail
-                  data-cy="image-preview"
-                />
-              </div>
+            ) : (
+              <Image
+                src="https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
+                alt="Default Avatar"
+                width={150}
+                height={150}
+                className="w-36 h-36 rounded-full" 
+              />
             )}
-          </Form>
-          <Button
-            variant="primary"
-            onClick={handleUpload}
-            data-cy="upload-button"
-          >
-            Upload
-          </Button>
-        </div>
-      )}
-
-      <h1>My photos</h1>
-      {currentUser?.id === user?.id && (
-        <Button
-          variant="secondary"
-          className="mb-3"
-          onClick={() => handleEdit()}
-        >
-          Edit
-        </Button>
-      )}
-      {currentUser?.id == userId && (
-        <Button
-          variant="primary"
-          className="mb-3"
-          onClick={handleViewPurchasedPhotos}
-        >
-          View Purchased Photos
-        </Button>
-      )}
-      <Row>
-        {photos
-          .filter((photo) => photo.user_id == user?.id?.toString())
-          .map((photo) => (
-            <Col key={photo.id} xs={12} md={4} lg={3} className="mb-4">
-              <div className="position-relative">
-                <Image
-                  crossOrigin="anonymous"
-                  src={`/api/${photo.path}`}
-                  onClick={() => handlePhotoClick(photo.id)}
-                  onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
-                  style={{ cursor: "pointer" }}
-                  alt={`Image ${photo.id}`}
-                  thumbnail
-                  className="w-100"
-                />
-                {isEdit && (
-                  <div>
-                    <Button
-                      variant="danger"
-                      className="position-absolute top-0 start-0 m-2"
-                      onClick={() => handleDelete(photo.path.split("/").pop()!)}
+          </div>
+          <div className="flex items-center justify-center gap-3 mt-5">
+            {currentUser?.id == userId && (
+              <button 
+                className="w-[170px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                onClick={handleUploadPic}
+                >
+                Upload profile picture
+              </button>
+            )}
+            <Link to="/" className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline">
+              Logout
+            </Link>
+          </div>
+          {isUpload && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="bg-white p-5 rounded-lg shadow-lg relative">
+                <h3 className="text-xl mb-3 text-center">Select Image</h3>
+                <Form>
+                  <Form.Group controlId="formFile" className="mb-3">
+                    <Form.Label>Select Image</Form.Label>
+                    <Form.Control type="file" onChange={handleFileChange} data-cy="file-input" />
+                  </Form.Group>
+                  {selectedImage && (
+                    <div className="mb-3">
+                      <h3 className="text-xl mb-3 text-center flex justify-start">Image Preview</h3>
+                      <div className="flex items-center justify-center">
+                        <Image
+                          src={selectedImage}
+                          alt="Selected Image"
+                          width="200"
+                          thumbnail
+                          data-cy="image-preview"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </Form>
+                <div className="flex items-center justify-center gap-3 mt-2">
+                  <button 
+                    className="w-[100px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                    onClick={handleUpload}
                     >
-                      Delete
-                    </Button>
-                    <Button
-                      variant="primary"
-                      className="position-absolute top-0 end-0 m-2"
-                      onClick={() => handleAddPhotoClick(photo.id)}
+                    Upload
+                  </button>
+                  <button
+                    className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                    onClick={handleCloseUpload}
                     >
-                      Add to album
-                    </Button>
-                  </div>
-                )}
-                Date: {formatDate(photo.created_at)}
-                <br />
-                Price: {photo.price}
+                    Cancel
+                  </button>
+                </div>
               </div>
-            </Col>
-          ))}
-      </Row>
-      <h3>My Albums</h3>
-      {currentUser?.id == userId && (
-        <Button variant="primary" className="mb-3" onClick={handleIsCreate}>
-          Create Album
-        </Button>
-      )}
-      {isCreateAlbum && <CreateAlbumForm onCreateAlbum={handleCreateAlbum} />}
-
-      {albums.map((album) => (
-        <div key={album.album_id} className="mb-3">
-          <h4>{album.title}</h4>
-          <p>{album.description}</p>
-          {currentUser?.id == userId && (
-            <Button
-              variant="danger"
-              onClick={() => handleDeleteAlbum(album.album_id.toString())}
-            >
-              Delete Album
-            </Button>
+            </div>
           )}
-          <Button
-            variant="info"
-            onClick={() => fetchAlbumPhotos(album.album_id.toString())}
-            className="ms-2"
-          >
-            View Photos
-          </Button>
-          {/* เพิ่มปุ่ม Export Album */}
-          <Button
-            variant="success"
-            onClick={() => handleExportAlbum(album.album_id.toString())} // เรียกฟังก์ชันสำหรับ export
-            className="ms-2"
-          >
-            Export Album
-          </Button>
-          <div className="mt-3">
-            {albumPhotosMap[album.album_id]?.map((photo) => {
-              return (
-                <div key={photo.id} className="m-2">
+        </div>
+      </div>
+      <div className="flex flex-col items-center justify-center mt-3">
+        <h2>My photos</h2>
+        <div className="flex items-center justify-center gap-3">
+          {currentUser?.id === user?.id && (
+            <button 
+              className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+              onClick={() => handleEdit()}
+            >
+            <SquarePen className="text-white w-10 h-[20px] mr-2" />
+              Edit
+            </button>
+          )}
+          {currentUser?.id == userId && (
+            <button
+              className="w-[230px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+              onClick={handleViewPurchasedPhotos}
+            >
+            <ShoppingBag className="text-white w-10 h-[20px] mr-2" />
+              View Purchased Photos
+            </button>
+          )}
+        </div>
+        <Row>
+          {photos
+            .filter((photo) => photo.user_id == user?.id?.toString())
+            .map((photo) => (
+              <Col key={photo.id} xs={12} md={4} lg={3} className="mb-4">
+                <div className="position-relative">
                   <Image
+                    crossOrigin="anonymous"
                     src={`/api/${photo.path}`}
-                    thumbnail
-                    width={100}
-                    height={100}
                     onClick={() => handlePhotoClick(photo.id)}
                     onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
                     style={{ cursor: "pointer" }}
+                    alt={`Image ${photo.id}`}
+                    thumbnail
+                    className="w-100"
                   />
+                  {isEdit && (
+                    <div>
+                      <Button
+                        variant="danger"
+                        className="position-absolute top-0 start-0 m-2"
+                        onClick={() => handleDelete(photo.path.split("/").pop()!)}
+                      >
+                        Delete
+                      </Button>
+                      <Button
+                        variant="primary"
+                        className="position-absolute top-0 end-0 m-2"
+                        onClick={() => handleAddPhotoClick(photo.id)}
+                      >
+                        Add to album
+                      </Button>
+                    </div>
+                  )}
+                  Date: {formatDate(photo.created_at)}
+                  <br />
+                  Price: {photo.price}
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+              </Col>
+            ))}
+        </Row>
 
-      {showSelectAlbumModal && (
-        <SelectAlbumModal
-          albums={albums}
-          photo_id={selectedPhotoId}
-          onClose={() => setShowSelectAlbumModal(false)}
-        />
-      )}
-      {previewImage && (
-        <div>
-          <h3>Album Preview:</h3>
-          <img
-            src={previewImage}
-            alt="Album Preview"
-            style={{ maxWidth: "100%", maxHeight: "500px" }}
+      </div>
+      <div className="flex flex-col items-center justify-center mt-3">
+        <h2>My Albums</h2>
+        {currentUser?.id == userId && (
+          <button
+            className="w-[170px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+            onClick={handleIsCreate}
+          >
+            <SquarePen className="text-white w-10 h-[20px] mr-2" />
+            Create Album
+          </button>
+        )}
+        {isCreateAlbum && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-5 rounded-lg shadow-lg relative w-[400px]">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl">Create Album</h3>
+                <button
+                  className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                  onClick={handleCloseCreateAlbum}
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="mt-3">
+                <CreateAlbumForm onCreateAlbum={handleCreateAlbum} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {albums.map((album) => (
+          <div key={album.album_id} className="mb-3">
+            <h4>{album.title}</h4>
+            <p>{album.description}</p>
+            {currentUser?.id == userId && (
+              <Button
+                variant="danger"
+                onClick={() => handleDeleteAlbum(album.album_id.toString())}
+              >
+                Delete Album
+              </Button>
+            )}
+            <Button
+              variant="info"
+              onClick={() => fetchAlbumPhotos(album.album_id.toString())}
+              className="ms-2"
+            >
+              View Photos
+            </Button>
+            {/* เพิ่มปุ่ม Export Album */}
+            <Button
+              variant="success"
+              onClick={() => handleExportAlbum(album.album_id.toString())} // เรียกฟังก์ชันสำหรับ export
+              className="ms-2"
+            >
+              Export Album
+            </Button>
+            <div className="mt-3">
+              {albumPhotosMap[album.album_id]?.map((photo) => {
+                return (
+                  <div key={photo.id} className="m-2">
+                    <Image
+                      src={`/api/${photo.path}`}
+                      thumbnail
+                      width={100}
+                      height={100}
+                      onClick={() => handlePhotoClick(photo.id)}
+                      onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+
+        {showSelectAlbumModal && (
+          <SelectAlbumModal
+            albums={albums}
+            photo_id={selectedPhotoId}
+            onClose={() => setShowSelectAlbumModal(false)}
           />
-          <Button onClick={handleDownload}>Download Preview</Button>
-        </div>
-      )}
+        )}
+        {previewImage && (
+          <div>
+            <h3>Album Preview:</h3>
+            <img
+              src={previewImage}
+              alt="Album Preview"
+              style={{ maxWidth: "100%", maxHeight: "500px" }}
+            />
+            <Button onClick={handleDownload}>Download Preview</Button>
+          </div>
+        )}
+      </div>
     </Layout>
   );
 };

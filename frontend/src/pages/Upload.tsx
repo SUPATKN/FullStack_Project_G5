@@ -105,7 +105,7 @@ const Upload = () => {
   useEffect(() => {
     refetch();
     fetchImages();
-  }, []);
+  }, [refetch]);
 
   useEffect(() => {
     if (photos.length > 0) {

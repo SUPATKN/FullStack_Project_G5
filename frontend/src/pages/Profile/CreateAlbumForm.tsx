@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Button, Form } from "react-bootstrap";
-import axios from "axios";
+import { Form } from "react-bootstrap";
+// import axios from "axios";
 
 interface CreateAlbumFormProps {
   onCreateAlbum: (title: string, description: string) => void;
@@ -33,9 +33,15 @@ const CreateAlbumForm: React.FC<CreateAlbumFormProps> = ({ onCreateAlbum }) => {
           onChange={(e) => setDescription(e.target.value)}
         />
       </Form.Group>
-      <Button variant="primary" type="submit">
-        Create Album
-      </Button>
+      <div className="flex items-center justify-center">
+        <button 
+          className="mt-3 w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+          type="submit"
+        >
+          Create Album
+        </button>
+
+      </div>
     </Form>
   );
 };
