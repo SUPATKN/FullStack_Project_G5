@@ -2,14 +2,14 @@ import React, { useEffect, ChangeEvent, useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import Layout from "../../Layout";
 import axios from "axios";
-import { Button, Form, Image, Row, Col } from "react-bootstrap";
+import { Form, Image, Row, Col } from "react-bootstrap";
 import useAuth from "../../hook/useAuth";
 import { User, Album } from "../../types/api";
 import CreateAlbumForm from "./CreateAlbumForm"; // นำเข้าฟอร์ม
 import SelectAlbumModal from "../../components/SelectAlbumModal"; // Import modal component
 import "../global.css";
 import { Link } from "react-router-dom";
-import { SquarePen, ShoppingBag } from 'lucide-react';
+import { SquarePen, ShoppingBag , SquareArrowUpRight , Tag } from 'lucide-react';
 
 interface Photo {
   id: string;
@@ -68,6 +68,7 @@ const Profile: React.FC = () => {
     }
   };
   const handleCloseCreateAlbum = () => setCreateAlbum(false);
+  const handleClosePreview = () => setPreviewImage(null);
 
   const fetchUserAlbums = async () => {
     try {
@@ -267,8 +268,8 @@ const Profile: React.FC = () => {
 
       // สร้าง canvas และกำหนดขนาด
       const canvas = document.createElement("canvas");
-      const canvasWidth = 1080; // ความกว้างของ canvas
-      const canvasHeight = 1920; // ความสูงของ canvas
+      const canvasWidth = 1920; // ความกว้างของ canvas
+      const canvasHeight = 1280; // ความสูงของ canvas
       canvas.width = canvasWidth;
       canvas.height = canvasHeight;
       const ctx = canvas.getContext("2d");
@@ -382,6 +383,7 @@ const Profile: React.FC = () => {
       // สร้าง URL ของภาพที่ได้จาก canvas
       const previewUrl = canvas.toDataURL("image/png");
       setPreviewImage(previewUrl);
+
     } catch (error) {
       console.error("Error exporting album:", error);
     }
@@ -491,7 +493,7 @@ const Profile: React.FC = () => {
         </div>
       </div>
       <div className="flex flex-col items-center justify-center mt-3">
-        <h2>My photos</h2>
+        <h2>MY PHOTOS</h2>
         <div className="flex items-center justify-center gap-3">
           {currentUser?.id === user?.id && (
             <button 
@@ -512,43 +514,54 @@ const Profile: React.FC = () => {
             </button>
           )}
         </div>
-        <Row>
+        <Row className="">
           {photos
             .filter((photo) => photo.user_id == user?.id?.toString())
             .map((photo) => (
-              <Col key={photo.id} xs={12} md={4} lg={3} className="mb-4">
-                <div className="position-relative">
-                  <Image
-                    crossOrigin="anonymous"
-                    src={`/api/${photo.path}`}
-                    onClick={() => handlePhotoClick(photo.id)}
-                    onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
-                    style={{ cursor: "pointer" }}
-                    alt={`Image ${photo.id}`}
-                    thumbnail
-                    className="w-100"
-                  />
-                  {isEdit && (
-                    <div>
-                      <Button
-                        variant="danger"
-                        className="position-absolute top-0 start-0 m-2"
-                        onClick={() => handleDelete(photo.path.split("/").pop()!)}
-                      >
-                        Delete
-                      </Button>
-                      <Button
-                        variant="primary"
-                        className="position-absolute top-0 end-0 m-2"
-                        onClick={() => handleAddPhotoClick(photo.id)}
-                      >
-                        Add to album
-                      </Button>
+              <Col key={photo.id} xs={12} md={4} lg={3}>
+                <div className="flex flex-col w-[300px] h-[400px] bg-white rounded-lg shadow-md border mt-3 p-2">
+                  <div className="flex items-center justify-between mt-3">
+                    <h3 className="text-[16px] ml-4">Photo{photo.id}</h3>
+                    <SquareArrowUpRight className="mr-4"/>
+                  </div>
+                  <h2  className="text-[12px] flex justify-start ml-4">Brand</h2>
+                  <div className="flex items-center justify-start gap-2 ml-4">
+                    <Tag className="text-[#ff8833]"/>
+                    <h2  className="text-[16px]">Animal</h2>
+                  </div>
+
+                  <div className="position-relative flex flex-col items-center justify-center mt-2">
+                    <Image
+                      crossOrigin="anonymous"
+                      src={`/api/${photo.path}`}
+                      onClick={() => handlePhotoClick(photo.id)}
+                      onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
+                      className="cursor-pointer h-[100%] w-[90%] object-cover"
+                      alt={`Image ${photo.id}`}
+                      // thumbnail
+                    />
+                    <div className="mr-14 mt-2">
+                      Date: {formatDate(photo.created_at)}
+                      <br />
+                      Price: {photo.price}
                     </div>
-                  )}
-                  Date: {formatDate(photo.created_at)}
-                  <br />
-                  Price: {photo.price}
+                      {isEdit && (
+                        <div className="flex items-center justify-center gap-3 mt-2">
+                          <button
+                            className="w-[80px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                            onClick={() => handleDelete(photo.path.split("/").pop()!)}
+                          >
+                            Delete
+                          </button>
+                          <button
+                            className="w-[120px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                            onClick={() => handleAddPhotoClick(photo.id)}
+                          >
+                            Add to album
+                          </button>
+                        </div>
+                      )}
+                  </div>
                 </div>
               </Col>
             ))}
@@ -556,7 +569,7 @@ const Profile: React.FC = () => {
 
       </div>
       <div className="flex flex-col items-center justify-center mt-3">
-        <h2>My Albums</h2>
+        <h2>MY ALBUMS</h2>
         {currentUser?.id == userId && (
           <button
             className="w-[170px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
@@ -578,78 +591,110 @@ const Profile: React.FC = () => {
                   Cancel
                 </button>
               </div>
-              <div className="mt-3">
+              <div className="">
                 <CreateAlbumForm onCreateAlbum={handleCreateAlbum} />
               </div>
             </div>
           </div>
         )}
-
-        {albums.map((album) => (
-          <div key={album.album_id} className="mb-3">
-            <h4>{album.title}</h4>
-            <p>{album.description}</p>
-            {currentUser?.id == userId && (
-              <Button
-                variant="danger"
-                onClick={() => handleDeleteAlbum(album.album_id.toString())}
-              >
-                Delete Album
-              </Button>
-            )}
-            <Button
-              variant="info"
-              onClick={() => fetchAlbumPhotos(album.album_id.toString())}
-              className="ms-2"
-            >
-              View Photos
-            </Button>
-            {/* เพิ่มปุ่ม Export Album */}
-            <Button
-              variant="success"
-              onClick={() => handleExportAlbum(album.album_id.toString())} // เรียกฟังก์ชันสำหรับ export
-              className="ms-2"
-            >
-              Export Album
-            </Button>
-            <div className="mt-3">
-              {albumPhotosMap[album.album_id]?.map((photo) => {
-                return (
-                  <div key={photo.id} className="m-2">
-                    <Image
-                      src={`/api/${photo.path}`}
-                      thumbnail
-                      width={100}
-                      height={100}
-                      onClick={() => handlePhotoClick(photo.id)}
-                      onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
-                      style={{ cursor: "pointer" }}
-                    />
-                  </div>
-                );
-              })}
+        <div className="flex flex-wrap gap-[31px] mt-3">
+          {albums.map((album) => (
+            <div className="flex flex-col w-[300px] h-[400px] bg-white rounded-lg shadow-md border p-2">
+              <div key={album.album_id} className="">
+                <h4 className="text-[20px] font-semibold mt-3 ml-4">Album Name: {album.title}</h4>
+                <p className="ml-4">Description: {album.description}</p>
+                <div className="mt-2 flex-wrap flex items-center justify-center w-[280px] h-[200px] bg-gray-200 shadow-lg border rounded-lg">
+                  {albumPhotosMap[album.album_id]?.map((photo) => {
+                    return (
+                      <div key={photo.id} className="m-2 flex items-center justify-center">
+                        <Image
+                          src={`/api/${photo.path}`}
+                          // thumbnail
+                          width={100}
+                          height={100}
+                          onClick={() => handlePhotoClick(photo.id)}
+                          onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
+                          style={{ cursor: "pointer" }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex items-center justify-center gap-4 mt-2">
+                  <button
+                    className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                    onClick={() => fetchAlbumPhotos(album.album_id.toString())}
+                  >
+                    View Photos
+                  </button>
+                  {currentUser?.id == userId && (
+                    <button
+                      className="w-[110px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                      onClick={() => handleDeleteAlbum(album.album_id.toString())}
+                    >
+                      Delete Album
+                    </button>
+                  )}
+                </div>
+                {/* เพิ่มปุ่ม Export Album */}
+                <div className="flex items-center justify-center mt-2">
+                  <button
+                    className="w-[110px] h-[35px] bg-green-600 rounded-md text-white cursor-pointer hover:bg-green-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                    onClick={() => handleExportAlbum(album.album_id.toString())}
+                  >
+                    Export Album
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+
+        </div>
 
         {showSelectAlbumModal && (
-          <SelectAlbumModal
-            albums={albums}
-            photo_id={selectedPhotoId}
-            onClose={() => setShowSelectAlbumModal(false)}
-          />
-        )}
-        {previewImage && (
-          <div>
-            <h3>Album Preview:</h3>
-            <img
-              src={previewImage}
-              alt="Album Preview"
-              style={{ maxWidth: "100%", maxHeight: "500px" }}
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <SelectAlbumModal
+              albums={albums}
+              photo_id={selectedPhotoId}
+              onClose={() => setShowSelectAlbumModal(false)}
             />
-            <Button onClick={handleDownload}>Download Preview</Button>
           </div>
         )}
+        {previewImage && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-5 rounded-lg shadow-lg w-[600px] h-[600px]">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl mb-2">Album Preview</h3>
+                <button
+                  className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                  onClick={handleClosePreview}
+                >
+                  Close
+                </button>
+
+              </div>
+              <div className="flex items-center justify-center">
+                <img
+                  src={previewImage}
+                  alt="Album Preview"
+                  style={{ maxWidth: "100%", maxHeight: "500px" }}
+                  className="mt-3"
+                />
+              </div>
+              <div className="flex items-center justify-center">
+                <button
+                  className="mt-2 w-[150px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                  onClick={handleDownload}
+                >
+                  Download Preview
+                </button>
+
+              </div>
+
+            </div>
+          </div>
+        )}
+
       </div>
     </Layout>
   );
