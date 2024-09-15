@@ -1,231 +1,105 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Navbar, Nav, Container } from "react-bootstrap";
+import React, { useState} from "react";
+import {Link, useLocation } from "react-router-dom";
 import Logo from "../LogoPreflight.png";
 import "../global.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import axios from "axios";
 import useAuth from "../hook/useAuth";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
 const NavBar: React.FC = () => {
   const { user, refetch } = useAuth();
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const location = useLocation(); // Get the current URL path
 
   const handleLogout = async () => {
     try {
-      await axios.get("/api/logout"); // ส่ง request ไปที่ backend เพื่อ logout
+      await axios.get("/api/logout"); // Send request to backend to logout
       refetch();
     } catch (error) {
       console.error("Logout failed", error);
     }
   };
-  return (
-    <Navbar
-      bg="grey"
-      expand="lg"
-      style={{ backgroundColor: "#37517e" }}
-      data-cy="navbar"
-    >
-      <Container>
-        <Navbar.Brand as={Link} to="/">
-          <img src={Logo} alt="My Photo App Logo" style={{ height: "40px" }} />
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link
-              as={Link}
-              to="/"
-              className="text-light"
-              data-cy="gallery-link"
-            >
+
+  const toggleNav = () => {
+    setIsNavOpen(!isNavOpen);
+  };
+
+ return (
+  <nav className="navbar fixed-top position-sticky">
+    <div className="containerNav">
+      <Link to="/" className="navbar-brand">
+        <img src={Logo} alt="My Photo App Logo" className="logo" />
+      </Link>
+      <button className="navbar-toggle" onClick={toggleNav}>
+        ☰
+      </button>
+      <div className={`navbar-collapse ${isNavOpen ? "active" : ""}`}>
+        <ul className="nav-links">
+          <li className={`${location.pathname === "/home" ? "active" : ""}`}>
+            <Link to="/home" className="nav-link">
+              Home
+            </Link>
+          </li>
+          <li className={`${location.pathname === "/" ? "active" : ""}`}>
+            <Link to="/" className="nav-link">
               Gallery
-            </Nav.Link>
-            <Nav.Link
-              as={Link}
-              to="/creator"
-              className="text-light"
-              data-cy="creator-link"
-            >
+            </Link>
+          </li>
+          <li className={`${location.pathname === "/creator" ? "active" : ""}`}>
+            <Link to="/creator" className="nav-link">
               Creator
-            </Nav.Link>
-            <Nav.Link
-              as={Link}
-              to="/instructor"
-              className="text-light"
-              data-cy="instructor-link"
-            >
+            </Link>
+          </li>
+          <li
+            className={`${location.pathname === "/instructor" ? "active" : ""}`}
+          >
+            <Link to="/instructor" className="nav-link">
               Instructor
-            </Nav.Link>
-          </Nav>
-          <Nav className="ms-auto">
-            {!user ? (
-              <>
-                <Nav.Link
-                  as={Link}
-                  to="/login"
-                  className="text-light mt-2"
-                  data-cy="login-link"
-                >
-                  Login
-                </Nav.Link>
-                <div className="d-flex flex-column flex-lg-row">
-                  <Nav.Link
-                    as={Link}
-                    to="/register"
-                    className="text-light"
-                    data-cy="register-link"
-                    style={{
-                      fontSize: "15px",
-                      backgroundColor: "#37517e",
-                      borderRadius: "25px",
-                      color: "#ffffff",
-                      boxShadow:
-                        "0 6px 12px 0 rgba(0,0,0,0.2), 0 6px 15px 0 rgba(0,0,0,0.19)",
-                      padding: "5px 10px",
-                      margin: "10px 0 5px 5px",
-                      width: "max-content",
-                      textAlign: "center",
-                    }}
-                  >
-                    Register
-                  </Nav.Link>
-                  <Nav.Item>
-                    <Nav.Link
-                      as={Link}
-                      to="/login"
-                      style={{
-                        fontSize: "15px",
-                        backgroundColor: "#ffffff",
-                        borderRadius: "25px",
-                        color: "#37517e",
-                        boxShadow:
-                          "0 6px 12px 0 rgba(0,0,0,0.2), 0 6px 15px 0 rgba(0,0,0,0.19)",
-                        padding: "5px 10px",
-                        margin: "10px 0 5px 5px",
-                        width: "max-content",
-                        textAlign: "center",
-                      }}
-                      data-cy="start-upload-button"
-                    >
-                      Start Upload
-                    </Nav.Link>
-                  </Nav.Item>
-                </div>
-              </>
-            ) : (
-              <Nav.Item className="navlink d-flex">
-                <Nav.Item>
-                  <Nav.Link
-                    as={Link}
-                    to="/coin"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      color: "#ffffff",
-                      textDecoration: "none",
-                      textAlign: "center",
-                      padding: "5px 10px",
-                      margin: "10px 0 5px 5px",
-                      width: "max-content",
-                    }}
-                    data-cy="coin"
-                  >
-                    <i
-                      className="bi bi-coin"
-                      style={{ marginRight: "5px", color: "#ffffff" }}
-                    ></i>{" "}
-                    {user.coin}
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link
-                    as={Link}
-                    to="/cart"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      color: "#ffffff",
-                      textDecoration: "none",
-                      textAlign: "center",
-                      padding: "5px 10px",
-                      margin: "10px 0 5px 5px",
-                      width: "max-content",
-                    }}
-                    data-cy="cart"
-                  >
-                    <i
-                      className="bi bi-cart4"
-                      style={{ marginRight: "5px", color: "#ffffff" }}
-                    ></i>
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link
-                    as={Link}
-                    to="/upload"
-                    style={{
-                      fontSize: "15px",
-                      backgroundColor: "#ffffff",
-                      borderRadius: "25px",
-                      color: "#37517e",
-                      boxShadow:
-                        "0 6px 12px 0 rgba(0,0,0,0.2), 0 6px 15px 0 rgba(0,0,0,0.19)",
-                      padding: "5px 10px",
-                      margin: "10px 0 5px 5px",
-                      width: "max-content",
-                      textAlign: "center",
-                    }}
-                    data-cy="start-upload-button"
-                  >
-                    Start Upload
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Link
-                  as={Link}
-                  to={`/profile/${user?.id}`}
-                  style={{
-                    fontSize: "15px",
-                    backgroundColor: "#ffffff",
-                    borderRadius: "25px",
-                    color: "#37517e",
-                    boxShadow:
-                      "0 6px 12px 0 rgba(0,0,0,0.2), 0 6px 15px 0 rgba(0,0,0,0.19)",
-                    padding: "5px 10px",
-                    margin: "10px 0 5px 5px",
-                    width: "max-content",
-                    textAlign: "center",
-                  }}
-                  data-cy="me"
-                >
-                  Profile
-                </Nav.Link>
-                <Nav.Link
-                  as={Link}
-                  to="/"
-                  onClick={handleLogout}
-                  style={{
-                    fontSize: "15px",
-                    backgroundColor: "#ff0000",
-                    borderRadius: "25px",
-                    color: "#ffffff",
-                    boxShadow:
-                      "0 6px 12px 0 rgba(0,0,0,0.2), 0 6px 15px 0 rgba(0,0,0,0.19)",
-                    padding: "5px 10px",
-                    margin: "10px 0 5px 5px",
-                    width: "max-content",
-                    textAlign: "center",
-                  }}
-                  data-cy="logout-link"
-                >
-                  Logout
-                </Nav.Link>
-              </Nav.Item>
-            )}
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
-  );
+            </Link>
+          </li>
+        </ul>
+        <div className="nav-actions">
+          {!user ? (
+            <>
+              <Link to="/login" className="nav-link start-upload">
+              <FontAwesomeIcon icon={faUpload}/>  
+              <div className="start-upload-text">Start Upload</div>
+              </Link>
+              <div className="signup-login">
+                <Link to="/register" className="nav-link signup">
+                  Sign Up
+                </Link>
+                <Link to="/login" className="nav-link login ">
+                  Log In
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <Link to="/coin" className="nav-link coin">
+                <i className="bi bi-coin"></i> {user.coin}
+              </Link>
+              <Link to="/cart" className="nav-link cart">
+                <i className="bi bi-cart4"></i>
+              </Link>
+              <Link to={`/profile/${user.id}`} className="nav-link profile">
+                Profile
+              </Link>
+              <Link to="/upload" className="nav-link upload">
+                Start Upload
+              </Link>
+              <Link to="/" onClick={handleLogout} className="nav-link logout">
+                Logout
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  </nav>
+);
 };
 
 export default NavBar;

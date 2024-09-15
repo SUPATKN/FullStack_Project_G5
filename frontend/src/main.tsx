@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Upload from "./pages/Upload";
+import Home from "./pages/Home";
 import Gallery from "./pages/Gallery";
 import Creator from "./pages/Creator";
 import Instructor from "./pages/Instructor";
@@ -24,10 +25,12 @@ axios.defaults.withCredentials = true;
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Router>
+  
+  <React.StrictMode >
+    <QueryClientProvider client={queryClient} >
+      <Router >
         <Routes>
+          <Route path="/home" element={<Home />} />
           <Route path="/" element={<Gallery />} />
           <Route path="/upload" element={<PrivateRoute><Upload /></PrivateRoute>} />
           <Route path="/creator" element={<PrivateRoute><Creator /></PrivateRoute>} />
