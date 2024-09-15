@@ -446,7 +446,7 @@ const Profile: React.FC = () => {
               </button>
             )}
             <Link to="/" className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline">
-              Logout
+              Back
             </Link>
           </div>
           {isUpload && (
