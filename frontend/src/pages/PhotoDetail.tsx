@@ -9,6 +9,7 @@ import {
   Tag,
   Heart,
   MessageCircleMore,
+  CircleX,
 } from "lucide-react";
 import LoadingWrapper from "../LoadingWrapper";
 
@@ -243,15 +244,15 @@ const PhotoDetail = () => {
     <LoadingWrapper>
       <Layout>
         <div className="flex items-center flex-col justify-center text-ccenter">
-          <h3 className="text-center">PHOTO DETAIL</h3>
-          <div className="flex items-center justify-center flex-col bg-white rounded-lg shadow-lg border w-[600px] h-full">
+          <h3 className="text-center text-[#ff8833] font-semibold">PHOTO DETAIL</h3>
+          <div className="flex items-center justify-center flex-col text-white  bg-black bg-opacity-15 rounded-lg shadow-lg border w-[600px] h-full mt-2">
             {loading ? (
               <p>Loading...</p>
             ) : photo ? (
-              <div className="text-center">
+              <div className="text-center mb-3">
                 <div className="flex items-center justify-between mt-3 text-center">
-                  <h3 className="text-[24px] text-center">{photo.title}</h3>
-                  <SquareArrowUpRight className="mr-4 w-8 h-8 text-center" />
+                  <h3 className="text-[24px] text-center"> {photo.title} </h3>
+                  <SquareArrowUpRight className="mr-4 w-8 h-8 text-center text-gray-300" />
                 </div>
                 <p className="flex justify-start">
                   Description: {photo.description}
@@ -305,7 +306,7 @@ const PhotoDetail = () => {
                 <div className="flex items-center justify-center gap-2">
                   {currentUser ? (
                     <button
-                      className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                      className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
                       onClick={() =>
                         handleLike(
                           photo.id.toString(),
@@ -324,7 +325,7 @@ const PhotoDetail = () => {
                     </button>
                   ) : (
                     <button
-                      className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                      className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
                       onClick={() =>
                         alert("You need to be logged in to like a photo.")
                       }
@@ -341,7 +342,7 @@ const PhotoDetail = () => {
                   {currentUser ? (
                     <>
                       <button
-                        className="w-[115px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                        className="w-[115px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
                         onClick={() => setShowCommentForm(!showCommentForm)}
                       >
                         <MessageCircleMore className="mr-2" />
@@ -356,12 +357,12 @@ const PhotoDetail = () => {
                           />
                           <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-md shadow-lg z-20 w-[90%] max-w-md">
                             <div className="flex items-center justify-between">
-                              <h2>Comment</h2>
+                              <h2 className="text-black">Comment</h2>
                               <button
-                                className="mb-2 w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                                className="mb-2 text-black  flex items-center justify-center text-center no-underline hover:no-underline"
                                 onClick={handleClose}
                               >
-                                Close
+                                <CircleX/>
                               </button>
                             </div>
                             <Form
@@ -387,7 +388,7 @@ const PhotoDetail = () => {
                               </Form.Group>
                               <div className="flex items-center justify-center">
                                 <button
-                                  className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                                  className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
                                   type="submit"
                                 >
                                   Submit
@@ -424,7 +425,7 @@ const PhotoDetail = () => {
                   ) : (
                     <div className="flex items-center justify-center ml-2">
                       <button
-                        className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                        className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
                         onClick={() =>
                           window.open(`/api/${photo.path}`, "_blank")
                         }
@@ -435,15 +436,15 @@ const PhotoDetail = () => {
                   )}
                 </div>
 
-                <p className="mt-2">
+                {/* <p className="mt-2">
                   {photo.price > 0 ? `Price: $${photo.price}` : "Free Download"}
-                </p>
+                </p> */}
               </div>
             ) : (
               <p>Photo not found</p>
             )}
           </div>
-          <div className="mt-4 text-center flex items-center justify-center w-[600px] h-[50px] bg-[#ff8833] text-white shadow-md border rounded-lg cursor-pointer">
+          <div className="mt-4 text-center flex items-center justify-center w-[600px] h-[50px] bg-[#ff8833] hover:bg-orange-500 text-white shadow-md border rounded-lg cursor-pointer">
             <h2 className="text-[18px] text-center mt-2">
               PAYMENT NOW PRICE : {photo?.price} BATH
             </h2>
