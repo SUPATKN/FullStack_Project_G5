@@ -9,9 +9,14 @@ import {
   Tag,
   Heart,
   MessageCircleMore,
+<<<<<<< Updated upstream
   CircleX,
 } from "lucide-react";
 import LoadingWrapper from "../LoadingWrapper";
+=======
+} from "lucide-react";
+//import LoadingWrapper from "../LoadingWrapper";
+>>>>>>> Stashed changes
 
 interface PhotoDetailProps {
   id: number;
@@ -246,6 +251,7 @@ const PhotoDetail = () => {
     <LoadingWrapper>
       <Layout>
         <div className="flex items-center flex-col justify-center text-ccenter">
+<<<<<<< Updated upstream
           <h3 className="text-center text-[#ff8833] font-semibold">PHOTO DETAIL</h3>
           <div className="flex items-center justify-center flex-col text-white  bg-black bg-opacity-10 rounded-lg shadow-lg border w-[600px] h-full mt-2">
             {loading ? (
@@ -255,6 +261,17 @@ const PhotoDetail = () => {
                 <div className="flex items-center justify-between mt-3 text-center">
                   <h3 className="text-[24px] text-center"> {photo.title} </h3>
                   <SquareArrowUpRight className="mr-4 w-8 h-8 text-center text-gray-300" />
+=======
+          <h3 className="text-center">PHOTO DETAIL</h3>
+          <div className="flex items-center justify-center flex-col bg-white rounded-lg shadow-lg border w-[600px] h-full">
+            {loading ? (
+              <p>Loading...</p>
+            ) : photo ? (
+              <div className="text-center">
+                <div className="flex items-center justify-between mt-3 text-center">
+                  <h3 className="text-[24px] text-center">{photo.title}</h3>
+                  <SquareArrowUpRight className="mr-4 w-8 h-8 text-center" />
+>>>>>>> Stashed changes
                 </div>
                 <p className="flex justify-start">
                   Description: {photo.description}
@@ -311,7 +328,11 @@ const PhotoDetail = () => {
                 <div className="flex items-center justify-center gap-2">
                   {currentUser ? (
                     <button
+<<<<<<< Updated upstream
                       className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
+=======
+                      className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+>>>>>>> Stashed changes
                       onClick={() =>
                         handleLike(
                           photo.id.toString(),
@@ -330,7 +351,11 @@ const PhotoDetail = () => {
                     </button>
                   ) : (
                     <button
+<<<<<<< Updated upstream
                       className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
+=======
+                      className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+>>>>>>> Stashed changes
                       onClick={() =>
                         alert("You need to be logged in to like a photo.")
                       }
@@ -347,7 +372,11 @@ const PhotoDetail = () => {
                   {currentUser ? (
                     <>
                       <button
+<<<<<<< Updated upstream
                         className="w-[115px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
+=======
+                        className="w-[115px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+>>>>>>> Stashed changes
                         onClick={() => setShowCommentForm(!showCommentForm)}
                       >
                         <MessageCircleMore className="mr-2" />
@@ -430,7 +459,11 @@ const PhotoDetail = () => {
                   ) : (
                     <div className="flex items-center justify-center ml-2">
                       <button
+<<<<<<< Updated upstream
                         className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
+=======
+                        className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+>>>>>>> Stashed changes
                         onClick={() =>
                           window.open(`/api/${photo.path}`, "_blank")
                         }
@@ -441,15 +474,25 @@ const PhotoDetail = () => {
                   )}
                 </div>
 
+<<<<<<< Updated upstream
                 {/* <p className="mt-2">
                   {photo.price > 0 ? `Price: $${photo.price}` : "Free Download"}
                 </p> */}
+=======
+                <p className="mt-2">
+                  {photo.price > 0 ? `Price: $${photo.price}` : "Free Download"}
+                </p>
+>>>>>>> Stashed changes
               </div>
             ) : (
               <p>Photo not found</p>
             )}
           </div>
+<<<<<<< Updated upstream
           <div className="mt-4 text-center flex items-center justify-center w-[600px] h-[50px] bg-[#ff8833] hover:bg-orange-500 text-white shadow-md border rounded-lg cursor-pointer">
+=======
+          <div className="mt-4 text-center flex items-center justify-center w-[600px] h-[50px] bg-[#ff8833] text-white shadow-md border rounded-lg cursor-pointer">
+>>>>>>> Stashed changes
             <h2 className="text-[18px] text-center mt-2">
               PAYMENT NOW PRICE : {photo?.price} BATH
             </h2>

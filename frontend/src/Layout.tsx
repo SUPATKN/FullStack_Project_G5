@@ -6,7 +6,7 @@ import useAuth from "./hook/useAuth";
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useAuth();
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen Body">
       <NavBar />
       <Container className="flex-grow my-4">{children}</Container>
       <footer className="mt-auto flex justify-center bg-[#37517e] p-5 shadow-lg border rounded-md w-full h-[110px]">

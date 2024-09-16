@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Upload from "./pages/Upload";
-import Home from "./pages/Home";
 import Gallery from "./pages/Gallery";
 import Creator from "./pages/Creator";
 import Instructor from "./pages/Instructor";
@@ -20,32 +19,111 @@ import PurchasedPhotos from "./pages/PurchasedPhotos";
 import ProfileAdmin from "./pages/ProfileAdmin";
 import SlipViewPage from "./pages/SlipViewPage";
 import PrivateRoute from "./components/PrivateRoute"; // Adjust the path if needed
+import ViewAlbumPhotos from "./pages/Profile/ViewAlbumPhotos";
 
 axios.defaults.withCredentials = true;
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  
-  <React.StrictMode >
-    <QueryClientProvider client={queryClient} >
-      <Router >
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <Router>
         <Routes>
-          <Route path="/home" element={<Home />} />
+          <Route path="/home" element={<Gallery />} />
           <Route path="/" element={<Gallery />} />
-          <Route path="/upload" element={<PrivateRoute><Upload /></PrivateRoute>} />
-          <Route path="/creator" element={<PrivateRoute><Creator /></PrivateRoute>} />
-          <Route path="/instructor" element={<PrivateRoute><Instructor /></PrivateRoute>} />
+          <Route
+            path="/upload"
+            element={
+              <PrivateRoute>
+                <Upload />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/creator"
+            element={
+              <PrivateRoute>
+                <Creator />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/instructor"
+            element={
+              <PrivateRoute>
+                <Instructor />
+              </PrivateRoute>
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-          <Route path="/profile/:userId" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile/:userId"
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/cart" element={<PrivateRoute><Cart /></PrivateRoute>} />
-          <Route path="/coin" element={<PrivateRoute><Coin /></PrivateRoute>} />
+          <Route
+            path="/cart"
+            element={
+              <PrivateRoute>
+                <Cart />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/coin"
+            element={
+              <PrivateRoute>
+                <Coin />
+              </PrivateRoute>
+            }
+          />
           <Route path="/photo/:id" element={<PhotoDetail />} />
-          <Route path="/purchased-photos" element={<PrivateRoute><PurchasedPhotos /></PrivateRoute>} />
-          <Route path="/profileadmin" element={<PrivateRoute adminOnly><ProfileAdmin /></PrivateRoute>} />
-          <Route path="/slip/:slipId" element={<PrivateRoute><SlipViewPage /></PrivateRoute>} />
+          <Route
+            path="/purchased-photos"
+            element={
+              <PrivateRoute>
+                <PurchasedPhotos />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profileadmin"
+            element={
+              <PrivateRoute adminOnly>
+                <ProfileAdmin />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/slip/:slipId"
+            element={
+              <PrivateRoute>
+                <SlipViewPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/album/:albumId/photos"
+            element={
+              <PrivateRoute>
+                <ViewAlbumPhotos />
+              </PrivateRoute>
+            }
+          />{" "}
+          {/* New route */}
         </Routes>
       </Router>
     </QueryClientProvider>

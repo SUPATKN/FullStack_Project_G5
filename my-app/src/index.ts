@@ -1398,24 +1398,33 @@ app.post("/api/create_album", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/api/albums/:user_id", async (req: Request, res: Response) => {
-  const { user_id } = req.params;
+app.get("/api/album/:albumId", async (req: Request, res: Response) => {
+  const { albumId } = req.params;
 
-  if (!user_id) {
-    return res.status(400).json({ error: "User ID is required" });
+  if (!albumId) {
+    return res.status(400).json({ error: "Album ID is required" });
   }
 
   try {
-    const userAlbums = await dbClient
+    // ดึงข้อมูล album จากฐานข้อมูล
+    const albumsForUser = await dbClient
       .select()
       .from(albums)
-      .where(eq(albums.user_id, Number(user_id)))
+      .where(eq(albums.album_id, Number(albumId))) // ใช้ albumId เป็น id ของ album
       .execute();
 
-    // Return an empty array if no albums are found
-    res.status(200).json(userAlbums);
+    if (albumsForUser.length === 0) {
+      return res.status(404).json({ error: "No album found with this ID" });
+    }
+
+    // ส่งข้อมูลของ album กลับไป
+    const album = albumsForUser[0];
+    res.status(200).json({
+      title: album.title,
+      description: album.description,
+    });
   } catch (error) {
-    console.error("Error fetching albums:", error);
+    console.error("Error fetching album details:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

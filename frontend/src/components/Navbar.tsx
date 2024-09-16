@@ -1,6 +1,6 @@
 import React, { useState} from "react";
 import {Link, useLocation } from "react-router-dom";
-import Logo from "../LogoPreflight.png";
+import Logo from "../LOGOArtandCommunity.png";
 import "../global.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import axios from "axios";
@@ -31,10 +31,11 @@ const NavBar: React.FC = () => {
     <div className="containerNav">
       <Link to="/" className="navbar-brand">
         <img src={Logo} alt="My Photo App Logo" className="logo" />
-      </Link>
-      <button className="navbar-toggle" onClick={toggleNav}>
+        <button className="navbar-toggle" onClick={toggleNav}>
         ☰
       </button>
+      </Link>
+      
       <div className={`navbar-collapse ${isNavOpen ? "active" : ""}`}>
         <ul className="nav-links">
           <li className={`${location.pathname === "/home" ? "active" : ""}`}>
@@ -60,43 +61,51 @@ const NavBar: React.FC = () => {
             </Link>
           </li>
         </ul>
-        <div className="nav-actions">
+        
+      </div>
+      <div className="nav-actions">
           {!user ? (
             <>
-              <Link to="/login" className="nav-link start-upload">
+              <Link to="/login" className={`nav-link start-upload ${location.pathname === '' ? 'active' : ''}`}>
               <FontAwesomeIcon icon={faUpload}/>  
-              <div className="start-upload-text">Start Upload</div>
+              <div className={`nav-link start-upload ${location.pathname === '' ? 'active' : ''}`} >Start&nbsp;Upload</div>
               </Link>
               <div className="signup-login">
-                <Link to="/register" className="nav-link signup">
-                  Sign Up
+                <Link to="/register" className={`nav-link signup  ${location.pathname === '/register' ? 'active' : ''}`} >
+                  Sign&nbsp;Up
                 </Link>
-                <Link to="/login" className="nav-link login ">
-                  Log In
+                <Link to="/login" className={`nav-link login  ${location.pathname === '/login' ? 'active' : ''}`} >
+                  Log&nbsp;In
                 </Link>
               </div>
             </>
           ) : (
             <>
-              <Link to="/coin" className="nav-link coin">
-                <i className="bi bi-coin"></i> {user.coin}
+              <Link to="/upload" className={`nav-link start-upload ${location.pathname === '/upload' ? 'active' : ''}`}>
+              <FontAwesomeIcon icon={faUpload}/>  
+              <div className={`nav-link start-upload ${location.pathname === '/upload' ? 'active' : ''}`} >Start&nbsp;Upload</div>
               </Link>
-              <Link to="/cart" className="nav-link cart">
-                <i className="bi bi-cart4"></i>
-              </Link>
-              <Link to={`/profile/${user.id}`} className="nav-link profile">
-                Profile
-              </Link>
-              <Link to="/upload" className="nav-link upload">
-                Start Upload
-              </Link>
+              
+              <div className="nav-actions pro">
+                <Link to="/coin" className={`nav-link coin ${location.pathname === '/coin' ? 'active' : ''}`}>
+                  <i className="bi bi-coin"></i> {user.coin}
+                </Link>
+
+                <Link to="/cart" className={`nav-link cart ${location.pathname === '/cart' ? 'active' : ''}`}>
+                  <i className="bi bi-cart3"></i>
+                </Link>
+
+                <Link to={`/profile/${user.id}`} className={`nav-link profile ${location.pathname === '/profile' ? 'active' : ''}`}>
+                    Profile
+                </Link>
+              </div>
+              
               <Link to="/" onClick={handleLogout} className="nav-link logout">
                 Logout
               </Link>
             </>
           )}
         </div>
-      </div>
     </div>
   </nav>
 );

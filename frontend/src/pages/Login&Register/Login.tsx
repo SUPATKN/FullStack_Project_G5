@@ -3,6 +3,7 @@ import axios from "axios";
 import Layout from "../../Layout";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../../hook/useAuth";
+import LogoGoogle from "../pnggoogle.png"
 
 const Login: FC = () => {
   const [email, setEmail] = useState("");
@@ -90,16 +91,11 @@ const Login: FC = () => {
         {loginStatus && <p style={{ color: "green" }}>{loginStatus}</p>}
 
         <h1>Social Login</h1>
+
         <article>
           <div style={{ display: "flex", gap: "2rem" }}>
             <button onClick={handleGoogleLogin}>
-              <svg width="90" height="90">
-                <image
-                  xlinkHref="logos/google-icon.svg"
-                  width="90"
-                  height="90"
-                />
-              </svg>
+              <img src={LogoGoogle} alt="GoogleLogo" style={{ width: "24px", height: "24px", marginRight: "8px" }} />
               <span>Login with Google</span>
             </button>
           </div>
