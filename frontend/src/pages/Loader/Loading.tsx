@@ -27,7 +27,7 @@ export default function Loading() {
       <ChangingButton duration={2000} text="I" color="blue" />
       <ChangingButton duration={1500} text="N" color="pink" />
       <ChangingButton duration={1000} text="G" color="indigo" />
-    </div> //bg-opacity-75
+    </div>
   );
 }
 

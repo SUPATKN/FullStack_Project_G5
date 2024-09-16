@@ -5,6 +5,7 @@ import { Button, Image, Form } from "react-bootstrap";
 import Layout from "../Layout";
 import useAuth from "../hook/useAuth";
 import { SquareArrowUpRight, Tag , Heart , MessageCircleMore } from "lucide-react";
+import LoadingWrapper from "../LoadingWrapper";
 
 interface PhotoDetailProps {
   id: number;
@@ -234,181 +235,183 @@ const PhotoDetail = () => {
   };
 
   return (
-    <Layout>
-      <div className="flex items-center flex-col justify-center text-ccenter">
-        <h3 className="text-center">PHOTO DETAIL</h3>
-        <div className="flex items-center justify-center flex-col bg-white rounded-lg shadow-lg border w-[600px] h-full">
-          {loading ? (
-            <p>Loading...</p>
-          ) : photo ? (
-            <div className="text-center">
-              <div className="flex items-center justify-between mt-3">
-                <h3 className="text-[24px]">Photo{photo.id}</h3>
-                <SquareArrowUpRight className="mr-4 w-8 h-8"/>
-              </div>
-              <p className="flex justify-start">Description: {photo.description}</p>
-              <div className="flex items-center justify-start gap-2">
-                <Tag className="text-[#ff8833]"/>
-                <h2  className="text-[16px]">Animal</h2>
-              </div>
-              <div className="flex items-center justify-center mt-2">
-                <Image
-                  crossOrigin="anonymous"
-                  src={`/api/${photo.path}`}
-                  alt={`Image ${photo.id}`}
-                  className="w-[550px] h-[350px] rounded-lg"
-                  onContextMenu={handleImageContextMenu}
-                />
-              </div>
-              <h4 className="mt-3 text-[16px] flex justify-start">Price: {photo.price > 0 ? `$${photo.price}` : "Free Download"}</h4>
-              <div className="flex items-center justify-start">
-                <Heart className="text-[20px]"  />
-                <h2 className="text-[20px] ml-4 mt-2">
-                  {getLikeCount(photo.id.toString())}
-                </h2>  
-              </div>
-              <MessageCircleMore/>
-              <div className="mt-3">
-                {(commentMap[photo.id.toString()] || []).map((comment) => (
-                  <div key={comment.id} className="flex justify-between items-center text-center">
-                    <p className="text-[16px]"> {getUsername(comment.user_id)} : {" "} {comment.content}</p>
-                    {currentUser?.id === comment.user_id && (
+    <LoadingWrapper>
+      <Layout>
+        <div className="flex items-center flex-col justify-center text-ccenter">
+            <h3 className="text-center">PHOTO DETAIL</h3>
+            <div className="flex items-center justify-center flex-col bg-white rounded-lg shadow-lg border w-[600px] h-full">
+              {loading ? (
+                <p>Loading...</p>
+              ) : photo ? (
+                <div className="text-center">
+                  <div className="flex items-center justify-between mt-3">
+                    <h3 className="text-[24px]">Photo{photo.id}</h3>
+                    <SquareArrowUpRight className="mr-4 w-8 h-8"/>
+                  </div>
+                  <p className="flex justify-start">Description: {photo.description}</p>
+                  <div className="flex items-center justify-start gap-2">
+                    <Tag className="text-[#ff8833]"/>
+                    <h2  className="text-[16px]">Animal</h2>
+                  </div>
+                  <div className="flex items-center justify-center mt-2">
+                    <Image
+                      crossOrigin="anonymous"
+                      src={`/api/${photo.path}`}
+                      alt={`Image ${photo.id}`}
+                      className="w-[550px] h-[350px] rounded-lg"
+                      onContextMenu={handleImageContextMenu}
+                    />
+                  </div>
+                  <h4 className="mt-3 text-[16px] flex justify-start">Price: {photo.price > 0 ? `$${photo.price}` : "Free Download"}</h4>
+                  <div className="flex items-center justify-start">
+                    <Heart className="text-[20px]"  />
+                    <h2 className="text-[20px] ml-4 mt-2">
+                      {getLikeCount(photo.id.toString())}
+                    </h2>  
+                  </div>
+                  <MessageCircleMore/>
+                  <div className="mt-3">
+                    {(commentMap[photo.id.toString()] || []).map((comment) => (
+                      <div key={comment.id} className="flex justify-between items-center text-center">
+                        <p className="text-[16px]"> {getUsername(comment.user_id)} : {" "} {comment.content}</p>
+                        {currentUser?.id === comment.user_id && (
+                          <button
+                            className="w-[70px] mb-2 h-[30px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                            onClick={() => handleDeleteComment(photo.id.toString(), comment.id)} 
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    {currentUser ? (
                       <button
-                        className="w-[70px] mb-2 h-[30px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                        onClick={() => handleDeleteComment(photo.id.toString(), comment.id)} // ใช้ `comment.id` เพื่อลบความคิดเห็นที่เฉพาะเจาะจง
+                        className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                        onClick={() =>handleLike(photo.id.toString(), currentUser.id.toString())}
                       >
-                        Delete
+                        <Heart className="text-[16px] mr-2"  />
+                        {likes.some(
+                          (like) =>
+                            like.photo_id === parseInt(photo.id.toString()) && like.user_id === parseInt(currentUser.id.toString())
+                        )
+                          ? "Unlike" : "Like"}                    
+                      </button>
+                    ) : (
+                      <button
+                        className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                        onClick={() => alert("You need to be logged in to like a photo.")}
+                      >
+                        Like
                       </button>
                     )}
-                  </div>
-                ))}
-              </div>
-              <div className="flex items-center justify-center gap-2">
-                {currentUser ? (
-                  <button
-                    className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                    onClick={() =>handleLike(photo.id.toString(), currentUser.id.toString())}
-                  >
-                    <Heart className="text-[16px] mr-2"  />
-                    {likes.some(
-                      (like) =>
-                        like.photo_id === parseInt(photo.id.toString()) && like.user_id === parseInt(currentUser.id.toString())
-                    )
-                      ? "Unlike" : "Like"}                    
-                  </button>
-                ) : (
-                  <button
-                    className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                    onClick={() => alert("You need to be logged in to like a photo.")}
-                  >
-                    Like
-                  </button>
-                )}
-                <p className="mt-2" onClick={() => handleUsernameClick(photo.user_id.toString())}/>
-                {currentUser ? (
-                  <>
-                    <button
-                      className="w-[115px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                      onClick={() => setShowCommentForm(!showCommentForm)}
-                    >
-                      <MessageCircleMore className="mr-2"/>
-                      Comment
-                    </button>
-
-                    {showCommentForm && (
+                    <p className="mt-2" onClick={() => handleUsernameClick(photo.user_id.toString())}/>
+                    {currentUser ? (
                       <>
-                        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-10" onClick={() => setShowCommentForm(false)}/>
-                          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-md shadow-lg z-20 w-[90%] max-w-md">
-                            <div className="flex items-center justify-between">
-                              <h2>Comment</h2>
-                              <button
-                                className="mb-2 w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                                onClick={handleClose}
-                              >
-                                Close
-                              </button>
-                            </div>
-                            <Form
-                              onSubmit={(e) => {
-                                e.preventDefault();
-                                handleCommentSubmit(photo.id.toString());
-                                setShowCommentForm(false);
-                              }}
-                            >
-                              <Form.Group className="mb-3">
-                                <Form.Control
-                                  className="w-[100px] h-[35px] rounded-md"
-                                  type="text"
-                                  placeholder="Write a comment..."
-                                  value={newComments[photo.id.toString()] || ""}
-                                  onChange={(e) =>
-                                    handleCommentChange(photo.id.toString(), e.target.value)
-                                  }
-                                />
-                              </Form.Group>
-                              <div className="flex items-center justify-center">
-                                <button
-                                  className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                                  type="submit"
+                        <button
+                          className="w-[115px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                          onClick={() => setShowCommentForm(!showCommentForm)}
+                        >
+                          <MessageCircleMore className="mr-2"/>
+                          Comment
+                        </button>
+
+                        {showCommentForm && (
+                          <>
+                            <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-10" onClick={() => setShowCommentForm(false)}/>
+                              <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-md shadow-lg z-20 w-[90%] max-w-md">
+                                <div className="flex items-center justify-between">
+                                  <h2>Comment</h2>
+                                  <button
+                                    className="mb-2 w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                                    onClick={handleClose}
+                                  >
+                                    Close
+                                  </button>
+                                </div>
+                                <Form
+                                  onSubmit={(e) => {
+                                    e.preventDefault();
+                                    handleCommentSubmit(photo.id.toString());
+                                    setShowCommentForm(false);
+                                  }}
                                 >
-                                  Submit
-                                </button>
+                                  <Form.Group className="mb-3">
+                                    <Form.Control
+                                      className="w-[100px] h-[35px] rounded-md"
+                                      type="text"
+                                      placeholder="Write a comment..."
+                                      value={newComments[photo.id.toString()] || ""}
+                                      onChange={(e) =>
+                                        handleCommentChange(photo.id.toString(), e.target.value)
+                                      }
+                                    />
+                                  </Form.Group>
+                                  <div className="flex items-center justify-center">
+                                    <button
+                                      className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                                      type="submit"
+                                    >
+                                      Submit
+                                    </button>
+                                  </div>
+                                </Form>
                               </div>
-                            </Form>
-                          </div>
+                          </>
+                        )}
                       </>
+                    ) : (
+                      <p className="text-danger">Log in to leave a comment.</p>
                     )}
-                  </>
-                ) : (
-                  <p className="text-danger">Log in to leave a comment.</p>
-                )}
 
-              {photo.price > 0 && !hasPurchased ? (
-                currentUser ? (
-                  <Button variant="primary" onClick={handlePurchase}>
-                    Buy for ${photo.price}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="secondary"
-                    onClick={() =>
-                      alert("You need to be logged in to purchase a photo.")
-                    }
-                  >
-                    Buy for ${photo.price}
-                    <div className="centered-links">
-                      <a href="/login">Login</a> or
-                      <a href="/register">Register</a>
+                  {photo.price > 0 && !hasPurchased ? (
+                    currentUser ? (
+                      <Button variant="primary" onClick={handlePurchase}>
+                        Buy for ${photo.price}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="secondary"
+                        onClick={() =>
+                          alert("You need to be logged in to purchase a photo.")
+                        }
+                      >
+                        Buy for ${photo.price}
+                        <div className="centered-links">
+                          <a href="/login">Login</a> or
+                          <a href="/register">Register</a>
+                        </div>
+                      </Button>
+                    )
+                  ) : (
+                    <div className="flex items-center justify-center ml-2">
+                      <button
+                        className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                        onClick={() => window.open(`/api/${photo.path}`, "_blank")}
+                      >
+                        Download
+                      </button>
                     </div>
-                  </Button>
-                )
-              ) : (
-                <div className="flex items-center justify-center ml-2">
-                  <button
-                    className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                    onClick={() => window.open(`/api/${photo.path}`, "_blank")}
-                  >
-                    Download
-                  </button>
-                </div>
-              )}
-              </div>
+                  )}
+                  </div>
 
-              <p className="mt-2">
-                {photo.price > 0 ? `Price: $${photo.price}` : "Free Download"}
-              </p>
+                  <p className="mt-2">
+                    {photo.price > 0 ? `Price: $${photo.price}` : "Free Download"}
+                  </p>
+                </div>
+              ) : (
+                <p>Photo not found</p>
+              )}
             </div>
-          ) : (
-            <p>Photo not found</p>
-          )}
+            <div className="mt-4 text-center flex items-center justify-center w-[600px] h-[50px] bg-[#ff8833] text-white shadow-md border rounded-lg cursor-pointer">
+              <h2 className="text-[18px] text-center mt-2">
+                PAYMENT NOW  PRICE : {photo?.price} BATH
+              </h2>
+            </div>
         </div>
-        <div className="mt-4 text-center flex items-center justify-center w-[600px] h-[50px] bg-[#ff8833] text-white shadow-md border rounded-lg cursor-pointer">
-          <h2 className="text-[18px] text-center mt-2">
-            PAYMENT NOW  PRICE : {photo?.price} BATH
-          </h2>
-        </div>
-      </div>
-    </Layout>
+      </Layout>
+    </LoadingWrapper>
   );
 };
 

@@ -1,40 +1,37 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Image, Row, Col, Button } from "react-bootstrap";
+import { Image, Row, Col , Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Layout from "../Layout";
 import useAuth from "../hook/useAuth";
-// import { format } from "date-fns";
+import { Heart, MessageCircleMore } from "lucide-react";
 
 interface UserProfile {
   id: number;
   username: string;
   email: string;
+  avatarURL?: string;
 }
 
 interface Comment {
   id: number;
   photo_id: string;
-  user_id: string;
   content: string;
+  user_id: string;
   created_at: string;
 }
 
 const Gallery = () => {
-  const [photos, setPhotos] = useState<
-    { id: string; path: string; user_id: string; price: number }[]
-  >([]);
-  const [users, setUsers] = useState<{ id: string; username: string }[]>([]);
-
+  const [photos, setPhotos] = useState<{ id: string; path: string; user_id: string; price: number }[]>([]);
+  const [users, setUsers] = useState<{ id: string; username: string; avatarURL?: string }[]>([]);
   const { user: me, refetch } = useAuth();
-  // const [error, setError] = useState<string | null>(null);
-  // const [success, setSuccess] = useState<string | null>(null);
-
-  const [cartItems, setCartItems] = useState<
-    { id: string; path: string; user_id: string; price: number }[]
-  >([]);
+  const [cartItems, setCartItems] = useState<{ id: string; path: string; user_id: string; price: number }[]>([]);
+  const [commentMap, setCommentMap] = useState<{ [key: string]: Comment[] }>({});
+  const [error, setError] = useState<string | null>(null);
+  const [hoveredPhotoId, setHoveredPhotoId] = useState<string | null>(null);
+  const [likes, setLikes] = useState<{ photo_id: number; user_id: number }[]>([]);
 
   const navigate = useNavigate();
 
@@ -46,31 +43,55 @@ const Gallery = () => {
     e: React.MouseEvent<HTMLImageElement, MouseEvent>,
     photoId: string
   ) => {
-    e.preventDefault(); // Prevent the default context menu
-    // Implement your custom behavior here
+    e.preventDefault();
     console.log(`Right-clicked on photo with ID: ${photoId}`);
-    // For example, you might show a modal or perform another action
   };
 
   const fetchImages = async () => {
     try {
-      const { data } = await axios.get<
-        { id: string; path: string; user_id: string; price: number }[]
-      >("/api/photo");
+      const { data } = await axios.get<{ id: string; path: string; user_id: string; price: number }[]>("/api/photo");
       setPhotos(data);
     } catch (error) {
+      setError("Error fetching images");
       console.error("Error fetching images:", error);
     }
   };
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get<{ id: string; username: string }[]>(
-        "/api/allusers"
-      );
+      const { data } = await axios.get<{ id: string; username: string; avatarURL?: string }[]>("/api/allusers");
       setUsers(data);
     } catch (error) {
+      setError("Error fetching users");
       console.error("Error fetching users:", error);
+    }
+  };
+
+  const fetchComments = async () => {
+    try {
+      const { data } = await axios.get<Comment[]>("/api/getcomments");
+      const map = data.reduce((acc, comment) => {
+        if (!acc[comment.photo_id]) {
+          acc[comment.photo_id] = [];
+        }
+        acc[comment.photo_id].push(comment);
+        return acc;
+      }, {} as { [key: string]: Comment[] });
+      setCommentMap(map);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      setError("Error fetching comments");
+    }
+  };
+
+  const fetchLikes = async () => {
+    try {
+      const { data } = await axios.get<{ photo_id: number; user_id: number }[]>(
+        "/api/getlikes"
+      );
+      setLikes(data);
+    } catch (error) {
+      console.error("Error fetching likes:", error);
     }
   };
 
@@ -78,14 +99,14 @@ const Gallery = () => {
     refetch();
     fetchUsers();
     fetchImages();
+    fetchLikes();
+    fetchComments();
   }, [me]);
 
   const fetchCartItems = async () => {
     if (me) {
       try {
-        const { data } = await axios.get<
-          { id: string; path: string; user_id: string; price: number }[]
-        >(`/api/cart/${me.id}`);
+        const { data } = await axios.get<{ id: string; path: string; user_id: string; price: number }[]>(`/api/cart/${me.id}`);
         setCartItems(data);
       } catch (error) {
         console.error("Error fetching cart items:", error);
@@ -95,21 +116,9 @@ const Gallery = () => {
 
   useEffect(() => {
     if (me) {
-      fetchCartItems(); // Fetch cart items when the user profile is available
+      fetchCartItems();
     }
   }, [me]);
-
-  const getUsername = (userId: string) => {
-    const user = users.find((user) => user.id === userId);
-    return user ? user.username : "Unknown User";
-  };
-
-  const handleUsernameClick = (userId: string) => {
-    const user = users.find((user) => user.id === userId);
-    if (user) {
-      navigate(`/profile/${userId}`, { state: { user } });
-    }
-  };
 
   const handleAddToCart = async (photoId: string) => {
     if (!me) {
@@ -123,7 +132,6 @@ const Gallery = () => {
       return;
     }
 
-    // Check if the photo is already in the cart
     const alreadyInCart = cartItems.some((item) => item.id === photoId);
 
     if (alreadyInCart) {
@@ -148,40 +156,92 @@ const Gallery = () => {
       console.error("Error adding photo to cart:", error);
     }
   };
+
+  const getLikeCount = (photoId: string) => {
+    return likes.filter((like) => like.photo_id === parseInt(photoId)).length;
+  };
+
+  const getCommentCount = (photoId: string) => {
+    return commentMap[photoId]?.length || 0;
+  };
+
+  const getUsername = (userId: string) => {
+    const user = users.find((user) => user.id === userId);
+    return user ? user.username : "Unknown User";
+  };
+
+  const handleUsernameClick = (userId: string) => {
+    const user = users.find((user) => user.id === userId);
+    if (user) {
+      navigate(`/profile/${userId}`, { state: { user } });
+    }
+  };
+
   return (
     <Layout>
-      <h3 className="mb-4 text-center">GALLERY</h3>
-      <hr />
+      <h3 className="mb-4 text-center text-[#ff8833]">GALLERY</h3>
+      {error && <p className="text-danger text-center">{error}</p>}
       <Row>
         {photos.map((photo) => (
           <Col key={photo.id} xs={12} md={4} lg={3} className="mb-4">
-            <Image
-              crossOrigin="anonymous"
-              src={`/api/${photo.path}`}
-              alt={`Image ${photo.id}`}
-              thumbnail
-              className="w-100"
-              onClick={() => handlePhotoClick(photo.id)}
-              onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
-              style={{ cursor: "pointer" }}
-            />
-            <p
-              className="mt-2"
-              onClick={() => handleUsernameClick(photo.user_id)}
+            <div 
+              className="relative flex flex-col w-[300px] h-full bg-white rounded-lg shadow-md border mt-3 p-2"
+              onMouseEnter={() => setHoveredPhotoId(photo.id)}
+              onMouseLeave={() => setHoveredPhotoId(null)}
             >
-              {getUsername(photo.user_id)}
-            </p>
-            {me && (
-              <>
-                <Button
-                  variant="success"
-                  className="mt-2"
-                  onClick={() => handleAddToCart(photo.id)}
-                >
-                  Add to Cart
-                </Button>
-              </>
-            )}
+              <div className="relative flex flex-col items-center justify-center mt-3">
+                <Image
+                  crossOrigin="anonymous"
+                  src={`/api/${photo.path}`}
+                  alt={`Image ${photo.id}`}
+                  className="w-[250px] h-[200px] rounded-md cursor-pointer"
+                  onClick={() => handlePhotoClick(photo.id)}
+                  onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
+                />
+                {hoveredPhotoId === photo.id && (
+                  <div className="absolute w-[250px] object-cover h-full bg-black bg-opacity-50 flex flex-col items-center justify-start text-white p-4 pointer-events-none">
+                    <h3 className="text-[24px] text-[#ff8833]">Photo {photo.id}</h3>
+                    {me && (
+                      <h5 className="flex items-center">
+                        {me.avatarURL ? (
+                          <Image
+                            src={me.avatarURL}
+                            alt="Profile Picture"
+                            className="w-8 h-8 rounded-full"
+                            width={32}
+                            height={32}
+                          />
+                        ) : (
+                          <span className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-700">U</span>
+                        )}
+                        <span className="ml-2">User {me.username}</span>
+                      </h5>
+                    )}
+                    <div className="flex gap-4 mt-5">
+                      <div className="flex items-center">
+                        <Heart className="mr-2" />
+                        {getLikeCount(photo.id)}
+                      </div>
+                      <div className="flex items-center">
+                        <MessageCircleMore className="mr-2" />
+                        {getCommentCount(photo.id)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {me && (
+                <>
+                  <Button
+                    variant="success"
+                    className="mt-2"
+                    onClick={() => handleAddToCart(photo.id)}
+                  >
+                    Add to Cart
+                  </Button>
+                </>
+              )}
+            </div>
           </Col>
         ))}
       </Row>

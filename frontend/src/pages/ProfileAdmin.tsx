@@ -344,11 +344,11 @@ const Admin = () => {
 
         <div>
           <h4 className="mt-4 flex items-center text-black text-2xl">
-            <Hexagon className="text-white w-10 h-10 mr-2"/>
+            <Hexagon className="text-black w-10 h-10 mr-2"/>
             Payment Slips
           </h4>
           <div className="overflow-hidden rounded-lg border shadow-md bg-white">
-            <table className="table-auto mx-auto w-[1296px] border-collapse">
+            <table className="table-auto mx-auto w-[1296px] h-full border-collapse">
               <thead>
                 <tr className="text-center">
                   <th className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap rounded-tl-lg">
@@ -427,11 +427,11 @@ const Admin = () => {
           </div>
 
           <h4 className="mt-4 flex items-center text-black text-2xl">
-            <Hexagon className="text-white w-10 h-10 mr-2"/>
+            <Hexagon className="text-black w-10 h-10 mr-2"/>
             Users
           </h4>
           <div className="overflow-hidden rounded-lg border shadow-md bg-white">
-            <table className="table-auto mx-auto w-[1296px] border-collapse">
+            <table className="table-auto mx-auto w-[1296px] h-full border-collapse">
               <thead>
                 <tr className="text-center">
                   <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
@@ -475,11 +475,11 @@ const Admin = () => {
           </div>
           
           <h4 className="mt-4 flex items-center text-black text-2xl">
-            <Hexagon className="text-white w-10 h-10 mr-2"/>
+            <Hexagon className="text-black w-10 h-10 mr-2"/>
             User Photos
           </h4>
           <div className="overflow-hidden rounded-lg border shadow-md bg-white">
-            <table className="table-auto mx-auto w-[1296px] border-collapse">
+            <table className="table-auto mx-auto w-[1296px] h-full border-collapse">
               <thead>
                 <tr className="text-center">
                   <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
@@ -546,7 +546,7 @@ const Admin = () => {
             </tbody>
           </Table> */}
           <h4 className="mt-4 flex items-center text-black text-2xl">
-            <Hexagon className="text-white w-10 h-10 mr-2"/>
+            <Hexagon className="text-black w-10 h-10 mr-2"/>
             User Stats Bar Graph
           </h4>
           <div className="w-[80%] mx-auto">
@@ -590,7 +590,7 @@ const Admin = () => {
 
           {/* Orders History */}
           <h4 className="mt-4 flex items-center text-black text-2xl">
-            <Hexagon className="text-white w-10 h-10 mr-2"/>
+            <Hexagon className="text-black w-10 h-10 mr-2"/>
             Orders History
           </h4>
           <div className="overflow-hidden rounded-lg border shadow-md bg-white">
@@ -639,7 +639,7 @@ const Admin = () => {
 
           {/* Transactions History */}
           <h4 className="mt-4 flex items-center text-black text-2xl">
-            <Hexagon className="text-white w-10 h-10 mr-2"/>
+            <Hexagon className="text-black w-10 h-10 mr-2"/>
             Transactions History
           </h4>
           <div className="overflow-hidden rounded-lg border shadow-md bg-white">
