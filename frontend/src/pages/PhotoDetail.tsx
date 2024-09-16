@@ -247,7 +247,7 @@ const PhotoDetail = () => {
       <Layout>
         <div className="flex items-center flex-col justify-center text-ccenter">
           <h3 className="text-center text-[#ff8833] font-semibold">PHOTO DETAIL</h3>
-          <div className="flex items-center justify-center flex-col text-white  bg-black bg-opacity-15 rounded-lg shadow-lg border w-[600px] h-full mt-2">
+          <div className="flex items-center justify-center flex-col text-white  bg-black bg-opacity-10 rounded-lg shadow-lg border w-[600px] h-full mt-2">
             {loading ? (
               <p>Loading...</p>
             ) : photo ? (

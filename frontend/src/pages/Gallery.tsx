@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Image, Row, Col, Button } from "react-bootstrap";
+import { Image, Row, Col  } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Layout from "../Layout";
@@ -153,31 +153,31 @@ const Gallery = () => {
       console.error("User is not logged in");
       return;
     }
-
+  
     const photo = photos.find((photo) => photo.id === photoId);
-
+  
     if (!photo) {
       return;
     }
-
+  
     const alreadyInCart = cartItems.some((item) => item.id === photoId);
-
+  
     if (alreadyInCart) {
       alert("This item is already in your cart.");
       return;
     }
-
+  
     if (photo.user_id === me.id.toString()) {
       alert("You cannot add your own photo to the cart.");
       return;
     }
-
+  
     try {
       const response = await axios.post("/api/cart/add", {
         user_id: me.id,
         photo_id: photoId,
       });
-
+  
       alert(response.data.message); // Display success message
       fetchCartItems(); // Refresh cart items after successful addition
     } catch (error) {
@@ -212,13 +212,13 @@ const Gallery = () => {
 
   return (
     <Layout>
-      <h3 className="mb-4 text-center text-[#ff8833]">GALLERY</h3>
+      <h3 className="mb-4 text-center text-[#ff8833] font-semibold">GALLERY</h3>
       {error && <p className="text-danger text-center">{error}</p>}
       <Row>
         {photos.map((photo) => (
           <Col key={photo.id} xs={12} md={4} lg={3} className="mb-4">
             <div
-              className="relative flex flex-col w-[300px] h-full bg-white rounded-lg shadow-md border mt-3 p-2"
+              className="relative flex flex-col w-[300px] h-full bg-black bg-opacity-10 rounded-lg shadow-md border mt-3 p-2"
               onMouseEnter={() => setHoveredPhotoId(photo.id)}
               onMouseLeave={() => setHoveredPhotoId(null)}
             >
@@ -275,13 +275,14 @@ const Gallery = () => {
               </div>
               {me && (
                 <>
-                  <Button
-                    variant="success"
-                    className="mt-2"
+                <div className="flex items-center justify-center mt-3">
+                  <button
+                    className="w-full h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
                     onClick={() => handleAddToCart(photo.id)}
                   >
                     Add to Cart
-                  </Button>
+                  </button>
+                </div>
                 </>
               )}
             </div>
