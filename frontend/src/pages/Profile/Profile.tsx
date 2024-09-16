@@ -9,7 +9,7 @@ import CreateAlbumForm from "./CreateAlbumForm"; // นำเข้าฟอร�
 import SelectAlbumModal from "../../components/SelectAlbumModal"; // Import modal component
 import "../global.css";
 import { Link } from "react-router-dom";
-import { SquarePen, ShoppingBag , SquareArrowUpRight , Tag } from 'lucide-react';
+import { SquarePen, ShoppingBag, SquareArrowUpRight, Tag } from "lucide-react";
 
 interface Photo {
   id: string;
@@ -42,9 +42,9 @@ const Profile: React.FC = () => {
   const [isUpload, setIsUpload] = useState(false);
   const [isCreateAlbum, setCreateAlbum] = useState(false);
   const [albums, setAlbums] = useState<Album[]>([]);
-  const [albumPhotosMap, setAlbumPhotosMap] = useState<Record<string, Photo[]>>(
-    {}
-  );
+  // const [albumPhotosMap, setAlbumPhotosMap] = useState<Record<string, Photo[]>>(
+  //   {}
+  // );
 
   const [showSelectAlbumModal, setShowSelectAlbumModal] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState<string>("");
@@ -111,18 +111,18 @@ const Profile: React.FC = () => {
   //   }
   // };
 
-  const fetchAlbumPhotos = async (albumId: string) => {
-    try {
-      const response = await axios.get(`/api/album/${albumId}/photos`);
-      setAlbumPhotosMap((prevMap) => ({
-        ...prevMap,
-        [albumId]: response.data, // Update only the specific album's photos
-      }));
-    } catch (error) {
-      console.error("Error fetching album photos:", error);
-      setError("Failed to fetch album photos");
-    }
-  };
+  // const fetchAlbumPhotos = async (albumId: string) => {
+  //   try {
+  //     const response = await axios.get(`/api/album/${albumId}/photos`);
+  //     setAlbumPhotosMap((prevMap) => ({
+  //       ...prevMap,
+  //       [albumId]: response.data, // Update only the specific album's photos
+  //     }));
+  //   } catch (error) {
+  //     console.error("Error fetching album photos:", error);
+  //     setError("Failed to fetch album photos");
+  //   }
+  // };
 
   const handlePhotoClick = (photoId: string) => {
     navigate(`/photo/${photoId}`);
@@ -252,142 +252,7 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleExportAlbum = async (albumId: string) => {
-    try {
-      const album = albums.find((a) => a.album_id.toString() === albumId);
-      if (!album) {
-        alert("Album not found.");
-        return;
-      }
-
-      const albumPhotos = albumPhotosMap[albumId];
-      if (!albumPhotos || albumPhotos.length === 0) {
-        alert("No photos to export in this album.");
-        return;
-      }
-
-      // สร้าง canvas และกำหนดขนาด
-      const canvas = document.createElement("canvas");
-      const canvasWidth = 1920; // ความกว้างของ canvas
-      const canvasHeight = 1280; // ความสูงของ canvas
-      canvas.width = canvasWidth;
-      canvas.height = canvasHeight;
-      const ctx = canvas.getContext("2d");
-
-      if (!ctx) {
-        console.error("Failed to get canvas context.");
-        return;
-      }
-
-      // กำหนดพื้นหลังเป็นสีเทาอ่อน
-      ctx.fillStyle = "#b9b9b9b9"; // สีพื้นหลัง
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-      // วาดชื่อ album และชื่อ user ที่ด้านบนของ canvas
-      ctx.fillStyle = "#000"; // สีข้อความเป็นสีดำ
-      ctx.font = "bold 36px 'Press Start 2P', cursive"; // ใช้ฟอนต์พิกเซลสำหรับชื่อ album
-      ctx.textAlign = "center";
-      ctx.fillText(`${album.title}`, canvasWidth / 2, 50); // วาดชื่อ album
-
-      ctx.font = "28px Arial"; // ขนาดฟอนต์ใหญ่ขึ้นสำหรับชื่อ user
-      ctx.fillText(`${user?.username || "Unknown"}`, canvasWidth / 2, 90); // วาดชื่อ user
-      ctx.font = "60px Arial";
-
-      ctx.fillText(
-        `----------------------------------------------------`,
-        canvasWidth / 2,
-        150
-      );
-
-      // กำหนดขนาดของ container แบบคงที่
-      const containerWidth = 500; // ความกว้างของ container
-      const containerHeight = 500; // ความสูงของ container
-      const padding = 20; // ระยะห่างระหว่าง container
-
-      // กำหนดตำแหน่งที่แน่นอนสำหรับรูปภาพ
-      const positions = [
-        { x: padding, y: 100 + padding }, // ตำแหน่งของภาพที่ 1
-        { x: padding + containerWidth + padding, y: 100 + padding }, // ตำแหน่งของภาพที่ 2
-        { x: padding, y: 100 + padding + containerHeight + padding }, // ตำแหน่งของภาพที่ 3
-        {
-          x: padding + containerWidth + padding,
-          y: 100 + padding + containerHeight + padding,
-        }, // ตำแหน่งของภาพที่ 4
-        { x: padding, y: 100 + 2 * (containerHeight + padding) }, // ตำแหน่งของภาพที่ 5
-        {
-          x: padding + containerWidth + padding,
-          y: 100 + 2 * (containerHeight + padding),
-        }, // ตำแหน่งของภาพที่ 6
-      ];
-
-      await Promise.all(
-        albumPhotos.slice(0, 6).map(async (photo, i) => {
-          try {
-            // ดึงภาพจาก server
-            const response = await fetch(`/api/${photo.path}`);
-            const blob = await response.blob();
-            const imageBitmap = await createImageBitmap(blob);
-
-            // คำนวณขนาดภาพเพื่อให้พอดีกับ container แบบคงที่
-            const scale = Math.min(
-              containerWidth / imageBitmap.width,
-              containerHeight / imageBitmap.height
-            );
-            const width = imageBitmap.width * scale;
-            const height = imageBitmap.height * scale;
-
-            // คำนวณตำแหน่งของภาพให้แสดงได้พอดี
-            const offsetX = (containerWidth - width) / 2;
-            const offsetY = (containerHeight - height) / 2;
-
-            // ตำแหน่งของภาพ
-            const pos = positions[i];
-
-            // วาดภาพใน container
-            ctx.drawImage(
-              imageBitmap,
-              pos.x + offsetX,
-              pos.y + offsetY,
-              width,
-              height
-            );
-          } catch (error) {
-            console.error(
-              `Failed to fetch or render image: ${photo.path}`,
-              error
-            );
-          }
-        })
-      );
-
-      // ดึงวันที่และเวลาปัจจุบัน
-      const now = new Date();
-      const date = now.toLocaleDateString(); // วันที่ในรูปแบบท้องถิ่น
-      const time = now.toLocaleTimeString(); // เวลาปัจจุบันในรูปแบบท้องถิ่น
-
-      // แสดงวันที่, เวลา, และเวลาที่ใช้ในการสร้าง canvas
-      ctx.fillStyle = "#000"; // สีข้อความเป็นสีดำ
-      ctx.font = "24px Arial"; // ขนาดฟอนต์ใหญ่ขึ้นสำหรับข้อมูลเวลา
-      ctx.textAlign = "center";
-      ctx.fillText(`Date: ${date}`, canvasWidth / 2, canvasHeight - 120); // แสดงวันที่
-      ctx.fillText(`Time: ${time}`, canvasWidth / 2, canvasHeight - 90); // แสดงเวลา
-
-      ctx.font = "60px Arial";
-
-      ctx.fillText(
-        `----------------------------------------------------`,
-        canvasWidth / 2,
-        canvasHeight - 40
-      );
-
-      // สร้าง URL ของภาพที่ได้จาก canvas
-      const previewUrl = canvas.toDataURL("image/png");
-      setPreviewImage(previewUrl);
-
-    } catch (error) {
-      console.error("Error exporting album:", error);
-    }
-  };
+  const handleExportAlbum = async () => {};
 
   const handleDownload = () => {
     if (previewImage) {
@@ -422,7 +287,7 @@ const Profile: React.FC = () => {
               <Image
                 src={`${user.avatarURL}`}
                 alt="Profile Picture"
-                className="w-36 h-36 rounded-full" 
+                className="w-36 h-36 rounded-full"
                 width={150}
                 height={150}
               />
@@ -432,20 +297,23 @@ const Profile: React.FC = () => {
                 alt="Default Avatar"
                 width={150}
                 height={150}
-                className="w-36 h-36 rounded-full" 
+                className="w-36 h-36 rounded-full"
               />
             )}
           </div>
           <div className="flex items-center justify-center gap-3 mt-5">
             {currentUser?.id == userId && (
-              <button 
+              <button
                 className="w-[170px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
                 onClick={handleUploadPic}
-                >
+              >
                 Upload profile picture
               </button>
             )}
-            <Link to="/" className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline">
+            <Link
+              to="/"
+              className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+            >
               Back
             </Link>
           </div>
@@ -456,11 +324,17 @@ const Profile: React.FC = () => {
                 <Form>
                   <Form.Group controlId="formFile" className="mb-3">
                     <Form.Label>Select Image</Form.Label>
-                    <Form.Control type="file" onChange={handleFileChange} data-cy="file-input" />
+                    <Form.Control
+                      type="file"
+                      onChange={handleFileChange}
+                      data-cy="file-input"
+                    />
                   </Form.Group>
                   {selectedImage && (
                     <div className="mb-3">
-                      <h3 className="text-xl mb-3 text-center flex justify-start">Image Preview</h3>
+                      <h3 className="text-xl mb-3 text-center flex justify-start">
+                        Image Preview
+                      </h3>
                       <div className="flex items-center justify-center">
                         <Image
                           src={selectedImage}
@@ -474,16 +348,16 @@ const Profile: React.FC = () => {
                   )}
                 </Form>
                 <div className="flex items-center justify-center gap-3 mt-2">
-                  <button 
+                  <button
                     className="w-[100px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
                     onClick={handleUpload}
-                    >
+                  >
                     Upload
                   </button>
                   <button
                     className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
                     onClick={handleCloseUpload}
-                    >
+                  >
                     Cancel
                   </button>
                 </div>
@@ -496,11 +370,11 @@ const Profile: React.FC = () => {
         <h2>MY PHOTOS</h2>
         <div className="flex items-center justify-center gap-3">
           {currentUser?.id === user?.id && (
-            <button 
+            <button
               className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
               onClick={() => handleEdit()}
             >
-            <SquarePen className="text-white w-10 h-[20px] mr-2" />
+              <SquarePen className="text-white w-10 h-[20px] mr-2" />
               Edit
             </button>
           )}
@@ -509,7 +383,7 @@ const Profile: React.FC = () => {
               className="w-[230px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
               onClick={handleViewPurchasedPhotos}
             >
-            <ShoppingBag className="text-white w-10 h-[20px] mr-2" />
+              <ShoppingBag className="text-white w-10 h-[20px] mr-2" />
               View Purchased Photos
             </button>
           )}
@@ -522,12 +396,12 @@ const Profile: React.FC = () => {
                 <div className="flex flex-col w-[300px] h-[400px] bg-white rounded-lg shadow-md border mt-3 p-2">
                   <div className="flex items-center justify-between mt-3">
                     <h3 className="text-[16px] ml-4">Photo{photo.id}</h3>
-                    <SquareArrowUpRight className="mr-4"/>
+                    <SquareArrowUpRight className="mr-4" />
                   </div>
-                  <h2  className="text-[12px] flex justify-start ml-4">Brand</h2>
+                  <h2 className="text-[12px] flex justify-start ml-4">Brand</h2>
                   <div className="flex items-center justify-start gap-2 ml-4">
-                    <Tag className="text-[#ff8833]"/>
-                    <h2  className="text-[16px]">Animal</h2>
+                    <Tag className="text-[#ff8833]" />
+                    <h2 className="text-[16px]">Animal</h2>
                   </div>
 
                   <div className="position-relative flex flex-col items-center justify-center mt-2">
@@ -545,28 +419,29 @@ const Profile: React.FC = () => {
                       <br />
                       Price: {photo.price}
                     </div>
-                      {isEdit && (
-                        <div className="flex items-center justify-center gap-3 mt-2">
-                          <button
-                            className="w-[80px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                            onClick={() => handleDelete(photo.path.split("/").pop()!)}
-                          >
-                            Delete
-                          </button>
-                          <button
-                            className="w-[120px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                            onClick={() => handleAddPhotoClick(photo.id)}
-                          >
-                            Add to album
-                          </button>
-                        </div>
-                      )}
+                    {isEdit && (
+                      <div className="flex items-center justify-center gap-3 mt-2">
+                        <button
+                          className="w-[80px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                          onClick={() =>
+                            handleDelete(photo.path.split("/").pop()!)
+                          }
+                        >
+                          Delete
+                        </button>
+                        <button
+                          className="w-[120px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                          onClick={() => handleAddPhotoClick(photo.id)}
+                        >
+                          Add to album
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Col>
             ))}
         </Row>
-
       </div>
       <div className="flex flex-col items-center justify-center mt-3">
         <h2>MY ALBUMS</h2>
@@ -601,19 +476,26 @@ const Profile: React.FC = () => {
           {albums.map((album) => (
             <div className="flex flex-col w-[300px] h-[400px] bg-white rounded-lg shadow-md border p-2">
               <div key={album.album_id} className="">
-                <h4 className="text-[20px] font-semibold mt-3 ml-4">Album Name: {album.title}</h4>
+                <h4 className="text-[20px] font-semibold mt-3 ml-4">
+                  Album Name: {album.title}
+                </h4>
                 <p className="ml-4">Description: {album.description}</p>
                 <div className="mt-2 flex-wrap flex items-center justify-center w-[280px] h-[200px] bg-gray-200 shadow-lg border rounded-lg">
                   {albumPhotosMap[album.album_id]?.map((photo) => {
                     return (
-                      <div key={photo.id} className="m-2 flex items-center justify-center">
+                      <div
+                        key={photo.id}
+                        className="m-2 flex items-center justify-center"
+                      >
                         <Image
                           src={`/api/${photo.path}`}
                           // thumbnail
                           width={100}
                           height={100}
                           onClick={() => handlePhotoClick(photo.id)}
-                          onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
+                          onContextMenu={(e) =>
+                            handlePhotoContextMenu(e, photo.id)
+                          }
                           style={{ cursor: "pointer" }}
                         />
                       </div>
@@ -623,14 +505,16 @@ const Profile: React.FC = () => {
                 <div className="flex items-center justify-center gap-4 mt-2">
                   <button
                     className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                    onClick={() => fetchAlbumPhotos(album.album_id.toString())}
+                    onClick={() => navigate(`/album/${album.album_id}/photos`)} // Navigate to new page
                   >
-                    View Photos
+                    View Albums
                   </button>
                   {currentUser?.id == userId && (
                     <button
                       className="w-[110px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                      onClick={() => handleDeleteAlbum(album.album_id.toString())}
+                      onClick={() =>
+                        handleDeleteAlbum(album.album_id.toString())
+                      }
                     >
                       Delete Album
                     </button>
@@ -648,7 +532,6 @@ const Profile: React.FC = () => {
               </div>
             </div>
           ))}
-
         </div>
 
         {showSelectAlbumModal && (
@@ -671,7 +554,6 @@ const Profile: React.FC = () => {
                 >
                   Close
                 </button>
-
               </div>
               <div className="flex items-center justify-center">
                 <img
@@ -688,13 +570,10 @@ const Profile: React.FC = () => {
                 >
                   Download Preview
                 </button>
-
               </div>
-
             </div>
           </div>
         )}
-
       </div>
     </Layout>
   );

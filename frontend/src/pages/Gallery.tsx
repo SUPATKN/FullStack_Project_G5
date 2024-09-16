@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Image, Row, Col , Button } from "react-bootstrap";
+import { Image, Row, Col, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Layout from "../Layout";
 import useAuth from "../hook/useAuth";
 import { Heart, MessageCircleMore } from "lucide-react";
 
-interface UserProfile {
-  id: number;
-  username: string;
-  email: string;
-  avatarURL?: string;
-}
+// interface UserProfile {
+//   id: number;
+//   username: string;
+//   email: string;
+//   avatarURL?: string;
+// }
 
 interface Comment {
   id: number;
@@ -24,14 +24,30 @@ interface Comment {
 }
 
 const Gallery = () => {
-  const [photos, setPhotos] = useState<{ id: string; path: string; user_id: string; price: number }[]>([]);
-  const [users, setUsers] = useState<{ id: string; username: string; avatarURL?: string }[]>([]);
+  const [photos, setPhotos] = useState<
+    {
+      id: string;
+      path: string;
+      user_id: string;
+      price: number;
+      title: string;
+    }[]
+  >([]);
+  const [users, setUsers] = useState<
+    { id: string; username: string; avatarURL?: string }[]
+  >([]);
   const { user: me, refetch } = useAuth();
-  const [cartItems, setCartItems] = useState<{ id: string; path: string; user_id: string; price: number }[]>([]);
-  const [commentMap, setCommentMap] = useState<{ [key: string]: Comment[] }>({});
+  const [cartItems, setCartItems] = useState<
+    { id: string; path: string; user_id: string; price: number }[]
+  >([]);
+  const [commentMap, setCommentMap] = useState<{ [key: string]: Comment[] }>(
+    {}
+  );
   const [error, setError] = useState<string | null>(null);
   const [hoveredPhotoId, setHoveredPhotoId] = useState<string | null>(null);
-  const [likes, setLikes] = useState<{ photo_id: number; user_id: number }[]>([]);
+  const [likes, setLikes] = useState<{ photo_id: number; user_id: number }[]>(
+    []
+  );
 
   const navigate = useNavigate();
 
@@ -49,7 +65,15 @@ const Gallery = () => {
 
   const fetchImages = async () => {
     try {
-      const { data } = await axios.get<{ id: string; path: string; user_id: string; price: number }[]>("/api/photo");
+      const { data } = await axios.get<
+        {
+          id: string;
+          path: string;
+          user_id: string;
+          price: number;
+          title: string;
+        }[]
+      >("/api/photo");
       setPhotos(data);
     } catch (error) {
       setError("Error fetching images");
@@ -59,7 +83,9 @@ const Gallery = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get<{ id: string; username: string; avatarURL?: string }[]>("/api/allusers");
+      const { data } = await axios.get<
+        { id: string; username: string; avatarURL?: string }[]
+      >("/api/allusers");
       setUsers(data);
     } catch (error) {
       setError("Error fetching users");
@@ -106,7 +132,9 @@ const Gallery = () => {
   const fetchCartItems = async () => {
     if (me) {
       try {
-        const { data } = await axios.get<{ id: string; path: string; user_id: string; price: number }[]>(`/api/cart/${me.id}`);
+        const { data } = await axios.get<
+          { id: string; path: string; user_id: string; price: number }[]
+        >(`/api/cart/${me.id}`);
         setCartItems(data);
       } catch (error) {
         console.error("Error fetching cart items:", error);
@@ -165,16 +193,21 @@ const Gallery = () => {
     return commentMap[photoId]?.length || 0;
   };
 
-  const getUsername = (userId: string) => {
-    const user = users.find((user) => user.id === userId);
-    return user ? user.username : "Unknown User";
-  };
+  // const getUsername = (userId: string) => {
+  //   const user = users.find((user) => user.id === userId);
+  //   return user ? user.username : "Unknown User";
+  // };
 
   const handleUsernameClick = (userId: string) => {
     const user = users.find((user) => user.id === userId);
     if (user) {
       navigate(`/profile/${userId}`, { state: { user } });
     }
+  };
+
+  const getPhotoOwner = (userId: string) => {
+    const user = users.find((user) => user.id === userId);
+    return user || null;
   };
 
   return (
@@ -184,7 +217,7 @@ const Gallery = () => {
       <Row>
         {photos.map((photo) => (
           <Col key={photo.id} xs={12} md={4} lg={3} className="mb-4">
-            <div 
+            <div
               className="relative flex flex-col w-[300px] h-full bg-white rounded-lg shadow-md border mt-3 p-2"
               onMouseEnter={() => setHoveredPhotoId(photo.id)}
               onMouseLeave={() => setHoveredPhotoId(null)}
@@ -200,21 +233,31 @@ const Gallery = () => {
                 />
                 {hoveredPhotoId === photo.id && (
                   <div className="absolute w-[250px] object-cover h-full bg-black bg-opacity-50 flex flex-col items-center justify-start text-white p-4 pointer-events-none">
-                    <h3 className="text-[24px] text-[#ff8833]">Photo {photo.id}</h3>
-                    {me && (
+                    <h3 className="text-[20px] text-[#ff8833]">
+                      {photo.title}
+                    </h3>
+                    {getPhotoOwner(photo.user_id) && (
                       <h5 className="flex items-center">
-                        {me.avatarURL ? (
+                        {getPhotoOwner(photo.user_id)?.avatarURL ? (
                           <Image
-                            src={me.avatarURL}
+                            src={getPhotoOwner(photo.user_id)?.avatarURL}
                             alt="Profile Picture"
                             className="w-8 h-8 rounded-full"
                             width={32}
                             height={32}
                           />
                         ) : (
-                          <span className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-700">U</span>
+                          <span className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-700">
+                            U
+                          </span>
                         )}
-                        <span className="ml-2">User {me.username}</span>
+                        <span
+                          className="ml-2 cursor-pointer"
+                          onClick={() => handleUsernameClick(photo.user_id)}
+                        >
+                          {getPhotoOwner(photo.user_id)?.username ||
+                            "Unknown User"}
+                        </span>
                       </h5>
                     )}
                     <div className="flex gap-4 mt-5">
