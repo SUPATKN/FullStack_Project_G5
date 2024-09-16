@@ -22,7 +22,7 @@ interface PhotoDetailProps {
 }
 
 interface Comment {
-  id: number;
+  comment_id: number;
   photo_id: string;
   user_id: string;
   content: string;
@@ -169,6 +169,8 @@ const PhotoDetail = () => {
       alert("You need to be logged in to delete a comment.");
       return;
     }
+    console.log("commentId", commentId);
+    console.log("phototId", photoId);
 
     try {
       await axios.delete("/api/deletecomment", {
@@ -178,7 +180,7 @@ const PhotoDetail = () => {
           comment_id: commentId,
         },
       });
-      await fetchComments(); // Refresh comments after deletion
+      await fetchComments();
     } catch (error) {
       console.error("Error deleting comment:", error);
     }
@@ -282,7 +284,7 @@ const PhotoDetail = () => {
                 <div className="mt-3">
                   {(commentMap[photo.id.toString()] || []).map((comment) => (
                     <div
-                      key={comment.id}
+                      key={comment.comment_id}
                       className="flex justify-between items-center text-center"
                     >
                       <p className="text-[16px]">
@@ -293,7 +295,10 @@ const PhotoDetail = () => {
                         <button
                           className="w-[70px] mb-2 h-[30px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
                           onClick={() =>
-                            handleDeleteComment(photo.id.toString(), comment.id)
+                            handleDeleteComment(
+                              photo.id.toString(),
+                              comment.comment_id
+                            )
                           }
                         >
                           Delete
