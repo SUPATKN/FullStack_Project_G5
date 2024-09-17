@@ -82,7 +82,7 @@ const Login: FC = () => {
         <h5 className="display-flex text-center text-[#ff8833] ">ART AND COMMUNITY </h5>
       </div>
 
-      <div className="container-login flex justify-center items-center min-h-[60vh] bg-[#fafafa12] mt-3">
+      <div className="container-login flex justify-center  min-h-[60vh] bg-[#fafafa12] mt-3">
         <div className="w-full max-w-xs pt-8 pb-8 rounded-lg">
           <h3 className=" text-lg font-semibold mb-6 text-center text-white">
             Log in
