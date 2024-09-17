@@ -9,10 +9,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <div className="flex flex-col min-h-screen Body">
       <NavBar />
       <Container className="flex-grow my-4">{children}</Container>
-      <footer className="mt-auto flex justify-center bg-[#37517e] p-5 shadow-lg border rounded-md w-full h-[110px]">
+      <footer className="mt-auto flex justify-center bg-[#000000] border-black p-5 shadow-lg border rounded-md w-full h-[110px]">
         <div className="flex flex-col items-center justify-center">
           <img
-            src="/LogoPreflight.png"
+            src="/LOGOArtandCommunity.png"
             alt="logo"
             width={60}
             height={60}

@@ -230,7 +230,7 @@ const ViewAlbumPhotos: React.FC = () => {
     };
   }, [currentIndex, photos]);
 
-  const currentPhoto = photos[currentIndex];
+  // const currentPhoto = photos[currentIndex];
 
   return (
     <Layout>

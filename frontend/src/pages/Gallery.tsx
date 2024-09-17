@@ -218,7 +218,7 @@ const Gallery = () => {
         {photos.map((photo) => (
           <Col key={photo.id} xs={12} md={4} lg={3} className="mb-4">
             <div
-              className="relative flex flex-col w-[300px] h-full bg-black bg-opacity-10 rounded-lg shadow-md border mt-3 p-2"
+              className="relative flex flex-col w-[300px] h-full bg-white bg-opacity-10 rounded-lg shadow-md border border-black mt-3 p-2"
               onMouseEnter={() => setHoveredPhotoId(photo.id)}
               onMouseLeave={() => setHoveredPhotoId(null)}
             >
