@@ -50,7 +50,7 @@ const Profile: React.FC = () => {
 
   const [showSelectAlbumModal, setShowSelectAlbumModal] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState<string>("");
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  // const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const navigate = useNavigate(); // For navigation
 
@@ -70,7 +70,7 @@ const Profile: React.FC = () => {
     }
   };
   const handleCloseCreateAlbum = () => setCreateAlbum(false);
-  const handleClosePreview = () => setPreviewImage(null);
+  // const handleClosePreview = () => setPreviewImage(null);
 
   const fetchUserAlbums = async () => {
     try {
@@ -254,16 +254,14 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleExportAlbum = async () => {};
-
-  const handleDownload = () => {
-    if (previewImage) {
-      const link = document.createElement("a");
-      link.download = "album-preview.png";
-      link.href = previewImage;
-      link.click();
-    }
-  };
+  // const handleDownload = () => {
+  //   if (previewImage) {
+  //     const link = document.createElement("a");
+  //     link.download = "album-preview.png";
+  //     link.href = previewImage;
+  //     link.click();
+  //   }
+  // };
 
   const handleCloseUpload = () => setIsUpload(false);
   return (
@@ -390,14 +388,14 @@ const Profile: React.FC = () => {
             </button>
           )}
         </div>
-        <Row className="">
+        <Row className="flex flex-wrap justify-center gap-4 mt-4">
           {photos
             .filter((photo) => photo.user_id == user?.id?.toString())
             .map((photo) => (
               <Col key={photo.id} xs={12} md={4} lg={3}>
-                <div className="flex flex-col w-[300px] h-[400px] bg-white rounded-lg shadow-md border mt-3 p-2">
+                <div className="flex flex-col w-[300px] h-auto bg-white rounded-lg shadow-md border p-2">
                   <div className="flex items-center justify-between mt-3">
-                    <h3 className="text-[16px] ml-4">Photo{photo.id}</h3>
+                    <h3 className="text-[16px] ml-4">{photo.title}</h3>
                     <SquareArrowUpRight className="mr-4" />
                   </div>
                   <h2 className="text-[12px] flex justify-start ml-4">Brand</h2>
@@ -405,21 +403,18 @@ const Profile: React.FC = () => {
                     <Tag className="text-[#ff8833]" />
                     <h2 className="text-[16px]">Animal</h2>
                   </div>
-
                   <div className="position-relative flex flex-col items-center justify-center mt-2">
                     <Image
                       crossOrigin="anonymous"
                       src={`/api/${photo.path}`}
                       onClick={() => handlePhotoClick(photo.id)}
                       onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
-                      className="cursor-pointer h-[100%] w-[90%] object-cover"
+                      className="cursor-pointer w-[90%] h-[250px] object-cover rounded-lg"
                       alt={`Image ${photo.id}`}
-                      // thumbnail
                     />
-                    <div className="mr-14 mt-2">
-                      Date: {formatDate(photo.created_at)}
-                      <br />
-                      Price: {photo.price}
+                    <div className="mr-14 mt-2 text-sm">
+                      <p>Date: {formatDate(photo.created_at)}</p>
+                      <p>Price: {photo.price}</p>
                     </div>
                     {isEdit && (
                       <div className="flex items-center justify-center gap-3 mt-2">
@@ -445,6 +440,7 @@ const Profile: React.FC = () => {
             ))}
         </Row>
       </div>
+
       <div className="flex flex-col items-center justify-center mt-3">
         <h2>MY ALBUMS</h2>
         {currentUser?.id == userId && (
@@ -476,14 +472,14 @@ const Profile: React.FC = () => {
         )}
         <div className="flex flex-wrap gap-[31px] mt-3">
           {albums.map((album) => (
-            <div className="flex flex-col w-[300px] h-[400px] bg-white rounded-lg shadow-md border p-2">
+            <div className="flex flex-col w-[300px] h-auto bg-white rounded-lg shadow-md border p-2">
               <div key={album.album_id} className="">
                 <h4 className="text-[20px] font-semibold mt-3 ml-4">
                   Album Name: {album.title}
                 </h4>
                 <p className="ml-4">Description: {album.description}</p>
-                <div className="mt-2 flex-wrap flex items-center justify-center w-[280px] h-[200px] bg-gray-200 shadow-lg border rounded-lg">
-                  {albumPhotosMap[album.album_id]?.map((photo) => {
+                <div className="mt-2 flex-wrap flex items-center justify-center w-[280px] h-auto bg-gray-200 shadow-lg border rounded-lg">
+                  {/* {albumPhotosMap[album.album_id]?.map((photo) => {
                     return (
                       <div
                         key={photo.id}
@@ -491,18 +487,22 @@ const Profile: React.FC = () => {
                       >
                         <Image
                           src={`/api/${photo.path}`}
-                          // thumbnail
                           width={100}
                           height={100}
+                          style={{
+                            objectFit: "cover", // เพื่อให้ภาพขยายเต็มกล่องโดยไม่ผิดสัดส่วน
+                            maxWidth: "100%", // ควบคุมไม่ให้ขยายเกินขนาดกล่อง
+                            maxHeight: "100px", // ควบคุมความสูงของภาพ
+                            cursor: "pointer",
+                          }}
                           onClick={() => handlePhotoClick(photo.id)}
                           onContextMenu={(e) =>
                             handlePhotoContextMenu(e, photo.id)
                           }
-                          style={{ cursor: "pointer" }}
                         />
                       </div>
                     );
-                  })}
+                  })} */}
                 </div>
                 <div className="flex items-center justify-center gap-4 mt-2">
                   <button
@@ -522,60 +522,17 @@ const Profile: React.FC = () => {
                     </button>
                   )}
                 </div>
-                {/* เพิ่มปุ่ม Export Album */}
-                <div className="flex items-center justify-center mt-2">
-                  <button
-                    className="w-[110px] h-[35px] bg-green-600 rounded-md text-white cursor-pointer hover:bg-green-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                    onClick={() => handleExportAlbum(album.album_id.toString())}
-                  >
-                    Export Album
-                  </button>
-                </div>
+                {showSelectAlbumModal && (
+                  <SelectAlbumModal
+                    albums={albums}
+                    photo_id={selectedPhotoId}
+                    onClose={() => setShowSelectAlbumModal(false)}
+                  />
+                )}
               </div>
             </div>
           ))}
         </div>
-
-        {showSelectAlbumModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <SelectAlbumModal
-              albums={albums}
-              photo_id={selectedPhotoId}
-              onClose={() => setShowSelectAlbumModal(false)}
-            />
-          </div>
-        )}
-        {previewImage && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-5 rounded-lg shadow-lg w-[600px] h-[600px]">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl mb-2">Album Preview</h3>
-                <button
-                  className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                  onClick={handleClosePreview}
-                >
-                  Close
-                </button>
-              </div>
-              <div className="flex items-center justify-center">
-                <img
-                  src={previewImage}
-                  alt="Album Preview"
-                  style={{ maxWidth: "100%", maxHeight: "500px" }}
-                  className="mt-3"
-                />
-              </div>
-              <div className="flex items-center justify-center">
-                <button
-                  className="mt-2 w-[150px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                  onClick={handleDownload}
-                >
-                  Download Preview
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </Layout>
   );

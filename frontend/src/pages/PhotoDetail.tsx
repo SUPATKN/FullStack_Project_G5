@@ -9,7 +9,6 @@ import {
   Tag,
   Heart,
   MessageCircleMore,
-  CircleX,
 } from "lucide-react";
 import LoadingWrapper from "../LoadingWrapper";
 
@@ -19,6 +18,7 @@ interface PhotoDetailProps {
   user_id: number;
   price: number;
   title: string;
+  max_sales: number;
   description: string;
 }
 
@@ -246,15 +246,15 @@ const PhotoDetail = () => {
     <LoadingWrapper>
       <Layout>
         <div className="flex items-center flex-col justify-center text-ccenter">
-          <h3 className="text-center text-[#ff8833] font-semibold">PHOTO DETAIL</h3>
-          <div className="flex items-center justify-center flex-col text-white border-black  bg-white bg-opacity-10 rounded-lg shadow-lg border w-[600px] h-full mt-2">
+          <h3 className="text-center text-white">PHOTO DETAIL</h3>
+          <div className="flex items-center justify-center flex-col bg-white rounded-lg shadow-lg border w-[600px] h-full">
             {loading ? (
               <p>Loading...</p>
             ) : photo ? (
-              <div className="text-center mb-3">
+              <div className="text-center">
                 <div className="flex items-center justify-between mt-3 text-center">
-                  <h3 className="text-[24px] text-center"> {photo.title} </h3>
-                  <SquareArrowUpRight className="mr-4 w-8 h-8 text-center text-gray-300" />
+                  <h3 className="text-[24px] text-center">{photo.title}</h3>
+                  <SquareArrowUpRight className="mr-4 w-8 h-8 text-center" />
                 </div>
                 <p className="flex justify-start">
                   Description: {photo.description}
@@ -275,6 +275,15 @@ const PhotoDetail = () => {
                 <h4 className="mt-3 text-[16px] flex justify-start">
                   Price: {photo.price > 0 ? `$${photo.price}` : "Free Download"}
                 </h4>
+                <h4 className="mt-3 text-[16px] flex justify-start">
+                  Limit:{" "}
+                  {photo.max_sales === null
+                    ? "Unlimited"
+                    : photo.max_sales === 0
+                    ? "Unable to download anymore"
+                    : `${photo.max_sales}`}
+                </h4>
+
                 <div className="flex items-center justify-start">
                   <Heart className="text-[20px]" />
                   <h2 className="text-[20px] ml-4 mt-2">
@@ -311,7 +320,7 @@ const PhotoDetail = () => {
                 <div className="flex items-center justify-center gap-2">
                   {currentUser ? (
                     <button
-                      className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                      className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
                       onClick={() =>
                         handleLike(
                           photo.id.toString(),
@@ -330,7 +339,7 @@ const PhotoDetail = () => {
                     </button>
                   ) : (
                     <button
-                      className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                      className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
                       onClick={() =>
                         alert("You need to be logged in to like a photo.")
                       }
@@ -347,7 +356,7 @@ const PhotoDetail = () => {
                   {currentUser ? (
                     <>
                       <button
-                        className="w-[115px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                        className="w-[115px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
                         onClick={() => setShowCommentForm(!showCommentForm)}
                       >
                         <MessageCircleMore className="mr-2" />
@@ -362,12 +371,12 @@ const PhotoDetail = () => {
                           />
                           <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-md shadow-lg z-20 w-[90%] max-w-md">
                             <div className="flex items-center justify-between">
-                              <h2 className="text-black">Comment</h2>
+                              <h2>Comment</h2>
                               <button
-                                className="mb-2 text-black  flex items-center justify-center text-center no-underline hover:no-underline"
+                                className="mb-2 w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
                                 onClick={handleClose}
                               >
-                                <CircleX/>
+                                Close
                               </button>
                             </div>
                             <Form
@@ -393,7 +402,7 @@ const PhotoDetail = () => {
                               </Form.Group>
                               <div className="flex items-center justify-center">
                                 <button
-                                  className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                                  className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
                                   type="submit"
                                 >
                                   Submit
@@ -408,7 +417,7 @@ const PhotoDetail = () => {
                     <p className="text-danger">Log in to leave a comment.</p>
                   )}
 
-                  {photo.price > 0 && !hasPurchased ? (
+                  {/* {photo.price > 0 && !hasPurchased ? (
                     currentUser ? (
                       <Button variant="primary" onClick={handlePurchase}>
                         Buy for ${photo.price}
@@ -430,7 +439,7 @@ const PhotoDetail = () => {
                   ) : (
                     <div className="flex items-center justify-center ml-2">
                       <button
-                        className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                        className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
                         onClick={() =>
                           window.open(`/api/${photo.path}`, "_blank")
                         }
@@ -438,22 +447,63 @@ const PhotoDetail = () => {
                         Download
                       </button>
                     </div>
-                  )}
+                  )} */}
+
+                  {photo.max_sales === 0 && !hasPurchased ? (
+                    <div className="w-[270px] h-[35px] bg-[#ffc302] rounded-md text-white cursor-pointer hover:bg-sky-500 flex items-center justify-center text-center no-underline hover:no-underline">
+                      <span>This picture has been bought in full.</span>
+                    </div>
+                  ) : photo.max_sales !== 0 &&
+                    photo.price > 0 &&
+                    !hasPurchased ? (
+                    currentUser ? (
+                      <Button variant="primary" onClick={handlePurchase}>
+                        Buy for ${photo.price}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="secondary"
+                        onClick={() =>
+                          alert("You need to be logged in to purchase a photo.")
+                        }
+                      >
+                        Buy for ${photo.price}
+                        <div className="centered-links">
+                          <a href="/login">Login</a> or
+                          <a href="/register">Register</a>
+                        </div>
+                      </Button>
+                    )
+                  ) : (photo.max_sales === 0 && hasPurchased) ||
+                    photo.price === 0 ? (
+                    currentUser ? (
+                      <div className="flex items-center justify-center ml-2">
+                        <button
+                          className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                          onClick={() =>
+                            window.open(`/api/${photo.path}`, "_blank")
+                          }
+                        >
+                          Download
+                        </button>
+                      </div>
+                    ) : null
+                  ) : null}
                 </div>
 
-                {/* <p className="mt-2">
-                  {photo.price > 0 ? `Price: $${photo.price}` : "Free Download"}
-                </p> */}
+                <p className="mt-2">
+                  {/* {photo.price > 0 ? `Price: $${photo.price}` : "Free Download"} */}
+                </p>
               </div>
             ) : (
               <p>Photo not found</p>
             )}
           </div>
-          <div className="mt-4 text-center flex items-center justify-center w-[600px] border-black h-[50px] bg-[#ff8833] hover:bg-orange-500 text-white shadow-md border rounded-lg cursor-pointer">
+          {/* <div className="mt-4 text-center flex items-center justify-center w-[600px] h-[50px] bg-[#ff8833] text-white shadow-md border rounded-lg cursor-pointer">
             <h2 className="text-[18px] text-center mt-2">
               PAYMENT NOW PRICE : {photo?.price} BATH
             </h2>
-          </div>
+          </div> */}
         </div>
       </Layout>
     </LoadingWrapper>

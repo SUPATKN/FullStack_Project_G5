@@ -21,11 +21,15 @@ const Upload = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const { user, refetch } = useAuth();
 
-  // New states for free image, price, title, and description
+  // New states for free image, price, title, description, and max sales
   const [isFree, setIsFree] = useState<boolean>(true);
   const [price, setPrice] = useState<number | "">(0);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+
+  // New states for limiting sales
+  const [limitSales, setLimitSales] = useState<boolean>(false);
+  const [maxSales, setMaxSales] = useState<number>(1);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -63,6 +67,7 @@ const Upload = () => {
     formData.append("price", isFree ? "" : price.toString());
     formData.append("title", title);
     formData.append("description", description);
+    formData.append("max_sales", maxSales.toString()); // Add max_sales to form data
 
     try {
       await axios.post("/api/upload", formData, {
@@ -77,6 +82,7 @@ const Upload = () => {
       setPrice(0); // Reset price after upload
       setTitle("");
       setDescription("");
+      setMaxSales(0); // Reset max_sales after upload
     } catch (error) {
       console.error("Error uploading file:", error);
       setSuccess(null);
@@ -117,107 +123,97 @@ const Upload = () => {
 
   return (
     <Layout>
-      <div className="flex gap-8">
-        <div className="w-1/2 p-6 bg-[#FAFAFA12] rounded-md">
-          <h2 className="mb-4 text-white">Upload Photo</h2>
-          <Form>
-            <Form.Group controlId="formFile" className="mb-3 text-white">
-              <Form.Label>Select Image</Form.Label>
-              <Form.Control
-                type="file"
-                onChange={handleFileChange}
-                data-cy="file-input"
-              />
-            </Form.Group>
-            {/* {selectedImage && (
-              <div className="mb-3">
-                <h3>Image Preview:</h3>
-                <Image
-                  src={selectedImage}
-                  alt="Selected Image"
-                  width="200"
-                  thumbnail
-                  data-cy="image-preview"
-                />
-              </div>
-            )} */}
-            <Form.Group controlId="formTitle" className="mb-3 text-white">
-              <Form.Label>Photo Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter photo name"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                data-cy="title-input"
-              />
-            </Form.Group>
-            <Form.Group controlId="formDescription" className="mb-3 text-white">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="Enter description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                data-cy="description-input"
-              />
-            </Form.Group>
-            <Form.Group controlId="formIsFree" className="mb-3 text-white">
-              <Form.Check
-                type="checkbox"
-                label="Free Image"
-                checked={isFree}
-                onChange={(e) => setIsFree(e.target.checked)}
-              />
-            </Form.Group>
-
-            {!isFree && (
-              <Form.Group controlId="formPrice" className="mb-3 text-white">
-                <Form.Label>Price</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter price"
-                  value={price}
-                  onChange={(e) => setPrice(Number(e.target.value))}
-                  data-cy="price-input"
-                />
-              </Form.Group>
-            )}
-
-            <button
-              className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
-              onClick={handleUpload}
-            >
-              Upload
-            </button>
-            {/* <Button
-              variant="primary"
-              onClick={handleUpload}
-              data-cy="upload-button"
-            >
-              Upload
-            </Button> */}
-          </Form>
-        </div>
-        <div className="w-1/2 p-6 bg-[#FAFAFA12] rounded-md">
-          <h2 className="text-2xl text-center mb-4 text-white">
-            Photo Preview
-          </h2>
-          <div className="w-full h-64 flex items-center justify-center  rounded-md">
-            {selectedImage ? (
-              <img
-                src={selectedImage}
-                alt="Selected Preview"
-                className="max-h-full max-w-full"
-                data-cy="image-preview"
-              />
-            ) : (
-              <span className="mb-4 text-white">No preview available.</span>
-            )}
+      <h2 className="mb-4 text-white">Upload File</h2>
+      <Form>
+        <Form.Group controlId="formFile" className="mb-3 text-white">
+          <Form.Label>Select Image</Form.Label>
+          <Form.Control
+            type="file"
+            onChange={handleFileChange}
+            data-cy="file-input"
+          />
+        </Form.Group>
+        {selectedImage && (
+          <div className="mb-3">
+            <h3>Image Preview:</h3>
+            <Image
+              src={selectedImage}
+              alt="Selected Image"
+              width="200"
+              thumbnail
+              data-cy="image-preview"
+            />
           </div>
-        </div>
-      </div>
-
+        )}
+        <Form.Group controlId="formTitle" className="mb-3 text-white">
+          <Form.Label>Title</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            data-cy="title-input"
+          />
+        </Form.Group>
+        <Form.Group controlId="formDescription" className="mb-3 text-white">
+          <Form.Label>Description</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            placeholder="Enter description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            data-cy="description-input"
+          />
+        </Form.Group>
+        <Form.Group controlId="formIsFree" className="mb-3 text-white">
+          <Form.Check
+            type="checkbox"
+            label="Free Image"
+            checked={isFree}
+            onChange={(e) => setIsFree(e.target.checked)}
+          />
+        </Form.Group>
+        {!isFree && (
+          <Form.Group controlId="formPrice" className="mb-3 text-white">
+            <Form.Label>Price</Form.Label>
+            <Form.Control
+              type="number"
+              placeholder="Enter price"
+              value={price}
+              onChange={(e) => setPrice(Number(e.target.value))}
+              data-cy="price-input"
+            />
+          </Form.Group>
+        )}
+        <Form.Group controlId="formLimitSales" className="mb-3 text-white">
+          <Form.Check
+            type="checkbox"
+            label="Limit Sales"
+            checked={limitSales}
+            onChange={(e) => setLimitSales(e.target.checked)}
+          />
+        </Form.Group>
+        {limitSales && (
+          <Form.Group controlId="formMaxSales" className="mb-3 text-white">
+            <Form.Label>Maximum Sales Allowed</Form.Label>
+            <Form.Control
+              type="number"
+              placeholder="Enter maximum sales"
+              value={maxSales}
+              onChange={(e) => setMaxSales(Number(e.target.value))}
+              data-cy="max-sales-input"
+            />
+          </Form.Group>
+        )}
+        <Button
+          variant="primary"
+          onClick={handleUpload}
+          data-cy="upload-button"
+        >
+          Upload
+        </Button>
+      </Form>
       {error && (
         <Alert variant="danger" className="mt-3" data-cy="error-message">
           {error}

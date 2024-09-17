@@ -97,8 +97,8 @@ const ViewAlbumPhotos: React.FC = () => {
       ctx.textAlign = "center";
       ctx.fillText(`${album?.title || ""}`, canvasWidth / 2, 50);
 
-      ctx.font = "28px Arial";
-      ctx.fillText(`${user?.username || "Unknown"}`, canvasWidth / 2, 90);
+      // ctx.font = "28px Arial";
+      // ctx.fillText(`${user?.username || "Unknown"}`, canvasWidth / 2, 90);
 
       ctx.font = "60px Arial";
       ctx.fillText(

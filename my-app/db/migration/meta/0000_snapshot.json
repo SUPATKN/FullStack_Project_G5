@@ -1,13 +1,5 @@
 {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  "id": "b8e93819-88d9-4589-a07c-69980d01c218",
-=======
-  "id": "7cb1a22e-5901-42da-9ab4-c2d5d9a92cc5",
->>>>>>> Stashed changes
-=======
-  "id": "7cb1a22e-5901-42da-9ab4-c2d5d9a92cc5",
->>>>>>> Stashed changes
+  "id": "f5a950cc-a5ac-42d7-9830-d2e764503963",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -526,6 +518,12 @@
         "title": {
           "name": "title",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "max_sales": {
+          "name": "max_sales",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },

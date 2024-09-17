@@ -223,12 +223,16 @@ app.post(
     const price = isFree ? 0 : parseInt(req.body.price, 10) || 0; // Default to 0 if free
     const title = req.body.title || ""; // Default to empty string if not provided
     const description = req.body.description || ""; // Default to empty string if not provided
+    const maxSales = parseInt(req.body.max_sales, 10) || null; // Convert max_sales to number or default to null
 
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
     }
 
     try {
+
+          console.log("maxSales: ", maxSales);
+
       const result = await dbClient
         .insert(images)
         .values({
@@ -237,6 +241,7 @@ app.post(
           price: price,
           created_at: new Date(),
           title: title,
+          max_sales:maxSales,
           description: description,
         })
         .returning({ id: images.id, path: images.path });
@@ -396,10 +401,10 @@ app.post("/api/comments", async (req: Request, res: Response) => {
 
 // delete comment
 app.delete("/api/deletecomment", async (req: Request, res: Response) => {
-  const { photo_id, user_id } = req.body;
+  const { photo_id, user_id, comment_id } = req.body; // เพิ่ม comment_id
 
-  if (!photo_id || !user_id) {
-    return res.status(400).json({ error: "Photo ID and User ID are required" });
+  if (!photo_id || !user_id || !comment_id) {
+    return res.status(400).json({ error: "Photo ID, User ID, and Comment ID are required" });
   }
 
   try {
@@ -408,15 +413,17 @@ app.delete("/api/deletecomment", async (req: Request, res: Response) => {
       .where(
         and(
           eq(comments.photo_id, Number(photo_id)),
-          eq(comments.user_id, Number(user_id))
+          eq(comments.user_id, Number(user_id)),
+          eq(comments.comment_id, Number(comment_id)) // เพิ่มเงื่อนไขการลบตาม comment_id
         )
       );
     res.status(200).json({ message: "comment deleted successfully" });
   } catch (error) {
-    console.error("Error deleting like:", error);
+    console.error("Error deleting comment:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 app.get("/api/getcomments", async (req: Request, res: Response) => {
   try {
@@ -927,8 +934,14 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
     const seller = await dbClient.query.users.findFirst({
       where: eq(users.id, photo.user_id),
     });
+
     if (!seller) {
       return res.status(404).json({ error: "Seller not found" });
+    }
+
+    // ตรวจสอบว่า max_sales ยังมีค่ามากกว่า 0 หรือไม่
+    if (photo.max_sales !== null && photo.max_sales <= 0) {
+      return res.status(400).json({ error: "This photo has reached its sales limit" });
     }
 
     await dbClient.transaction(async (trx) => {
@@ -936,6 +949,7 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
         .update(users)
         .set({ coin: buyer.coin - photo.price })
         .where(eq(users.id, userId));
+
       await trx
         .update(users)
         .set({ coin: seller.coin + photo.price })
@@ -960,6 +974,14 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
         transaction_type: "sale",
         description: `Sold photo ${photoId}`,
       });
+
+      // ลดค่า max_sales ลง 1
+      if (photo.max_sales !== null) {
+        await trx
+          .update(images)
+          .set({ max_sales: photo.max_sales - 1 })
+          .where(eq(images.id, photoId));
+      }
     });
 
     res.status(200).json({ message: "Purchase successful" });
@@ -968,7 +990,6 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 // Get all photos purchased by a specific user
 app.get(
   "/api/user/:userId/purchased-photos",
@@ -1024,19 +1045,7 @@ app.get("/api/getcountlikes", async (req: Request, res: Response) => {
   }
 });
 
-// app.get("/api/getreceivedlikes", async (req: Request, res: Response) => {
-//   try {
-//     const likes = await dbClient.query.likes.findMany();
-//     const receivedLikes = likes.reduce((acc: Record<number, number>, like) => {
-//       acc[like.user_id] = (acc[like.user_id] || 0) + 1;
-//       return acc;
-//     }, {});
-//     res.json(receivedLikes);
-//   } catch (error) {
-//     console.error("Error retrieving received likes from the database:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
+
 
 app.get("/api/getcountcomments", async (req: Request, res: Response) => {
   try {
@@ -1429,6 +1438,9 @@ app.get("/api/album/:albumId", async (req: Request, res: Response) => {
   }
 });
 
+
+
+
 app.delete("/api/album/:album_id", async (req: Request, res: Response) => {
   const { album_id } = req.params;
 
@@ -1506,6 +1518,8 @@ app.get("/api/album/:album_id/photos", async (req: Request, res: Response) => {
         path: images.path,
         user_id: images.user_id,
         price: images.price,
+        title:images.title,
+        description:images.description,
         created_at: images.created_at,
       })
       .from(photo_albums)
