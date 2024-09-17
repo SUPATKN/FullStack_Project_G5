@@ -224,6 +224,10 @@ const PhotoDetail = () => {
           userId: currentUser.id,
         });
         setHasPurchased(true);
+        const updatedPhotoResponse = await axios.get<PhotoDetailProps>(
+          `/api/photo/${photo.id}`
+        );
+        setPhoto(updatedPhotoResponse.data);
       } catch (error) {
         console.error("Error purchasing photo:", error);
       }
@@ -263,15 +267,72 @@ const PhotoDetail = () => {
                   <Tag className="text-[#ff8833]" />
                   <h2 className="text-[16px]">Animal</h2>
                 </div>
-                <div className="flex items-center justify-center mt-2">
+                <div className="relative flex items-center justify-center mt-2">
+                  {/* ภาพหลัก */}
                   <Image
                     crossOrigin="anonymous"
                     src={`/api/${photo.path}`}
                     alt={`Image ${photo.id}`}
-                    className="w-[550px] h-[350px] rounded-lg"
-                    onContextMenu={handleImageContextMenu}
+                    className="w-[550px] h-[350px] rounded-lg relative"
+                    onContextMenu={
+                      photo.price > 0 && !hasPurchased
+                        ? handleImageContextMenu
+                        : undefined
+                    }
                   />
+
+                  {/* แสดงลายน้ำเฉพาะในกรณีที่รูปไม่ฟรีและยังไม่ได้ซื้อ */}
+                  {photo.price > 0 && !hasPurchased && (
+                    <div
+                      className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-transparent pointer-events-none"
+                      style={{ zIndex: 1 }}
+                    >
+                      {/* ลายน้ำ */}
+                      <div
+                        className="absolute inset-0 bg-repeat opacity-50"
+                        style={{
+                          backgroundImage: `repeating-linear-gradient(
+                            45deg,
+                            rgba(255, 255, 255, 0.1) 0px,
+                            rgba(255, 255, 255, 0.1) 25px,
+                            transparent 25px,
+                            transparent 50px
+                          )`,
+                        }}
+                      >
+                        <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                          <p
+                            className="text-grey text-xl font-bold opacity-90 transform rotate-45 mb-2"
+                            style={{ zIndex: 2 }}
+                          >
+                            Art and Community
+                          </p>
+                          <p
+                            className="text-grey text-lg font-semibold opacity-90 transform rotate-45 mb-2"
+                            style={{ zIndex: 2 }}
+                          >
+                            {currentUser
+                              ? `${currentUser.username}'s Photo`
+                              : "Unauthorized Use"}
+                          </p>
+                          <p
+                            className="text-grey text-md font-medium opacity-80 transform rotate-45 mb-2"
+                            style={{ zIndex: 2 }}
+                          >
+                            Do not share or distribute
+                          </p>
+                          <p
+                            className="text-grey text-sm font-light opacity-70 transform rotate-45"
+                            style={{ zIndex: 2 }}
+                          >
+                            © {new Date().getFullYear()} YourCompanyName
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
+
                 <h4 className="mt-3 text-[16px] flex justify-start">
                   Price: {photo.price > 0 ? `$${photo.price}` : "Free Download"}
                 </h4>
