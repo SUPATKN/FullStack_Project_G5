@@ -3,7 +3,7 @@ import axios from "axios";
 import Layout from "../../Layout";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../../hook/useAuth";
-import LogoGoogle from "../pnggoogle.png"
+import LogoGoogle from "../pnggoogle.png";
 
 const Login: FC = () => {
   const [email, setEmail] = useState("");
@@ -70,8 +70,8 @@ const Login: FC = () => {
 
   return (
     <Layout>
-      <div>
-        <h2>Login</h2>
+      {/* <h3>LOGIN TO THE ART AND COMMUNITY</h3>
+      <div className="flex justify-center items-center h-screen">
         <input
           type="email"
           placeholder="Email"
@@ -100,6 +100,56 @@ const Login: FC = () => {
             </button>
           </div>
         </article>
+      </div> */}
+      <h3 className="text-center text-white">LOGIN TO THE ART AND COMMUNITY</h3>
+      <div className="flex justify-center items-center min-h-[60vh] bg-[#FAFAFA12]">
+        <div className="w-full max-w-xs p-8 rounded-lg">
+          <h3 className=" text-lg font-semibold mb-6 text-center text-white">
+            Log in
+          </h3>
+          <input
+            type="text"
+            placeholder="Email Address Or Phone Number"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-2 mb-4  rounded"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 mb-4  rounded"
+          />
+          <button
+            onClick={handleLogin}
+            disabled={loading}
+            className="w-full bg-[#ff8833] text-white font-semibold py-2 rounded hover:bg-orange-500 transition duration-200"
+          >
+            {loading ? "Logging in..." : "LOG IN"}
+          </button>
+          {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+          {loginStatus && (
+            <p className="text-green-500 text-center mt-2">{loginStatus}</p>
+          )}
+
+          <div className="text-center mt-4 text-gray-400">
+            Other log in options
+          </div>
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={handleGoogleLogin}
+              className="flex items-center justify-center w-full bg-white py-2  rounded shadow hover:bg-gray-100"
+            >
+              <img
+                src="logo_google_g_icon.png"
+                alt="Google logo"
+                className="w-6 h-6 mr-2"
+              />
+              <span className="text-gray-700">Login with Google</span>
+            </button>
+          </div>
+        </div>
       </div>
     </Layout>
   );

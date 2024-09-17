@@ -117,77 +117,101 @@ const Upload = () => {
 
   return (
     <Layout>
-      <h2 className="mb-4">Upload File</h2>
-      <Form>
-        <Form.Group controlId="formFile" className="mb-3">
-          <Form.Label>Select Image</Form.Label>
-          <Form.Control
-            type="file"
-            onChange={handleFileChange}
-            data-cy="file-input"
-          />
-        </Form.Group>
-        {selectedImage && (
-          <div className="mb-3">
-            <h3>Image Preview:</h3>
-            <Image
-              src={selectedImage}
-              alt="Selected Image"
-              width="200"
-              thumbnail
-              data-cy="image-preview"
-            />
+      <div className="flex gap-8">
+        <div className="w-1/2 p-6 bg-[#FAFAFA12] rounded-md">
+          <h2 className="mb-4 text-white">Upload Photo</h2>
+          <Form>
+            <Form.Group controlId="formFile" className="mb-3 text-white">
+              <Form.Label>Select Image</Form.Label>
+              <Form.Control
+                type="file"
+                onChange={handleFileChange}
+                data-cy="file-input"
+              />
+            </Form.Group>
+            {/* {selectedImage && (
+              <div className="mb-3">
+                <h3>Image Preview:</h3>
+                <Image
+                  src={selectedImage}
+                  alt="Selected Image"
+                  width="200"
+                  thumbnail
+                  data-cy="image-preview"
+                />
+              </div>
+            )} */}
+            <Form.Group controlId="formTitle" className="mb-3 text-white">
+              <Form.Label>Photo Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter photo name"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                data-cy="title-input"
+              />
+            </Form.Group>
+            <Form.Group controlId="formDescription" className="mb-3 text-white">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Enter description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                data-cy="description-input"
+              />
+            </Form.Group>
+            <Form.Group controlId="formIsFree" className="mb-3 text-white">
+              <Form.Check
+                type="checkbox"
+                label="Free Image"
+                checked={isFree}
+                onChange={(e) => setIsFree(e.target.checked)}
+              />
+            </Form.Group>
+
+            {!isFree && (
+              <Form.Group controlId="formPrice" className="mb-3 text-white">
+                <Form.Label>Price</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter price"
+                  value={price}
+                  onChange={(e) => setPrice(Number(e.target.value))}
+                  data-cy="price-input"
+                />
+              </Form.Group>
+            )}
+
+            <Button
+              variant="primary"
+              onClick={handleUpload}
+              data-cy="upload-button"
+            >
+              Upload
+            </Button>
+          </Form>
+        </div>
+        <div className="w-1/2 p-6 bg-[#FAFAFA12] rounded-md">
+          <h2 className="text-2xl text-center mb-4 text-white">
+            Photo Preview
+          </h2>
+          <div className="w-full h-64 flex items-center justify-center  rounded-md">
+            {selectedImage ? (
+              <img
+                src={selectedImage}
+                alt="Selected Preview"
+                className="max-h-full max-w-full"
+                data-cy="image-preview"
+              />
+            ) : (
+              <span className="mb-4 text-white">No preview available.</span>
+            )}
           </div>
-        )}
-        <Form.Group controlId="formTitle" className="mb-3">
-          <Form.Label>Title</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            data-cy="title-input"
-          />
-        </Form.Group>
-        <Form.Group controlId="formDescription" className="mb-3">
-          <Form.Label>Description</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            placeholder="Enter description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            data-cy="description-input"
-          />
-        </Form.Group>
-        <Form.Group controlId="formIsFree" className="mb-3">
-          <Form.Check
-            type="checkbox"
-            label="Free Image"
-            checked={isFree}
-            onChange={(e) => setIsFree(e.target.checked)}
-          />
-        </Form.Group>
-        {!isFree && (
-          <Form.Group controlId="formPrice" className="mb-3">
-            <Form.Label>Price</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter price"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-              data-cy="price-input"
-            />
-          </Form.Group>
-        )}
-        <Button
-          variant="primary"
-          onClick={handleUpload}
-          data-cy="upload-button"
-        >
-          Upload
-        </Button>
-      </Form>
+        </div>
+      </div>
+
       {error && (
         <Alert variant="danger" className="mt-3" data-cy="error-message">
           {error}

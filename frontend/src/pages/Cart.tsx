@@ -126,7 +126,7 @@ const Cart = () => {
 
   return (
     <Layout>
-      <h3 className="mb-4 text-center">My Cart</h3>
+      <h3 className="mb-4 text-center">MY CART</h3>
       <Row>
         <Col md={8}>
           {cartItems.length > 0 ? (
