@@ -291,7 +291,7 @@ const PhotoDetail = () => {
                       <div
                         className="absolute inset-0 bg-repeat opacity-50"
                         style={{
-                          backgroundImage: `repeating-linear-gradient(
+                          backgroundImage: `repeating-linear-gradient( 
                             45deg,
                             rgba(255, 255, 255, 0.1) 0px,
                             rgba(255, 255, 255, 0.1) 25px,
