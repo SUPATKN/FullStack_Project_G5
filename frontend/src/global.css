@@ -2,12 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 .Body{
-  background-color: #000000;
+  background-color: #181818;
 }
 body {
   margin: 0;
   background-color: #000000;
   padding: 0;
+}
+.letter-spacing-0-7px{
+  letter-spacing: 0.7px;
 }
 .single_advisor_profile {
   position: relative;
@@ -871,7 +874,7 @@ a:hover {
 /* Navbar.css */
 
 .navbar {
-  background: #181818;
+  background: #000000;
   color: #fff;
   padding: 10px;
 }
@@ -888,7 +891,7 @@ a:hover {
   gap: 15px;
 }
 .navbar-brand .logo {
-  height: 40px;
+  width: 55px;
 }
 
 .navbar-toggle {
@@ -1390,3 +1393,103 @@ a:hover {
   }
 }
 
+.header-login{
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.header-login h5{
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: 0.7px;
+}
+.container-login{
+  border-radius: 8px;
+}
+.container-login h3{
+  font-weight: 300;
+  letter-spacing: 0.7px;
+}
+.container-login input{
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 0.7px;
+}
+.container-login button{
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.7px;
+  padding: 8px;
+}
+.container-login span{
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.7px;
+}
+.button-google{
+  background-color: #ffffff;
+}
+.button-google:hover{
+  background-color: #e7e7e7;
+}
+.button-options-login{
+  margin-left: 15px;
+}
+.button-options-login span{
+  font-size: 18px;
+  font-weight: 300;
+  text-decoration: none;
+  letter-spacing: 0.7px;
+}
+.button-options-login span .textlogin{
+  text-decoration: none;
+}
+
+.header-sign-up{
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.header-sign-up h5{
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: 0.7px;
+}
+.container-sign-up{
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+}
+.container-sign-up h3{
+  font-weight: 300;
+  letter-spacing: 0.7px;
+}
+.container-sign-up input{
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 0.7px;
+}
+.container-sign-up button{
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.7px;
+  padding: 8px;
+}
+.container-sign-up span{
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.7px;
+}
+.head-section{
+  color: #b3b3b3;
+  font-weight: 300;
+  font-size: 14px;
+  letter-spacing: 0.7px;
+}
+.options-login{
+  padding-bottom:2rem ;
+}

@@ -3,7 +3,8 @@ import axios from "axios";
 import Layout from "../../Layout";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../../hook/useAuth";
-// import LogoGoogle from "../pnggoogle.png";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const Login: FC = () => {
   const [email, setEmail] = useState("");
@@ -16,6 +17,7 @@ const Login: FC = () => {
 
   // Handle query parameters from URL
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   React.useEffect(() => {
     const query = new URLSearchParams(location.search);
@@ -61,6 +63,10 @@ const Login: FC = () => {
     } finally {
       setLoading(false);
     }
+    
+  };
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleGoogleLogin = () => {
@@ -70,61 +76,46 @@ const Login: FC = () => {
 
   return (
     <Layout>
-      {/* <h3>LOGIN TO THE ART AND COMMUNITY</h3>
-      <div className="flex justify-center items-center h-screen">
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button onClick={handleLogin} disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {loginStatus && <p style={{ color: "green" }}>{loginStatus}</p>}
+      <div className="header-login">
+        <h5 className="text-center text-[#ff8833] ">LOGIN</h5>
+        <h5 className="text-center text-[#ffffff] " >TO THE</h5>
+        <h5 className="display-flex text-center text-[#ff8833] ">ART AND COMMUNITY </h5>
+      </div>
 
-        <h1>Social Login</h1>
-
-        <article>
-          <div style={{ display: "flex", gap: "2rem" }}>
-            <button onClick={handleGoogleLogin}>
-              <img src={LogoGoogle} alt="GoogleLogo" style={{ width: "24px", height: "24px", marginRight: "8px" }} />
-              <span>Login with Google</span>
-            </button>
-          </div>
-        </article>
-      </div> */}
-      <h3 className="text-center text-[#ff8833] font-semibold">LOGIN TO THE ART AND COMMUNITY</h3>
-      <div className="flex justify-center items-center min-h-[60vh] bg-[#FAFAFA12] mt-3">
-        <div className="w-full max-w-xs p-8 rounded-lg">
+      <div className="container-login flex justify-center items-center min-h-[60vh] bg-[#fafafa12] mt-3">
+        <div className="w-full max-w-xs pt-8 pb-8 rounded-lg">
           <h3 className=" text-lg font-semibold mb-6 text-center text-white">
             Log in
           </h3>
+          <h6 className="head-section">
+            Email or Phone Number
+          </h6>
           <input
             type="text"
             placeholder="Email Address Or Phone Number"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 mb-4  rounded"
+            className="w-full p-2.5 mb-4  rounded"
           />
+          <h6 className="head-section">
+            Password
+            <FontAwesomeIcon 
+              icon={showPassword ? faEye : faEyeSlash} 
+              onClick={toggleShowPassword} 
+              style={{ cursor: "pointer", marginLeft: 10 ,color: "#b3b3b3"}} 
+            />
+          </h6>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 mb-4  rounded"
+            className={`w-full p-2.5 mb-4 rounded `}
           />
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full bg-[#ff8833] text-white font-semibold py-2 rounded hover:bg-orange-500 transition duration-200"
+            className="w-full bg-[#ff8833] text-white font-semibold py-2 rounded hover:bg-[#f16501] transition duration-200"
           >
             {loading ? "Logging in..." : "LOG IN"}
           </button>
@@ -133,13 +124,13 @@ const Login: FC = () => {
             <p className="text-green-500 text-center mt-2">{loginStatus}</p>
           )}
 
-          <div className="text-center mt-4 text-gray-400">
+          <div className="text-center mt-4 text-gray-400 font-light letter-spacing-0-7px">
             Other log in options
           </div>
           <div className="flex justify-center mt-4">
             <button
               onClick={handleGoogleLogin}
-              className="flex items-center justify-center w-full bg-white py-2  rounded shadow hover:bg-gray-100"
+              className="button-google flex items-center justify-center w-full py-2  rounded "
             >
               <img
                 src="logo_google_g_icon.png"
