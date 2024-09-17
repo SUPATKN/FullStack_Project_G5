@@ -3,7 +3,7 @@ import axios from "axios";
 import Layout from "../../Layout";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../../hook/useAuth";
-import LogoGoogle from "../pnggoogle.png";
+// import LogoGoogle from "../pnggoogle.png";
 
 const Login: FC = () => {
   const [email, setEmail] = useState("");
@@ -101,8 +101,8 @@ const Login: FC = () => {
           </div>
         </article>
       </div> */}
-      <h3 className="text-center text-white">LOGIN TO THE ART AND COMMUNITY</h3>
-      <div className="flex justify-center items-center min-h-[60vh] bg-[#FAFAFA12]">
+      <h3 className="text-center text-[#ff8833] font-semibold">LOGIN TO THE ART AND COMMUNITY</h3>
+      <div className="flex justify-center items-center min-h-[60vh] bg-[#FAFAFA12] mt-3">
         <div className="w-full max-w-xs p-8 rounded-lg">
           <h3 className=" text-lg font-semibold mb-6 text-center text-white">
             Log in

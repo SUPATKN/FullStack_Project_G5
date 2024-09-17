@@ -184,13 +184,19 @@ const Upload = () => {
               </Form.Group>
             )}
 
-            <Button
+            <button
+              className="w-[110px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
+              onClick={handleUpload}
+            >
+              Upload
+            </button>
+            {/* <Button
               variant="primary"
               onClick={handleUpload}
               data-cy="upload-button"
             >
               Upload
-            </Button>
+            </Button> */}
           </Form>
         </div>
         <div className="w-1/2 p-6 bg-[#FAFAFA12] rounded-md">
