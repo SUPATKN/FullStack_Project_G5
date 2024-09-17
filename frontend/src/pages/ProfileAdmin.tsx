@@ -345,33 +345,33 @@ const Admin = () => {
         ) : (
 
           <div>
-            <h4 className="mt-4 flex items-center text-black text-2xl">
-              <Hexagon className="text-black w-10 h-10 mr-2"/>
+            <h4 className="mt-4 flex items-center text-white text-2xl">
+              <Hexagon className="text-white w-10 h-10 mr-2"/>
               Payment Slips
             </h4>
-            <div className="overflow-hidden rounded-lg border shadow-md bg-white">
-              <table className="table-auto mx-auto w-[1296px] h-full border-collapse">
+            <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
+              <table className="table-auto mx-auto w-[1296px] h-full border-collapse border-black">
                 <thead>
                   <tr className="text-center">
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[186px]  whitespace-nowrap rounded-tl-lg">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[186px]  whitespace-nowrap rounded-tl-lg">
                       Slip ID
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[180px] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[180px] whitespace-nowrap ">
                       User ID
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[185px] whitespace-nowrap ">
                       Amount
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[185px] whitespace-nowrap ">
                       Coins
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[185px] whitespace-nowrap ">
                       Status
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[190px] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[190px] whitespace-nowrap ">
                       Slip Image
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[185px] whitespace-nowrap rounded-tr-lg">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[185px] whitespace-nowrap rounded-tr-lg">
                       Actions
                     </th>
                   </tr>
@@ -428,24 +428,24 @@ const Admin = () => {
               </table>
             </div>
 
-            <h4 className="mt-4 flex items-center text-black text-2xl">
-              <Hexagon className="text-black w-10 h-10 mr-2"/>
+            <h4 className="mt-4 flex items-center text-white text-2xl">
+              <Hexagon className="text-white w-10 h-10 mr-2"/>
               Users
             </h4>
-            <div className="overflow-hidden rounded-lg border shadow-md bg-white">
-              <table className="table-auto mx-auto w-[1296px] h-full border-collapse">
+            <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
+              <table className="table-auto mx-auto w-[1296px] h-full border-collapse border-black">
                 <thead>
-                  <tr className="text-center">
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
+                  <tr className="text-center border-black">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px]  whitespace-nowrap rounded-tl-[8px]">
                       ID
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px] whitespace-nowrap ">
                       Username
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px] whitespace-nowrap ">
                       Email
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap rounded-tr-lg">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px] whitespace-nowrap rounded-tr-lg">
                       Profile
                     </th>
                   </tr>
@@ -453,16 +453,16 @@ const Admin = () => {
                 <tbody>
                   {users.map((user) => (
                     <tr key={user.id} className="text-center">
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tl-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap rounded-tl-lg">
                         {user.id}
                       </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap">
                         {user.username}
                       </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap">
                         {user.email}
                       </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tr-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap rounded-tr-lg">
                         <button
                           className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
                           onClick={() => handleUsernameClick(user.id.toString())}
@@ -476,24 +476,24 @@ const Admin = () => {
               </table>
             </div>
             
-            <h4 className="mt-4 flex items-center text-black text-2xl">
-              <Hexagon className="text-black w-10 h-10 mr-2"/>
+            <h4 className="mt-4 flex items-center text-white text-2xl">
+              <Hexagon className="text-white w-10 h-10 mr-2"/>
               User Photos
             </h4>
-            <div className="overflow-hidden rounded-lg border shadow-md bg-white">
-              <table className="table-auto mx-auto w-[1296px] h-full border-collapse">
+            <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
+              <table className="table-auto mx-auto w-[1296px] h-full border-collapse border-black">
                 <thead>
                   <tr className="text-center">
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px]  whitespace-nowrap rounded-tl-[8px]">
                       Photo ID
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px] whitespace-nowrap ">
                       User ID
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px] whitespace-nowrap ">
                       Photo
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap rounded-tr-lg">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px] whitespace-nowrap rounded-tr-lg">
                       Price
                     </th>
                   </tr>
@@ -501,13 +501,13 @@ const Admin = () => {
                 <tbody>
                   {photos.map((photo) => (
                     <tr key={photo.id} className="text-center">
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tl-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap rounded-tl-lg">
                         {photo.id}
                       </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap">
                         {photo.user_id}
                       </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px] h-full  whitespace-nowrap flex items-center justify-center">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px] h-full  whitespace-nowrap flex items-center justify-center">
                         <Image
                             crossOrigin="anonymous"
                             src={`/api/${photo.path}`}
@@ -519,7 +519,7 @@ const Admin = () => {
                             className="cursor-pointer"
                           />
                       </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tr-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap rounded-tr-lg">
                         {photo.price}
                       </td>
                     </tr>
@@ -547,8 +547,8 @@ const Admin = () => {
                 ))}
               </tbody>
             </Table> */}
-            <h4 className="mt-4 flex items-center text-black text-2xl">
-              <Hexagon className="text-black w-10 h-10 mr-2"/>
+            <h4 className="mt-4 flex items-center text-white text-2xl">
+              <Hexagon className="text-white w-10 h-10 mr-2"/>
               User Stats Bar Graph
             </h4>
             <div className="w-[80%] mx-auto">
@@ -591,24 +591,24 @@ const Admin = () => {
             </div>
 
             {/* Orders History */}
-            <h4 className="mt-4 flex items-center text-black text-2xl">
-              <Hexagon className="text-black w-10 h-10 mr-2"/>
+            <h4 className="mt-4 flex items-center text-white text-2xl">
+              <Hexagon className="text-white w-10 h-10 mr-2"/>
               Orders History
             </h4>
-            <div className="overflow-hidden rounded-lg border shadow-md bg-white">
-              <table className="table-auto mx-auto w-[1296px] border-collapse">
+            <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
+              <table className="table-auto mx-auto w-[1296px] border-collapse border-black">
                 <thead>
                   <tr className="text-center">
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px]  whitespace-nowrap rounded-tl-[8px]">
                       ID
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px] whitespace-nowrap ">
                       Username
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px] whitespace-nowrap ">
                       Email
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap rounded-tr-lg">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px] whitespace-nowrap rounded-tr-lg">
                       Actions
                     </th>
                   </tr>
@@ -616,16 +616,16 @@ const Admin = () => {
                 <tbody>
                   {users.map((user) => (
                     <tr key={user.id} className="text-center">
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tl-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap rounded-tl-lg">
                         {user.id}
                       </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap">
                         {user.username}
                       </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap">
                         {user.email}
                       </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tr-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap rounded-tr-lg">
                         <button
                             className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
                             onClick={() =>handleShowOrderHistory(user.id, user.username)}
@@ -640,24 +640,24 @@ const Admin = () => {
             </div>
 
             {/* Transactions History */}
-            <h4 className="mt-4 flex items-center text-black text-2xl">
-              <Hexagon className="text-black w-10 h-10 mr-2"/>
+            <h4 className="mt-4 flex items-center text-white text-2xl">
+              <Hexagon className="text-white w-10 h-10 mr-2"/>
               Transactions History
             </h4>
-            <div className="overflow-hidden rounded-lg border shadow-md bg-white">
-              <table className="table-auto mx-auto w-[1296px] border-collapse">
+            <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
+              <table className="table-auto mx-auto w-[1296px] border-collapse border-black">
                 <thead>
                   <tr className="text-center">
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px]  whitespace-nowrap rounded-tl-[8px]">
+                    <th className="border-2 border-[#ff8833] px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px]  whitespace-nowrap rounded-tl-[8px]">
                       ID
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    <th className="border-2 border-[#ff8833] px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px] whitespace-nowrap ">
                       Username
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap ">
+                    <th className="border-2 border-[#ff8833] px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px] whitespace-nowrap ">
                       Email
                     </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[324px] whitespace-nowrap rounded-tr-lg">
+                    <th className="border-2 border-[#ff8833] px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[324px] whitespace-nowrap rounded-tr-lg">
                       Actions
                     </th>
                   </tr>
@@ -665,16 +665,16 @@ const Admin = () => {
                 <tbody>
                   {users.map((user) => (
                     <tr key={user.id} className="text-center">
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tl-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap rounded-tl-lg">
                         {user.id}
                       </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap">
                         {user.username}
                       </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap">
                         {user.email}
                       </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[324px]  whitespace-nowrap rounded-tr-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap rounded-tr-lg">
                         <button
                             className="bg-[#ff8833] text-white w-[200px] h-[30px] rounded-md"
                             onClick={() =>handleShowTransactions(user.id, user.username)}
@@ -690,8 +690,8 @@ const Admin = () => {
 
             {/* Order Transactions Modal */}
             {showTransactionsModal && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ">
-              <div className="bg-white p-5 h-[600px] w-[700px] rounded-md shadow-md border">
+              <div className="fixed inset-0 bg-black h-full bg-opacity-50 flex items-center justify-center z-50 ">
+              <div className="bg-white p-5 w-[700px] rounded-md shadow-md border">
                 <div className="flex items-center justify-between">
                   <h2 className="text-black text-[24px] font-medium ml-5">
                     Transactions History for{" "}
