@@ -31,6 +31,7 @@ import {
   orders_history,
   albums,
   photo_albums,
+  tags,
 } from "@db/schema";
 import { and, eq, isNotNull } from "drizzle-orm";
 
@@ -1720,6 +1721,45 @@ app.get("/api/transactions", async (req: Request, res: Response) => {
       .execute();
 
     res.status(200).json(transections);
+  } catch (error) {
+    console.error("Error fetching order history:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/tag", async (req: Request, res: Response) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ error: "Tag name requied!" });
+  }
+
+  const existingTag = await dbClient
+    .select()
+    .from(tags)
+    .where(eq(tags.name, name))
+    .execute();
+
+  if (existingTag.length > 0) {
+    return res.status(409).json({ error: "Tag already exists in this album" });
+  }
+
+  try {
+    await dbClient.insert(tags).values({
+      name: name,
+    });
+    res.status(200).json({ message: "tag created successfully" });
+  } catch (error) {
+    console.error("Error creating tag:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+//get all tags
+app.get("/api/tag", async (req: Request, res: Response) => {
+  try {
+    const allTag = await dbClient.query.tags.findMany();
+    res.status(200).json(allTag);
   } catch (error) {
     console.error("Error fetching order history:", error);
     res.status(500).json({ error: "Internal Server Error" });

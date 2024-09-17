@@ -224,7 +224,20 @@
       .references(() => albums.album_id, { onDelete: "cascade" }),
   });
 
-  export type ProviderType = "GOOGLE";
+export const tags = pgTable("tags", {
+  tags_id: serial("tags_id").primaryKey(),
+  name: text("name").notNull(),
+});
+
+export const Photo_tags = pgTable("Photo_tags", {
+  photo_id: integer("photo_id")
+    .notNull()
+    .references(() => images.id, { onDelete: "cascade" }),
+  tags_id: integer("tags_id")
+    .notNull()
+    .references(() => tags.tags_id, { onDelete: "cascade" }),
+});
+export type ProviderType = "GOOGLE";
 
   type UTI = typeof users.$inferInsert;
   type ATI = typeof accountsTable.$inferInsert;
