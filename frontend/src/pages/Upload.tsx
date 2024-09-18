@@ -13,6 +13,11 @@ interface Photo {
   description: string;
 }
 
+interface Tag {
+  tags_id: number;
+  name: string;
+}
+
 const Upload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>("");
@@ -30,6 +35,8 @@ const Upload = () => {
   // New states for limiting sales
   const [limitSales, setLimitSales] = useState<boolean>(false);
   const [maxSales, setMaxSales] = useState<number>(1);
+  const [tags, setTags] = useState<Tag[]>([]); // State for all tags
+  const [selectedTags, setSelectedTags] = useState<number[]>([]); // State for selected tag IDs
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -69,6 +76,11 @@ const Upload = () => {
     formData.append("description", description);
     formData.append("max_sales", maxSales.toString()); // Add max_sales to form data
 
+    // Append selected tags to form data
+    selectedTags.forEach((tagId) => {
+      formData.append("tags", tagId.toString());
+    });
+
     try {
       await axios.post("/api/upload", formData, {
         headers: {
@@ -83,6 +95,7 @@ const Upload = () => {
       setTitle("");
       setDescription("");
       setMaxSales(0); // Reset max_sales after upload
+      setSelectedTags([]); // Clear selected tags after upload
     } catch (error) {
       console.error("Error uploading file:", error);
       setSuccess(null);
@@ -108,9 +121,19 @@ const Upload = () => {
     }
   };
 
+  const fetchTags = async () => {
+    try {
+      const { data } = await axios.get<Tag[]>("/api/tag");
+      setTags(data);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+    }
+  };
+
   useEffect(() => {
     refetch();
     fetchImages();
+    fetchTags();
   }, [refetch]);
 
   useEffect(() => {
@@ -206,6 +229,27 @@ const Upload = () => {
             />
           </Form.Group>
         )}
+        <Form.Group controlId="formTags" className="mb-3 text-white">
+          <Form.Label>Select Tags</Form.Label>
+          {tags.map((tag) => (
+            <Form.Check
+              key={tag.tags_id}
+              type="checkbox"
+              label={tag.name}
+              value={tag.tags_id}
+              checked={selectedTags.includes(tag.tags_id)}
+              onChange={(e) => {
+                const tagId = parseInt(e.target.value);
+                if (e.target.checked) {
+                  setSelectedTags([...selectedTags, tagId]);
+                } else {
+                  setSelectedTags(selectedTags.filter((id) => id !== tagId));
+                }
+              }}
+            />
+          ))}
+        </Form.Group>
+
         <Button
           variant="primary"
           onClick={handleUpload}
