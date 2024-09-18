@@ -31,9 +31,11 @@ import {
   orders_history,
   albums,
   photo_albums,
+  Photo_tags,
   tags,
 } from "@db/schema";
 import { and, eq, isNotNull } from "drizzle-orm";
+import { param } from "express-validator";
 
 type CartType = {
   cart_id: number;
@@ -225,14 +227,13 @@ app.post(
     const title = req.body.title || ""; // Default to empty string if not provided
     const description = req.body.description || ""; // Default to empty string if not provided
     const maxSales = parseInt(req.body.max_sales, 10) || null; // Convert max_sales to number or default to null
-
+    const tags = req.body.tags;
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
     }
 
     try {
-
-          console.log("maxSales: ", maxSales);
+      console.log("maxSales: ", maxSales);
 
       const result = await dbClient
         .insert(images)
@@ -242,10 +243,32 @@ app.post(
           price: price,
           created_at: new Date(),
           title: title,
-          max_sales:maxSales,
+          max_sales: maxSales,
           description: description,
         })
         .returning({ id: images.id, path: images.path });
+
+      let selectedTags: number[] = [];
+      if (tags) {
+        if (Array.isArray(tags)) {
+          // Multiple tags selected
+          selectedTags = tags.map((tagId: string) => parseInt(tagId));
+        } else {
+          // Single tag selected
+          selectedTags = [parseInt(tags)];
+        }
+
+        // Insert into Photo_tags table
+        for (const tagId of selectedTags) {
+          await dbClient
+            .insert(Photo_tags)
+            .values({
+              photo_id: result[0].id,
+              tags_id: tagId,
+            })
+            .execute();
+        }
+      }
 
       res.json({ filePath, id: result[0].id });
     } catch (error) {
@@ -405,26 +428,25 @@ app.delete("/api/deletecomment", async (req: Request, res: Response) => {
   const { photo_id, user_id, comment_id } = req.body; // เพิ่ม comment_id
 
   if (!photo_id || !user_id || !comment_id) {
-    return res.status(400).json({ error: "Photo ID, User ID, and Comment ID are required" });
+    return res
+      .status(400)
+      .json({ error: "Photo ID, User ID, and Comment ID are required" });
   }
 
   try {
-    await dbClient
-      .delete(comments)
-      .where(
-        and(
-          eq(comments.photo_id, Number(photo_id)),
-          eq(comments.user_id, Number(user_id)),
-          eq(comments.comment_id, Number(comment_id)) // เพิ่มเงื่อนไขการลบตาม comment_id
-        )
-      );
+    await dbClient.delete(comments).where(
+      and(
+        eq(comments.photo_id, Number(photo_id)),
+        eq(comments.user_id, Number(user_id)),
+        eq(comments.comment_id, Number(comment_id)) // เพิ่มเงื่อนไขการลบตาม comment_id
+      )
+    );
     res.status(200).json({ message: "comment deleted successfully" });
   } catch (error) {
     console.error("Error deleting comment:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 app.get("/api/getcomments", async (req: Request, res: Response) => {
   try {
@@ -942,7 +964,9 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
 
     // ตรวจสอบว่า max_sales ยังมีค่ามากกว่า 0 หรือไม่
     if (photo.max_sales !== null && photo.max_sales <= 0) {
-      return res.status(400).json({ error: "This photo has reached its sales limit" });
+      return res
+        .status(400)
+        .json({ error: "This photo has reached its sales limit" });
     }
 
     await dbClient.transaction(async (trx) => {
@@ -1045,8 +1069,6 @@ app.get("/api/getcountlikes", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 app.get("/api/getcountcomments", async (req: Request, res: Response) => {
   try {
@@ -1439,9 +1461,6 @@ app.get("/api/album/:albumId", async (req: Request, res: Response) => {
   }
 });
 
-
-
-
 app.delete("/api/album/:album_id", async (req: Request, res: Response) => {
   const { album_id } = req.params;
 
@@ -1519,8 +1538,8 @@ app.get("/api/album/:album_id/photos", async (req: Request, res: Response) => {
         path: images.path,
         user_id: images.user_id,
         price: images.price,
-        title:images.title,
-        description:images.description,
+        title: images.title,
+        description: images.description,
         created_at: images.created_at,
       })
       .from(photo_albums)
@@ -1763,5 +1782,33 @@ app.get("/api/tag", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching order history:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.delete("/api/tag", async (req: Request, res: Response) => {
+  const { tag_id } = req.body;
+
+  try {
+    await dbClient.delete(tags).where(eq(tags.tags_id, Number(tag_id)));
+    res.status(200).json({ message: "Tag removed successfully" });
+  } catch (error) {
+    console.error("Error deleting tag:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/photo/:photoId/tags", async (req, res) => {
+  const { photoId } = req.params;
+  console.log("photoId:", photoId);
+  try {
+    const Tag = await dbClient
+      .select({ name: tags.name })
+      .from(Photo_tags)
+      .innerJoin(tags, eq(Photo_tags.tags_id, tags.tags_id))
+      .where(eq(Photo_tags.photo_id, parseInt(photoId)));
+
+    res.json(Tag);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching tags" });
   }
 });

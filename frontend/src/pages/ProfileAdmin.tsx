@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Button, Spinner, Alert, Image, Modal } from "react-bootstrap";
+import {
+  Button,
+  Spinner,
+  Alert,
+  Image,
+  Modal,
+  Form,
+  ListGroup,
+} from "react-bootstrap";
 import Layout from "../Layout";
 import { useNavigate } from "react-router-dom";
 import { Bar } from "react-chartjs-2";
-import { Hexagon } from 'lucide-react';
+import { Hexagon } from "lucide-react";
 import LoadingWrapper from "../LoadingWrapper";
 import {
   Chart as ChartJS,
@@ -78,6 +86,11 @@ interface Comment {
   created_at: string;
 }
 
+interface Tag {
+  tags_id: number;
+  name: string;
+}
+
 const Admin = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -91,7 +104,8 @@ const Admin = () => {
   const [selectedSlip, setSelectedSlip] = useState<Slip | null>(null);
   const [showPhotoModal, setShowPhotoModal] = useState<boolean>(false);
   const [showSlipModal, setShowSlipModal] = useState<boolean>(false);
-  const [showOrderHistoryModal, setShowOrderHistoryModal] =useState<boolean>(false);
+  const [showOrderHistoryModal, setShowOrderHistoryModal] =
+    useState<boolean>(false);
   const [showTransactionsModal, setShowTransactionsModal] =
     useState<boolean>(false);
   const [selectedUserName, setSelectedUserName] = useState<string | null>(null);
@@ -99,6 +113,9 @@ const Admin = () => {
     []
   );
   const [comments, setComments] = useState<Comment[]>([]);
+  const [tagName, setTagName] = useState("");
+  const [AllTag, setAllTag] = useState<Tag[]>([]);
+  const [message, setMessage] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -140,7 +157,7 @@ const Admin = () => {
     }
   };
 
-  const fetchData = async () => {
+  const fetchAllPhoto = async () => {
     try {
       const [photosResponse] = await Promise.all([
         axios.get<Photo[]>("/api/photo"),
@@ -211,6 +228,15 @@ const Admin = () => {
       setComments(data);
     } catch (error) {
       console.error("Error fetching comments:", error);
+    }
+  };
+
+  const fetchTags = async () => {
+    try {
+      const { data } = await axios.get<Tag[]>("/api/tag");
+      setAllTag(data);
+    } catch (error) {
+      console.error("Error fetching Tags:", error);
     }
   };
 
@@ -288,12 +314,56 @@ const Admin = () => {
     }
   };
 
+  //add tag
+  const handleAddTag = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Reset messages
+    setMessage(null);
+    setError(null);
+
+    if (!tagName) {
+      setError("Tag name is required!");
+      return;
+    }
+
+    try {
+      const response = await axios.post("/api/tag", { name: tagName });
+      if (response.status === 200) {
+        fetchTags();
+        setMessage("Tag created successfully");
+        setTagName(""); // Clear the input field after success
+      }
+    } catch (err: any) {
+      if (err.response && err.response.status === 409) {
+        setError("Tag already exists in this album");
+      } else {
+        setError("Error adding tag, please try again.");
+      }
+    }
+  };
+  //Tag delete
+  const handleDeleteTag = async (tagId: number | undefined) => {
+    try {
+      const response = await axios.delete("/api/tag", {
+        data: { tag_id: tagId },
+      });
+      if (response.status === 200) {
+        setMessage("Tag removed successfully.");
+        setAllTag(AllTag.filter((tag) => tag.tags_id !== tagId)); // Update the tags list in the frontend
+      }
+    } catch (error) {
+      setError("Error deleting tag.");
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
-    fetchData();
+    fetchAllPhoto();
     fetchSlips();
     fetchLikes();
     fetchComments();
+    fetchTags();
   }, []);
 
   // Get unique user IDs
@@ -321,32 +391,32 @@ const Admin = () => {
     4
   );
 
-    // useEffect(() => {
-    //   if (showTransactionsModal) {
-    //     document.body.classList.add("overflow-hidden");
-    //   } else {
-    //     document.body.classList.remove("overflow-hidden");
-    //   }
-  
-    //   return () => {
-    //     document.body.classList.remove("overflow-hidden");
-    //   };
-    // }, [showTransactionsModal]);
+  // useEffect(() => {
+  //   if (showTransactionsModal) {
+  //     document.body.classList.add("overflow-hidden");
+  //   } else {
+  //     document.body.classList.remove("overflow-hidden");
+  //   }
+
+  //   return () => {
+  //     document.body.classList.remove("overflow-hidden");
+  //   };
+  // }, [showTransactionsModal]);
 
   return (
     <LoadingWrapper>
       <Layout>
-        <h2 className="flex items-center justify-center text-center text-[#ff8833] font-semibold">ADMIN DASHBOARD</h2>
+        <h2 className="flex items-center justify-center text-center text-[#ff8833] font-semibold">
+          ADMIN DASHBOARD
+        </h2>
         {loading ? (
           <Spinner animation="border" />
-          
         ) : error ? (
           <Alert variant="danger">{error}</Alert>
         ) : (
-
           <div>
             <h4 className="mt-4 flex items-center text-white text-2xl">
-              <Hexagon className="text-white w-10 h-10 mr-2"/>
+              <Hexagon className="text-white w-10 h-10 mr-2" />
               Payment Slips
             </h4>
             <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
@@ -396,31 +466,31 @@ const Admin = () => {
                       </td>
                       <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap">
                         <Image
-                            crossOrigin="anonymous"
-                            src={`/api/slip/${slip.slip_path}`}
-                            alt={`Slip ${slip.slip_id}`}
-                            thumbnail
-                            width={100}
-                            height={100}
-                            onClick={() => handleShowSlip(slip)}
-                            className="cursor-pointer"
-                          />
+                          crossOrigin="anonymous"
+                          src={`/api/slip/${slip.slip_path}`}
+                          alt={`Slip ${slip.slip_id}`}
+                          thumbnail
+                          width={100}
+                          height={100}
+                          onClick={() => handleShowSlip(slip)}
+                          className="cursor-pointer"
+                        />
                       </td>
                       <td className="border px-2 py-3 text-[16px] font-medium text-black w-[186px]  whitespace-nowrap rounded-tr-lg">
                         <Button
-                            variant="success"
-                            className="custom-margin"
-                            onClick={() => handleApproveSlip(slip.slip_id)}
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            variant="danger"
-                            className="custom-margin"
-                            onClick={() => handleRejectSlip(slip.slip_id)}
-                          >
-                            Reject
-                          </Button>
+                          variant="success"
+                          className="custom-margin"
+                          onClick={() => handleApproveSlip(slip.slip_id)}
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          variant="danger"
+                          className="custom-margin"
+                          onClick={() => handleRejectSlip(slip.slip_id)}
+                        >
+                          Reject
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -428,8 +498,59 @@ const Admin = () => {
               </table>
             </div>
 
+            <div>
+              <h2>Add a Tag</h2>
+              <Form onSubmit={handleAddTag}>
+                <Form.Group controlId="tagName">
+                  <Form.Label>Tag Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter tag name"
+                    value={tagName}
+                    onChange={(e) => setTagName(e.target.value)}
+                  />
+                </Form.Group>
+                <Button variant="primary" type="submit" className="mt-3">
+                  Add Tag
+                </Button>
+              </Form>
+
+              {message && (
+                <Alert variant="success" className="mt-3">
+                  {message}
+                </Alert>
+              )}
+              {error && (
+                <Alert variant="danger" className="mt-3">
+                  {error}
+                </Alert>
+              )}
+
+              <h3 className="mt-4">All Tags</h3>
+              {AllTag.length > 0 ? (
+                <ListGroup className="mt-3">
+                  {AllTag.map((tag) => (
+                    <ListGroup.Item key={tag.tags_id}>
+                      {" "}
+                      {/* Fallback to index */}
+                      {tag.name}
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteTag(tag.tags_id)}
+                      >
+                        Delete
+                      </Button>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              ) : (
+                <p>No tags found.</p>
+              )}
+            </div>
+
             <h4 className="mt-4 flex items-center text-white text-2xl">
-              <Hexagon className="text-white w-10 h-10 mr-2"/>
+              <Hexagon className="text-white w-10 h-10 mr-2" />
               Users
             </h4>
             <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
@@ -465,7 +586,9 @@ const Admin = () => {
                       <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap rounded-tr-lg">
                         <button
                           className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
-                          onClick={() => handleUsernameClick(user.id.toString())}
+                          onClick={() =>
+                            handleUsernameClick(user.id.toString())
+                          }
                         >
                           View Profile
                         </button>
@@ -475,9 +598,9 @@ const Admin = () => {
                 </tbody>
               </table>
             </div>
-            
+
             <h4 className="mt-4 flex items-center text-white text-2xl">
-              <Hexagon className="text-white w-10 h-10 mr-2"/>
+              <Hexagon className="text-white w-10 h-10 mr-2" />
               User Photos
             </h4>
             <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
@@ -509,15 +632,15 @@ const Admin = () => {
                       </td>
                       <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px] h-full  whitespace-nowrap flex items-center justify-center">
                         <Image
-                            crossOrigin="anonymous"
-                            src={`/api/${photo.path}`}
-                            alt={`Image ${photo.id}`}
-                            // thumbnail
-                            width={100}
-                            height={100}
-                            onClick={() => handleShowPhoto(photo)}
-                            className="cursor-pointer"
-                          />
+                          crossOrigin="anonymous"
+                          src={`/api/${photo.path}`}
+                          alt={`Image ${photo.id}`}
+                          // thumbnail
+                          width={100}
+                          height={100}
+                          onClick={() => handleShowPhoto(photo)}
+                          className="cursor-pointer"
+                        />
                       </td>
                       <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap rounded-tr-lg">
                         {photo.price}
@@ -527,7 +650,7 @@ const Admin = () => {
                 </tbody>
               </table>
             </div>
-        
+
             {/* <h4 className="mt-4">User Stats</h4>
             <Table striped bordered hover>
               <thead>
@@ -548,7 +671,7 @@ const Admin = () => {
               </tbody>
             </Table> */}
             <h4 className="mt-4 flex items-center text-white text-2xl">
-              <Hexagon className="text-white w-10 h-10 mr-2"/>
+              <Hexagon className="text-white w-10 h-10 mr-2" />
               User Stats Bar Graph
             </h4>
             <div className="w-[80%] mx-auto">
@@ -592,7 +715,7 @@ const Admin = () => {
 
             {/* Orders History */}
             <h4 className="mt-4 flex items-center text-white text-2xl">
-              <Hexagon className="text-white w-10 h-10 mr-2"/>
+              <Hexagon className="text-white w-10 h-10 mr-2" />
               Orders History
             </h4>
             <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
@@ -627,11 +750,13 @@ const Admin = () => {
                       </td>
                       <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap rounded-tr-lg">
                         <button
-                            className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
-                            onClick={() =>handleShowOrderHistory(user.id, user.username)}
-                          >
-                            View Orders
-                          </button>
+                          className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
+                          onClick={() =>
+                            handleShowOrderHistory(user.id, user.username)
+                          }
+                        >
+                          View Orders
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -641,7 +766,7 @@ const Admin = () => {
 
             {/* Transactions History */}
             <h4 className="mt-4 flex items-center text-white text-2xl">
-              <Hexagon className="text-white w-10 h-10 mr-2"/>
+              <Hexagon className="text-white w-10 h-10 mr-2" />
               Transactions History
             </h4>
             <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
@@ -676,11 +801,13 @@ const Admin = () => {
                       </td>
                       <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[324px]  whitespace-nowrap rounded-tr-lg">
                         <button
-                            className="bg-[#ff8833] text-white w-[200px] h-[30px] rounded-md"
-                            onClick={() =>handleShowTransactions(user.id, user.username)}
-                          >
-                            View Transactions
-                          </button>
+                          className="bg-[#ff8833] text-white w-[200px] h-[30px] rounded-md"
+                          onClick={() =>
+                            handleShowTransactions(user.id, user.username)
+                          }
+                        >
+                          View Transactions
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -691,69 +818,66 @@ const Admin = () => {
             {/* Order Transactions Modal */}
             {showTransactionsModal && (
               <div className="fixed inset-0 bg-black h-full bg-opacity-50 flex items-center justify-center z-50 ">
-              <div className="bg-white p-5 w-[700px] rounded-md shadow-md border">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-black text-[24px] font-medium ml-5">
-                    Transactions History for{" "}
-                    <span style={{ color: "green" }}>{selectedUserName}</span>
-                  </h2>
-                  <button
-                    onClick={() => setShowTransactionsModal(false)}
-                    className="p-2 bg-red-700 text-white rounded-md"
-                  >
-                    Close
-                  </button>
-                </div>
-                <div className="overflow-hidden rounded-lg border shadow-md bg-white mt-4">
-                  <table className="table-auto mx-auto w-[600px] border-collapse">
-                    <thead>
-                      <tr className="text-center">
-                        <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap rounded-tl-[8px]">
-                          USER ID
-                        </th>
-                        <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap">
-                          Price
-                        </th>
-                        <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap">
-                          Type
-                        </th>
-                        <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap">
-                          Descriptions
-                        </th>
-                        <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap rounded-tr-[8px]">
-                          Created At
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Transactions.map((trans) => (
-                        <tr key={trans.user_id} className="text-center">
-                          <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap rounded-tl-lg">
-                            {trans.user_id}
-                          </td>
-                          <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap">
-                            {trans.amount}
-                          </td>
-                          <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap">
-                            {trans.transaction_type}
-                          </td>
-                          <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap">
-                            {trans.description}
-                          </td>
-                          <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap rounded-tr-lg">
-                            {new Date(trans.created_at).toLocaleString()}
-                          </td>
+                <div className="bg-white p-5 w-[700px] rounded-md shadow-md border">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-black text-[24px] font-medium ml-5">
+                      Transactions History for{" "}
+                      <span style={{ color: "green" }}>{selectedUserName}</span>
+                    </h2>
+                    <button
+                      onClick={() => setShowTransactionsModal(false)}
+                      className="p-2 bg-red-700 text-white rounded-md"
+                    >
+                      Close
+                    </button>
+                  </div>
+                  <div className="overflow-hidden rounded-lg border shadow-md bg-white mt-4">
+                    <table className="table-auto mx-auto w-[600px] border-collapse">
+                      <thead>
+                        <tr className="text-center">
+                          <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap rounded-tl-[8px]">
+                            USER ID
+                          </th>
+                          <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap">
+                            Price
+                          </th>
+                          <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap">
+                            Type
+                          </th>
+                          <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap">
+                            Descriptions
+                          </th>
+                          <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px]  whitespace-nowrap rounded-tr-[8px]">
+                            Created At
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {Transactions.map((trans) => (
+                          <tr key={trans.user_id} className="text-center">
+                            <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap rounded-tl-lg">
+                              {trans.user_id}
+                            </td>
+                            <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap">
+                              {trans.amount}
+                            </td>
+                            <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap">
+                              {trans.transaction_type}
+                            </td>
+                            <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap">
+                              {trans.description}
+                            </td>
+                            <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap rounded-tr-lg">
+                              {new Date(trans.created_at).toLocaleString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
-            </div>
             )}
-
-
-
 
             {/* Order History Modal */}
             {showOrderHistoryModal && (
@@ -818,7 +942,6 @@ const Admin = () => {
                 </div>
               </div>
             )}
-
 
             {selectedPhoto && (
               <Modal show={showPhotoModal} onHide={handleClosePhotoModal}>

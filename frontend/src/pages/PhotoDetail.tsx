@@ -45,6 +45,7 @@ const PhotoDetail = () => {
   const [commentMap, setCommentMap] = useState<{ [key: string]: Comment[] }>(
     {}
   );
+  const [tags, setTags] = useState<string[]>([]);
 
   const navigate = useNavigate();
 
@@ -91,6 +92,18 @@ const PhotoDetail = () => {
       setUsers(data);
     } catch (error) {
       console.error("Error fetching users:", error);
+    }
+  };
+
+  const fetchTags = async () => {
+    try {
+      const { data } = await axios.get<{ name: string }[]>(
+        `/api/photo/${id}/tags`
+      );
+      const tagNames = data.map((tag) => tag.name);
+      setTags(tagNames);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
     }
   };
 
@@ -192,6 +205,7 @@ const PhotoDetail = () => {
   };
 
   useEffect(() => {
+    fetchTags();
     fetchUsers();
     fetchLikes();
     fetchComments();
@@ -265,7 +279,15 @@ const PhotoDetail = () => {
                 </p>
                 <div className="flex items-center justify-start gap-2">
                   <Tag className="text-[#ff8833]" />
-                  <h2 className="text-[16px]">Animal</h2>
+                  {tags.length > 0 ? (
+                    tags.map((tag, index) => (
+                      <h2 key={index} className="text-[16px]">
+                        {tag}
+                      </h2>
+                    ))
+                  ) : (
+                    <h2 className="text-[16px]">No tags</h2>
+                  )}
                 </div>
                 <div className="relative flex items-center justify-center mt-2">
                   {/* ภาพหลัก */}
