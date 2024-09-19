@@ -34,7 +34,7 @@ const Upload = () => {
 
   // New states for limiting sales
   const [limitSales, setLimitSales] = useState<boolean>(false);
-  const [maxSales, setMaxSales] = useState<number>(1);
+  const [maxSales, setMaxSales] = useState<number>(0);
   const [tags, setTags] = useState<Tag[]>([]); // State for all tags
   const [selectedTags, setSelectedTags] = useState<number[]>([]); // State for selected tag IDs
 
