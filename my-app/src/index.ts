@@ -303,7 +303,7 @@ app.delete("/api/photo/:filename", async (req: Request, res: Response) => {
   const filePath = path.join(__dirname, "../images", filename);
 
   try {
-    fs.unlinkSync(filePath);
+    // fs.unlinkSync(filePath);
 
     const results = await dbClient.query.images.findMany();
     if (results.length === 0) {
@@ -677,6 +677,8 @@ app.post("/api/cart/checkout", async (req: Request, res: Response) => {
           throw new Error(`Seller with ID ${photo.user_id} not found`);
         }
 
+
+
         // Update coins for buyer and seller
         await trx
           .update(users)
@@ -691,6 +693,7 @@ app.post("/api/cart/checkout", async (req: Request, res: Response) => {
         await trx.insert(image_ownerships).values({
           user_id: user_id,
           image_id: photo.id,
+          path: photo.path,
           purchased_at: new Date(),
         });
 
@@ -928,6 +931,10 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Invalid photo ID or user ID" });
   }
 
+  // const photo = await dbClient.query.images.findFirst({
+  //         where: eq(images.id, photoId),
+  //       });
+
   try {
     const photo = await dbClient.query.images.findFirst({
       where: eq(images.id, photoId),
@@ -983,6 +990,7 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
       await trx.insert(image_ownerships).values({
         user_id: userId,
         image_id: photoId,
+        path:photo.path,
         purchased_at: new Date(),
       });
 
@@ -1029,8 +1037,8 @@ app.get(
       // ค้นหารูปภาพที่ผู้ใช้ได้ซื้อ
       const purchasedPhotos = await dbClient
         .select({
-          id: images.id,
-          path: images.path,
+          id: image_ownerships.id,
+          path: image_ownerships.path,
           price: images.price,
           purchased_at: image_ownerships.purchased_at,
         })

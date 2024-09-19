@@ -231,6 +231,8 @@ const PhotoDetail = () => {
       alert("You need to be logged in to purchase a photo.");
       return;
     }
+    console.log("hasPurchased: ", hasPurchased);
+    console.log("photo: ", photo);
 
     if (photo) {
       try {
@@ -238,10 +240,13 @@ const PhotoDetail = () => {
           userId: currentUser.id,
         });
         setHasPurchased(true);
+        console.log("Updated hasPurchased:", true);
+
         const updatedPhotoResponse = await axios.get<PhotoDetailProps>(
           `/api/photo/${photo.id}`
         );
         setPhoto(updatedPhotoResponse.data);
+        console.log("Updated photo:", updatedPhotoResponse.data);
       } catch (error) {
         console.error("Error purchasing photo:", error);
       }

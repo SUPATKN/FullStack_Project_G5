@@ -207,16 +207,22 @@ const Upload = () => {
               onChange={(e) => setPrice(Number(e.target.value))}
               data-cy="price-input"
             />
+            <Form.Check
+              type="checkbox"
+              label="Limit Sales"
+              checked={limitSales}
+              onChange={(e) => setLimitSales(e.target.checked)}
+            />
           </Form.Group>
         )}
-        <Form.Group controlId="formLimitSales" className="mb-3 text-white">
+        {/* <Form.Group controlId="formLimitSales" className="mb-3 text-white">
           <Form.Check
             type="checkbox"
             label="Limit Sales"
             checked={limitSales}
             onChange={(e) => setLimitSales(e.target.checked)}
           />
-        </Form.Group>
+        </Form.Group> */}
         {limitSales && (
           <Form.Group controlId="formMaxSales" className="mb-3 text-white">
             <Form.Label>Maximum Sales Allowed</Form.Label>
