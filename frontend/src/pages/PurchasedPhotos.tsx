@@ -5,7 +5,13 @@ import { Card, Col, Row } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import Layout from "../Layout";
 
-interface Photo {
+// interface Photo {
+//   id: string;
+//   path: string;
+//   price: number;
+//   purchased_at: string;
+// }
+interface PhotoOwner {
   id: string;
   path: string;
   price: number;
@@ -13,14 +19,14 @@ interface Photo {
 }
 
 const PurchasedPhotos: React.FC = () => {
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [photos, setPhotos] = useState<PhotoOwner[]>([]);
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
   const userId = location.state?.userId;
 
   const fetchPurchasedPhotos = async () => {
     try {
-      const response = await axios.get<Photo[]>(
+      const response = await axios.get<PhotoOwner[]>(
         `/api/user/${userId}/purchased-photos`
       );
       setPhotos(response.data);
@@ -65,7 +71,7 @@ const PurchasedPhotos: React.FC = () => {
   return (
     <Layout>
       <div className="container mt-4">
-        <h2 className="mb-4">Purchased Photos</h2>
+        <h2 className="mb-4 text-white">Purchased Photos</h2>
         {error ? (
           <p>{error}</p>
         ) : (
@@ -100,7 +106,7 @@ const PurchasedPhotos: React.FC = () => {
                 </Col>
               ))
             ) : (
-              <p>No photos purchased yet.</p>
+              <p className="text-white">No photos purchased yet.</p>
             )}
           </Row>
         )}

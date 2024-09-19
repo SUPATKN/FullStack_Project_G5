@@ -149,8 +149,8 @@
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     image_id: integer("image_id")
-      .notNull()
-      .references(() => images.id, { onDelete: "cascade" }),
+      .references(() => images.id, { onDelete: "set null" }),
+      path: text("path"),
     purchased_at: timestamp("purchased_at").defaultNow().notNull(),
   });
 

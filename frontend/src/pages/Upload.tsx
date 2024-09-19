@@ -34,7 +34,7 @@ const Upload = () => {
 
   // New states for limiting sales
   const [limitSales, setLimitSales] = useState<boolean>(false);
-  const [maxSales, setMaxSales] = useState<number>(1);
+  const [maxSales, setMaxSales] = useState<number>(0);
   const [tags, setTags] = useState<Tag[]>([]); // State for all tags
   const [selectedTags, setSelectedTags] = useState<number[]>([]); // State for selected tag IDs
 
@@ -207,16 +207,22 @@ const Upload = () => {
               onChange={(e) => setPrice(Number(e.target.value))}
               data-cy="price-input"
             />
+            <Form.Check
+              type="checkbox"
+              label="Limit Sales"
+              checked={limitSales}
+              onChange={(e) => setLimitSales(e.target.checked)}
+            />
           </Form.Group>
         )}
-        <Form.Group controlId="formLimitSales" className="mb-3 text-white">
+        {/* <Form.Group controlId="formLimitSales" className="mb-3 text-white">
           <Form.Check
             type="checkbox"
             label="Limit Sales"
             checked={limitSales}
             onChange={(e) => setLimitSales(e.target.checked)}
           />
-        </Form.Group>
+        </Form.Group> */}
         {limitSales && (
           <Form.Group controlId="formMaxSales" className="mb-3 text-white">
             <Form.Label>Maximum Sales Allowed</Form.Label>
