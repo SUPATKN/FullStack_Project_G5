@@ -205,7 +205,7 @@ const Gallery = () => {
 
   return (
     <Layout>
-      <h3 className="mb-4 text-center text-[#ff8833] font-semibold">GALLERY</h3>
+      <h3 className="mb-4 text-center text-[#ff8833] font-light">GALLERY</h3>
       {error && <p className="text-danger text-center">{error}</p>}
       <Row>
         {photos.map((photo) => (

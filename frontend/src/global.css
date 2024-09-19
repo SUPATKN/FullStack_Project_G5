@@ -1393,6 +1393,77 @@ a:hover {
   }
 }
 
+.header-home .Logo{
+  height: 100px;
+  margin: 20px 0  ;
+}
+.header-home{
+  margin-top: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.header-text{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.header-home h2{
+  font-size: 68px;
+  font-weight: 300;
+  letter-spacing: 0.7px;
+  margin-bottom: 10px;
+}
+.header-home h5{
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: 0.7px;
+  transition: 0.35s;
+}
+.header-home h5:hover{
+  transition: 0.2s;
+  font-size: 68px;
+  font-weight: 300;
+  letter-spacing: 0.7px;
+}
+
+.TO{
+  letter-spacing: 0.7px;
+  display: flex;
+  flex-direction: row;
+  padding: 0 12px;
+}
+.TO h5{
+  letter-spacing: 0.7px;
+  padding: 0 2px;
+}
+.Bordershow:hover{
+  transform: translateY(-0.5rem) rotate(8deg); 
+}
+
+.BordershowY:hover {
+  transform: translateY(-0.5rem) rotate(-6deg); 
+}
+.BordershowX:hover {
+  transform: translateY(-0.5rem) rotate(9deg); 
+}
+.description-home{
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: -40px;
+  margin-left:90px;
+}
+.description-home h5{
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: 0.7px;
+}
+
 .header-login{
   font-size: 10px;
   display: flex;

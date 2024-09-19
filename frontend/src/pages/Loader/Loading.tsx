@@ -8,25 +8,25 @@ interface ChangingButtonProps {
 }
 
 const colorClasses: { [key: string]: string } = {
-  red: "bg-red-400",
-  yellow: "bg-yellow-400",
-  purple: "bg-purple-400",
-  green: "bg-green-400",
-  blue: "bg-blue-400",
-  pink: "bg-pink-400",
-  indigo: "bg-indigo-400",
+  red: "bg-[#ff7614]",
+  yellow: "bg-[#e7721e]",
+  purple: "bg-[#FF8833]",
+  green: "bg-[#ffb681]",
+  blue: "bg-[#e7721e]",
+  pink: "bg-[#ff9b54]",
+  indigo: "bg-[#FF8833]",
 };
 
 export default function Loading() {
   return (
-    <div className="App flex justify-center items-center bg-gray-200  h-screen">
-      <ChangingButton duration={3500} text="L" color="red" />
-      <ChangingButton duration={1500} text="O" color="yellow" />
-      <ChangingButton duration={3000} text="A" color="purple" />
-      <ChangingButton duration={2500} text="D" color="green" />
-      <ChangingButton duration={2000} text="I" color="blue" />
-      <ChangingButton duration={1500} text="N" color="pink" />
-      <ChangingButton duration={1000} text="G" color="indigo" />
+    <div className="App flex justify-center items-center bg-[#181818] h-screen">
+      <ChangingButton duration={1100} text="L" color="red" />
+      <ChangingButton duration={1300} text="O" color="yellow" />
+      <ChangingButton duration={2400} text="A" color="purple" />
+      <ChangingButton duration={1700} text="D" color="green" />
+      <ChangingButton duration={1500} text="I" color="blue" />
+      <ChangingButton duration={900} text="N" color="pink" />
+      <ChangingButton duration={600} text="G" color="indigo" />
     </div>
   );
 }

@@ -20,6 +20,7 @@ import ProfileAdmin from "./pages/ProfileAdmin";
 import SlipViewPage from "./pages/SlipViewPage";
 import PrivateRoute from "./components/PrivateRoute"; // Adjust the path if needed
 import ViewAlbumPhotos from "./pages/Profile/ViewAlbumPhotos";
+import Home from "./pages/Home";
 
 axios.defaults.withCredentials = true;
 const queryClient = new QueryClient();
@@ -29,7 +30,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <Router>
         <Routes>
-          <Route path="/home" element={<Gallery />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/" element={<Gallery />} />
           <Route
             path="/upload"
