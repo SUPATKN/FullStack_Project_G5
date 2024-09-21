@@ -64,7 +64,8 @@ CREATE TABLE IF NOT EXISTS "comments" (
 CREATE TABLE IF NOT EXISTS "image_ownerships" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" integer NOT NULL,
-	"image_id" integer NOT NULL,
+	"image_id" integer,
+	"path" text,
 	"purchased_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -210,7 +211,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "image_ownerships" ADD CONSTRAINT "image_ownerships_image_id_images_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."images"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "image_ownerships" ADD CONSTRAINT "image_ownerships_image_id_images_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."images"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

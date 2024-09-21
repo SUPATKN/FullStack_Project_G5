@@ -3,8 +3,8 @@ import axios from "axios";
 import Layout from "../../Layout";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../../hook/useAuth";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const Login: FC = () => {
   const [email, setEmail] = useState("");
@@ -49,7 +49,7 @@ const Login: FC = () => {
         const { data: updatedAuth } = await refetch(); // ดึงข้อมูล user ใหม่จาก refetch
 
         if (updatedAuth?.user?.isAdmin) {
-          navigate("/profileadmin");
+          navigate("/admin");
         } else {
           navigate("/");
         }
@@ -63,7 +63,6 @@ const Login: FC = () => {
     } finally {
       setLoading(false);
     }
-    
   };
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -78,8 +77,10 @@ const Login: FC = () => {
     <Layout>
       <div className="header-login">
         <h5 className="text-center text-[#ff8833] ">LOGIN</h5>
-        <h5 className="text-center text-[#ffffff] " >TO THE</h5>
-        <h5 className="display-flex text-center text-[#ff8833] ">ART AND COMMUNITY </h5>
+        <h5 className="text-center text-[#ffffff] ">TO THE</h5>
+        <h5 className="display-flex text-center text-[#ff8833] ">
+          ART AND COMMUNITY{" "}
+        </h5>
       </div>
 
       <div className="container-login flex justify-center  min-h-[60vh] bg-[#fafafa12] mt-3">
@@ -87,9 +88,7 @@ const Login: FC = () => {
           <h3 className=" text-lg font-semibold mb-6 text-center text-white">
             Log in
           </h3>
-          <h6 className="head-section">
-            Email or Phone Number
-          </h6>
+          <h6 className="head-section">Email or Phone Number</h6>
           <input
             type="text"
             placeholder="Email Address Or Phone Number"
@@ -99,10 +98,10 @@ const Login: FC = () => {
           />
           <h6 className="head-section">
             Password
-            <FontAwesomeIcon 
-              icon={showPassword ? faEye : faEyeSlash} 
-              onClick={toggleShowPassword} 
-              style={{ cursor: "pointer", marginLeft: 10 ,color: "#b3b3b3"}} 
+            <FontAwesomeIcon
+              icon={showPassword ? faEye : faEyeSlash}
+              onClick={toggleShowPassword}
+              style={{ cursor: "pointer", marginLeft: 10, color: "#b3b3b3" }}
             />
           </h6>
           <input

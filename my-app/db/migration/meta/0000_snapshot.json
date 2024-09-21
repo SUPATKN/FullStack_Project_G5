@@ -1,5 +1,5 @@
 {
-  "id": "49a04c41-90e2-4730-86f3-cd78ae43d404",
+  "id": "a3e7b3e7-4dcf-4967-820b-81dc05694d13",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -486,7 +486,13 @@
           "name": "image_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "path": {
+          "name": "path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "purchased_at": {
           "name": "purchased_at",
@@ -521,7 +527,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
