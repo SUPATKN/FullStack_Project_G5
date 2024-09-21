@@ -21,6 +21,7 @@ import SlipViewPage from "./pages/SlipViewPage";
 import PrivateRoute from "./components/PrivateRoute"; // Adjust the path if needed
 import ViewAlbumPhotos from "./pages/Profile/ViewAlbumPhotos";
 import Home from "./pages/Home";
+import Page from "./admin/page";
 
 axios.defaults.withCredentials = true;
 const queryClient = new QueryClient();
@@ -125,6 +126,15 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             }
           />{" "}
           {/* New route */}
+          <Route
+            path="/admin"
+            element={
+              <PrivateRoute adminOnly>
+                <Page />
+              </PrivateRoute>
+            }
+          />
+
         </Routes>
       </Router>
     </QueryClientProvider>
