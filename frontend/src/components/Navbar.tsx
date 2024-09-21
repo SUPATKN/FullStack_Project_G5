@@ -55,6 +55,7 @@ const NavBar: React.FC = () => {
                 Creator
               </Link>
             </li>
+
             <li
               className={`${
                 location.pathname === "/instructor" ? "active" : ""

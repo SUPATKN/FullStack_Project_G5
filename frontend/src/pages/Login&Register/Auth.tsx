@@ -17,7 +17,7 @@ const Auth: React.FC = () => {
       setIsLogin(true);
     }
   }, [location.pathname]);
-
+  //
   return (
     <Layout>
       <div className="header-login mb-3">

@@ -132,7 +132,7 @@ const Login: FC = () => {
             >
               {loading ? "Logging in..." : "LOG IN"}
             </button>
-
+            {/* / */}
             {/* Alternative Login */}
             <div className="flex items-center justify-center mt-6">
               <div className="border-t border-gray-300 w-1/4"></div>

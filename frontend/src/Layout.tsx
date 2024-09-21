@@ -19,7 +19,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             className="z-10"
           />
           <p className="text-center text-xs italic font-bold text-white mt-2">
-            © {new Date("2024").getFullYear()} Art and Community. All rights reserved. by CPE 65 - GROUP 5
+            © {new Date("2024").getFullYear()} Art and Community. All rights
+            reserved. by CPE 65 - GROUP 5
           </p>
         </div>
       </footer>
