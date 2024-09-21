@@ -5,8 +5,8 @@ import Upload from "./pages/Upload";
 import Gallery from "./pages/Gallery";
 import Creator from "./pages/Creator";
 import Instructor from "./pages/Instructor";
-import Login from "./pages/Login&Register/Login";
-import Register from "./pages/Login&Register/Register";
+// import Login from "./pages/Login&Register/Login";
+// import Register from "./pages/Login&Register/Register";
 import ForgotPassword from "./Forget";
 import Profile from "./pages/Profile/Profile";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -22,6 +22,7 @@ import PrivateRoute from "./components/PrivateRoute"; // Adjust the path if need
 import ViewAlbumPhotos from "./pages/Profile/ViewAlbumPhotos";
 import Home from "./pages/Home";
 import Page from "./admin/page";
+import Auth from "./pages/Login&Register/Auth";
 
 axios.defaults.withCredentials = true;
 const queryClient = new QueryClient();
@@ -57,8 +58,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               </PrivateRoute>
             }
           />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          {/* <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} /> */}
+          <Route path="/login" element={<Auth />} /> {/* เปลี่ยนที่นี่ */}
+          <Route path="/register" element={<Auth />} /> {/* เปลี่ยนที่นี่ */}
           <Route
             path="/profile"
             element={
@@ -134,7 +137,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               </PrivateRoute>
             }
           />
-
         </Routes>
       </Router>
     </QueryClientProvider>

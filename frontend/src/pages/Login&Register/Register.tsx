@@ -1,10 +1,9 @@
 // src/components/Register.tsx
 import React, { useState } from "react";
 import axios from "axios";
-import Layout from "../../Layout";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import {Link} from "react-router-dom";
+import Layout from "./Layout";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -45,8 +44,6 @@ const Register: React.FC = () => {
         password,
       });
       setSuccess(response.data.message);
-
-      // Implement email verification logic here (refer to backend considerations)
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data.error || "Registration failed.");
@@ -65,111 +62,132 @@ const Register: React.FC = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
   const handleGoogleLogin = () => {
-    // Redirect user to the Google OAuth URL
     window.location.href = "/api/login/oauth/google";
   };
 
   return (
     <Layout>
-      <div className="header-login mb-3">
-        <h5 className="text-center text-[#ff8833] ">SIGN UP</h5>
-        <h5 className="text-center text-[#ffffff] " >TO THE</h5>
-        <h5 className="display-flex text-center text-[#ff8833] ">ART AND COMMUNITY </h5>
-      </div>
+      <div className="flex justify-center items-center  bg-gray-50">
+        <div className="w-full max-w-md p-6 bg-white rounded-lg ">
+          <h1 className="text-2xl font-bold text-center text-[#ff8833]">
+            Create Account
+          </h1>
+          <p className="text-center text-gray-500 mt-2">
+            Join our community today!
+          </p>
 
-      <div className="container-sign-up flex justify-center items-center min-h-[60vh] bg-[#fafafa12]">
-        <div className="w-full max-w-xs pt-8 rounded-lg">
-          <h3 className="text-lg font-semibold mb-6 text-center text-white">
-            Sign Up
-          </h3>
-          <h6 className="head-section">
-            Username
-          </h6>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-2.5 mb-4 rounded"
-          />
-          <h6 className="head-section">
-            Email Address Or Phone Number
-          </h6>
-          <input
-            type="email"
-            placeholder="Email Address Or Phone Number"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2.5 mb-4 rounded"
-          />
-          <h6 className="head-section">
-            Password
-            <FontAwesomeIcon 
-              icon={showPassword ? faEye : faEyeSlash} 
-              onClick={toggleShowPassword} 
-              style={{ cursor: "pointer", marginLeft: 10 ,color: "#b3b3b3"}} 
-            />
-            </h6>
+          <div className="mt-6">
+            {/* Username Field */}
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Username
+            </label>
             <input
+              id="username"
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff8833] focus:border-[#ff8833] transition"
+            />
+
+            {/* Email Field */}
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mt-4"
+            >
+              Email Address or Phone Number
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Email Address or Phone Number"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff8833] focus:border-[#ff8833] transition"
+            />
+
+            {/* Password Field */}
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mt-4"
+            >
+              Password
+              <FontAwesomeIcon
+                icon={showPassword ? faEye : faEyeSlash}
+                onClick={toggleShowPassword}
+                className="ml-2 text-gray-500 cursor-pointer"
+              />
+            </label>
+            <input
+              id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2.5 mb-4 rounded"
+              className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff8833] focus:border-[#ff8833] transition"
             />
-           
 
-          <h6 className="head-section">
-          Confirm Password
-          <FontAwesomeIcon
-            icon={showConfirmPassword ? faEye : faEyeSlash}
-            onClick={toggleShowConfirmPassword}
-            style={{ cursor: "pointer", marginLeft: 10 ,color: "#b3b3b3"}}
-          />
-          </h6>
-          <input
-            type={showConfirmPassword ? "text" : "password"}
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full p-2.5 mb-4 rounded"
-          />
-            
-          <button
-            onClick={handleRegister}
-            disabled={loading}
-            className="w-full bg-[#ff8833] text-white font-semibold py-2 rounded hover:bg-[#f16501] transition duration-200"
-          >
-            {loading ? "Signing Up..." : "SIGN UP"}
-          </button>
-          {error && <p className="text-red-500 text-center mt-2">{error}</p>}
-          {success && <p className="text-green-500 text-center mt-2">{success}</p>}
+            {/* Confirm Password Field */}
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700 mt-4"
+            >
+              Confirm Password
+              <FontAwesomeIcon
+                icon={showConfirmPassword ? faEye : faEyeSlash}
+                onClick={toggleShowConfirmPassword}
+                className="ml-2 text-gray-500 cursor-pointer"
+              />
+            </label>
+            <input
+              id="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff8833] focus:border-[#ff8833] transition"
+            />
 
-          <div className="text-center mt-4 text-gray-400 font-light letter-spacing-0-7px">
-            Other sign up options
-          </div>
-          
-        </div>
-        <div className="options-login flex justify-center mt-4">
-        <button
+            {/* Error and Success Messages */}
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+            {success && (
+              <p className="text-green-500 text-sm mt-2">{success}</p>
+            )}
+
+            {/* Register Button */}
+            <button
+              onClick={handleRegister}
+              disabled={loading}
+              className="w-full mt-6 bg-[#ff8833] text-white font-semibold py-2.5 rounded-lg hover:bg-[#f16501] transition duration-200 ease-in-out disabled:bg-gray-400"
+            >
+              {loading ? "Signing Up..." : "SIGN UP"}
+            </button>
+
+            {/* Alternative Sign-Up Options */}
+            <div className="flex items-center justify-center mt-3">
+              <div className="border-t border-gray-300 w-1/4"></div>
+              <p className="text-sm text-gray-500 mx-4">or sign up with</p>
+              <div className="border-t border-gray-300 w-1/4"></div>
+            </div>
+
+            {/* Google Sign-Up Button */}
+            <button
               onClick={handleGoogleLogin}
-              className="button-google flex items-center justify-center w-fit py-2  rounded "
+              className="flex items-center justify-center w-full mt-2 bg-white border border-gray-300 py-2.5 rounded-lg hover:bg-gray-100 transition"
             >
               <img
                 src="logo_google_g_icon.png"
                 alt="Google logo"
-                className="w-6 h-6 "
+                className="w-5 h-5 mr-2"
               />
-              <span className="text-gray-700">Sign Up with Google</span>
-            </button>
-          
-          <button
-            className="button-options-login flex items-center justify-center w-fit py-2 rounded "
-          >
-            <span className="text-gray-400 font-light">Already have an account? 
-              <Link to="/login" className="textlogin text-[#ff8833] font-light hover:text-[#f16501] ">Log&nbsp;In</Link>
+              <span className="text-gray-700 font-semibold">
+                Sign Up with Google
               </span>
-          </button>
+            </button>
+          </div>
         </div>
       </div>
     </Layout>

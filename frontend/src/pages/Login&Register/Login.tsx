@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import axios from "axios";
-import Layout from "../../Layout";
+import Layout from "./Layout";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../../hook/useAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,8 +14,6 @@ const Login: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, refetch } = useAuth();
-
-  // Handle query parameters from URL
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -45,9 +43,7 @@ const Login: FC = () => {
       const response = await axios.post("/api/login", { email, password });
 
       if (response.status === 200) {
-        // เรียก refetch เพื่ออัพเดตข้อมูลผู้ใช้หลังจากการล็อกอินเสร็จ
-        const { data: updatedAuth } = await refetch(); // ดึงข้อมูล user ใหม่จาก refetch
-
+        const { data: updatedAuth } = await refetch();
         if (updatedAuth?.user?.isAdmin) {
           navigate("/admin");
         } else {
@@ -64,79 +60,99 @@ const Login: FC = () => {
       setLoading(false);
     }
   };
+
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
   const handleGoogleLogin = () => {
-    // Redirect user to the Google OAuth URL
     window.location.href = "/api/login/oauth/google";
   };
 
   return (
     <Layout>
-      <div className="header-login">
-        <h5 className="text-center text-[#ff8833] ">LOGIN</h5>
-        <h5 className="text-center text-[#ffffff] ">TO THE</h5>
-        <h5 className="display-flex text-center text-[#ff8833] ">
-          ART AND COMMUNITY{" "}
-        </h5>
-      </div>
+      <div className="flex justify-center items-center bg-gray-50">
+        <div className="w-full max-w-md p-6 bg-white rounded-lg ">
+          <h1 className="text-2xl font-bold text-center text-gray-800">
+            Login
+          </h1>
+          <p className="text-center text-gray-500 mt-2">
+            Welcome back! Please login to your account.
+          </p>
 
-      <div className="container-login flex justify-center  min-h-[60vh] bg-[#fafafa12] mt-3">
-        <div className="w-full max-w-xs pt-8 pb-8 rounded-lg">
-          <h3 className=" text-lg font-semibold mb-6 text-center text-white">
-            Log in
-          </h3>
-          <h6 className="head-section">Email or Phone Number</h6>
-          <input
-            type="text"
-            placeholder="Email Address Or Phone Number"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2.5 mb-4  rounded"
-          />
-          <h6 className="head-section">
-            Password
-            <FontAwesomeIcon
-              icon={showPassword ? faEye : faEyeSlash}
-              onClick={toggleShowPassword}
-              style={{ cursor: "pointer", marginLeft: 10, color: "#b3b3b3" }}
+          <div className="mt-6">
+            {/* Email Field */}
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email or Phone Number
+            </label>
+            <input
+              id="email"
+              type="text"
+              placeholder="Email Address Or Phone Number"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff8833] focus:border-[#ff8833] transition"
             />
-          </h6>
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={`w-full p-2.5 mb-4 rounded `}
-          />
-          <button
-            onClick={handleLogin}
-            disabled={loading}
-            className="w-full bg-[#ff8833] text-white font-semibold py-2 rounded hover:bg-[#f16501] transition duration-200"
-          >
-            {loading ? "Logging in..." : "LOG IN"}
-          </button>
-          {error && <p className="text-red-500 text-center mt-2">{error}</p>}
-          {loginStatus && (
-            <p className="text-green-500 text-center mt-2">{loginStatus}</p>
-          )}
 
-          <div className="text-center mt-4 text-gray-400 font-light letter-spacing-0-7px">
-            Other log in options
-          </div>
-          <div className="flex justify-center mt-4">
+            {/* Password Field */}
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mt-4"
+            >
+              Password
+              <FontAwesomeIcon
+                icon={showPassword ? faEye : faEyeSlash}
+                onClick={toggleShowPassword}
+                className="ml-2 text-gray-500 cursor-pointer"
+              />
+            </label>
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff8833] focus:border-[#ff8833] transition"
+            />
+
+            {/* Error Message */}
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+            {loginStatus && (
+              <p className="text-green-500 text-sm mt-2">{loginStatus}</p>
+            )}
+
+            {/* Login Button */}
+            <button
+              onClick={handleLogin}
+              disabled={loading}
+              className="w-full mt-6 bg-[#ff8833] text-white font-semibold py-3 rounded-lg hover:bg-[#f16501] transition duration-200 ease-in-out disabled:bg-gray-400"
+            >
+              {loading ? "Logging in..." : "LOG IN"}
+            </button>
+
+            {/* Alternative Login */}
+            <div className="flex items-center justify-center mt-6">
+              <div className="border-t border-gray-300 w-1/4"></div>
+              <p className="text-sm text-gray-500 mx-4">or login with</p>
+              <div className="border-t border-gray-300 w-1/4"></div>
+            </div>
+
+            {/* Google Login Button */}
             <button
               onClick={handleGoogleLogin}
-              className="button-google flex items-center justify-center w-full py-2  rounded "
+              className="flex items-center justify-center w-full mt-4 bg-white border border-gray-300 py-3 rounded-lg hover:bg-gray-100 transition"
             >
               <img
                 src="logo_google_g_icon.png"
                 alt="Google logo"
-                className="w-6 h-6 mr-2"
+                className="w-5 h-5 mr-2"
               />
-              <span className="text-gray-700">Login with Google</span>
+              <span className="text-gray-700 font-semibold">
+                Login with Google
+              </span>
             </button>
           </div>
         </div>
