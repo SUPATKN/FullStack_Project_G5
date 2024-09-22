@@ -15,11 +15,11 @@ const Instructor = () => {
           className="container-fluid team section  dark-background"
         >
           <div className="container-xl section-title text-center">
-            <h2 className="instructor-h">◣ Instructor ◥</h2>
-            <p className="instructor-p1">
-              Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
-              consectetur velit
-            </p>
+          <h3 className="mb-4 text-center text-[#ff8833] font-light letter-spacing-0-7px">INSTRUCTOR</h3>
+                <p className="instructor-p mb-4">
+                  Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
+                  consectetur velit
+                </p>
           </div>
           <div className="container-xl">
             <div className="row gy-4">
@@ -32,27 +32,28 @@ const Instructor = () => {
                       alt=""
                     />
                   </div>
-                  <div className="member-info text-light">
-                    <h4 className="">Dome Potikanond</h4>
-                    <span>Instructor</span>
-                    <hr />
-                    <div className="social-gmail">
-                      <i className="fa fa-phone text-dark" />
-                      Phone
-                      <a href="" className="text-light">
-                        {" "}
-                        : (+66) 84-614000-6
-                      </a>{" "}
-                      <br />
-                      E-mail :
-                      <a
-                        href="https://mail.google.com/mail/u/0/#search/dome.potikanond%40cmu.ac.th?compose=new"
-                        target="blank"
-                        className="text-light"
-                      >
-                        {" "}
-                        dome.potikanond@cmu.ac.th
-                      </a>
+                  <div className="instruction-info">
+                    <div className="member-info text-light">
+                      <h3 className="memtext">Dome Potikanond</h3>
+                      <p>Instructor</p>
+                      <hr />
+                      <div className="social-gmail">
+                      <i className="bi bi-phone" /> Phone
+                        <a href="">
+                          
+                          {" "}
+                          : (+66) 84-614000-6
+                        </a>{" "}
+                        <br />
+                        E-mail :
+                        <a
+                          href="https://mail.google.com/mail/u/0/#search/dome.potikanond%40cmu.ac.th?compose=new"
+                          target="blank"
+                        >
+                          {" "}
+                          dome.potikanond@cmu.ac.th
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -66,26 +67,28 @@ const Instructor = () => {
                       alt=""
                     />
                   </div>
-                  <div className="member-info text-light">
-                    <h4>Nirand Pasutha-Arnond</h4>
-                    <span>Instructor</span>
-                    <hr />
-                    <div className="social-gmail">
-                      <i className="bi bi-phone" /> Phone
-                      <a href="" className="text-light">
-                        {" "}
-                        : (+66) 53-944125-6
-                      </a>{" "}
-                      <br />
-                      E-mail :
-                      <a
-                        href="https://mail.google.com/mail/u/0/#search/nirand.p%40cmu.ac.th?compose=new"
-                        target="blank"
-                        className="text-light"
-                      >
-                        {" "}
-                        nirand.p@cmu.ac.th{" "}
-                      </a>
+                  <div className="instruction-info">
+                    <div className="member-info text-light">
+                      <h3 className="memtext">Nirand Pasutha-Arnond</h3>
+                      <p>Instructor</p>
+                      <hr />
+                      <div className="social-gmail">
+                        <i className="bi bi-phone" /> Phone
+                        <a href="" className="">
+                          {" "}
+                          : (+66) 53-944125-6
+                        </a>{" "}
+                        <br />
+                        E-mail :
+                        <a
+                          href="https://mail.google.com/mail/u/0/#search/nirand.p%40cmu.ac.th?compose=new"
+                          target="blank"
+                          className=""
+                        >
+                          {" "}
+                          nirand.p@cmu.ac.th{" "}
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>

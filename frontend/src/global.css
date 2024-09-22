@@ -9,7 +9,6 @@ body {
   background-color: #000000;
   padding: 0;
 }
-
 .photo-container{
   margin-top: 30px;
   -webkit-box-align: center;
@@ -110,17 +109,18 @@ body {
   z-index: 1;
   border-radius: 15px 15px 0 0;
   margin: 0 auto;
-  padding: 30px 30px 0 30px;
-  background-color: #6aa1c3;
+  padding: 5px 5px 0 5px;
+  background-color:#ffffff;
   overflow: hidden;
 }
+
 .single_advisor_profile .advisor_thumb::after {
   -webkit-transition-duration: 500ms;
   transition-duration: 500ms;
   position: absolute;
   width: 150%;
   height: 80px;
-  bottom: -45px;
+  bottom: -55px;
   left: -25%;
   content: "";
   background-color: #ffffff;
@@ -170,7 +170,7 @@ body {
   z-index: 1;
   width: 50px;
   height: 3px;
-  background-color: #3268b5;
+  background-color:#FF8833;
   content: "";
   top: 12px;
   right: 30px;
@@ -202,13 +202,14 @@ body {
 }
 .single_advisor_profile:hover .advisor_thumb .social-info a,
 .single_advisor_profile:focus .advisor_thumb .social-info a {
-  color: #ffffff;
+  color:#FF8833
+  ;
 }
 .single_advisor_profile:hover .advisor_thumb .social-info a:hover,
 .single_advisor_profile:hover .advisor_thumb .social-info a:focus,
 .single_advisor_profile:focus .advisor_thumb .social-info a:hover,
 .single_advisor_profile:focus .advisor_thumb .social-info a:focus {
-  color: #ffffff;
+  color:#FF8833;
 }
 .single_advisor_profile:hover .single_advisor_details_info,
 .single_advisor_profile:focus .single_advisor_details_info {
@@ -256,10 +257,11 @@ body {
   /* border: 1px solid red; */
 /* } */
 .team .team-member {
-  background-color: #37517e;
+  background-color:#181818;
   box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+  border: 5px solid #3e3e3e;
   position: relative;
-  border-radius: 5px;
+  border-radius: 8px;
   transition: 0.5s;
   padding: 30px;
   height: 100%;
@@ -274,7 +276,7 @@ body {
 }
 
 .team .team-member .pic {
-  border: #415069 4px solid;
+  border: #ffc8a0 5px solid;
   overflow: hidden;
   width: 150px;
   height: 150px;
@@ -287,6 +289,8 @@ body {
 }
 
 .team .team-member:hover {
+  background-color: #2e2e2e;
+  border: 5px solid #FF8833;
   transform: translateY(-10px);
 }
 
@@ -312,6 +316,7 @@ body {
   font-size: 15px;
   padding-bottom: 10px;
   position: relative;
+  color:inherit;
   font-weight: 500;
 }
 
@@ -335,6 +340,7 @@ body {
 .team .team-member p {
   margin: 10px 0 0 0;
   font-size: 14px;
+  color:#ffffff;
 }
 
 .team .team-member .social {
@@ -342,6 +348,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: start;
+  color:#ffffff;
   width: 100%;
 }
 
@@ -409,12 +416,12 @@ body {
   transition-duration: 500ms;
   position: absolute;
   z-index: 1;
-  width: 50px;
+  width: 90px;
   height: 3px;
-  background-color: #3f43fd;
+  background-color:#FF8833;
   content: "";
   top: 12px;
-  right: 30px;
+  right: 030px;
 }
 .single_advisor_profile .single_advisor_details_info h6 {
   margin-bottom: 0.25rem;
@@ -439,7 +446,7 @@ body {
 }
 .single_advisor_profile:hover .advisor_thumb::after,
 .single_advisor_profile:focus .advisor_thumb::after {
-  background-color: #1d2e4d;
+  background-color:#FF8833;
 }
 .single_advisor_profile:hover .advisor_thumb .social-info a,
 .single_advisor_profile:focus .advisor_thumb .social-info a {
@@ -449,11 +456,11 @@ body {
 .single_advisor_profile:hover .advisor_thumb .social-info a:focus,
 .single_advisor_profile:focus .advisor_thumb .social-info a:hover,
 .single_advisor_profile:focus .advisor_thumb .social-info a:focus {
-  color: #ffffff;
+  color:#98582a;
 }
 .single_advisor_profile:hover .single_advisor_details_info,
 .single_advisor_profile:focus .single_advisor_details_info {
-  background-color: #1d2e4d;
+  background-color:#FF8833;
 }
 .single_advisor_profile:hover .single_advisor_details_info::after,
 .single_advisor_profile:focus .single_advisor_details_info::after {
@@ -550,38 +557,46 @@ body {
   font-weight: 100;
   font-size: 17px;
 }
-.member-info h4 {
-  font-weight: 200;
-  margin-bottom: 5px;
+
+.memtext{
+  font-weight: 300;
+  font-size: 24px;
+  letter-spacing: 0.7px;
 }
 .member-info p {
-  letter-spacing: 0.2px;
+  font-weight: 300;
+  letter-spacing: 0.7px;
 }
 
 .instructor-h {
   color: #28313d;
 }
 
-.instructor-p1 {
-  color: #28313d;
+.instructor {
+  color: #ffffff;
   font-weight: 200;
   font-size: 17px;
   letter-spacing: 0.5px;
 }
-.instructor-p2 {
-  color: #171e2b;
+.instructor-p{
+  color: #afafaf;
   font-weight: 100;
-  font-size: 17px;
-  letter-spacing: 0.5px;
+  font-size: 16px;
+  letter-spacing: 0.7px;
 }
 .Gallery-Creator-h {
   color: #37517e;
 }
 .social-gmail {
   padding-top: 35px;
-  font-weight: 330;
+  font-weight: 300;
+  color: #ffffff;
   font-size: 16px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.7px;
+}
+.social-gmail a{
+  text-decoration: none;
+  color: #ffffff;
 }
 .gall-nav {
   display: flex;
@@ -607,7 +622,10 @@ body {
   max-height: 250px;
   border-radius: 4px;
 }
-
+.member-info hr{
+  height: 1.5px;
+  background-color: #ffffff;
+}
 .Bt {
   margin-bottom: 30px;
   margin-top: 30px;
