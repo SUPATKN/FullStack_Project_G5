@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Alert, Form, ListGroup } from "react-bootstrap";
 import { Button } from "react-bootstrap";
+import { Hexagon } from "lucide-react";
 
 interface Tag {
     tags_id: number;
@@ -68,53 +69,55 @@ export default function Tag() {
   return (
     <div>
         <div>
-              <h2>Add a Tag</h2>
-              <Form onSubmit={handleAddTag}>
-                <Form.Group controlId="tagName">
-                  <Form.Label>Tag Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter tag name"
-                    value={tagName}
-                    onChange={(e) => setTagName(e.target.value)}
-                  />
-                </Form.Group>
-                <Button variant="primary" type="submit" className="mt-3">
-                  Add Tag
-                </Button>
-              </Form>
+              <h4 className="flex items-center text-white text-2xl">
+                <Hexagon className="text-white w-10 h-10 mr-2" />
+                Add a Tag
+              </h4>
+              <div className="mt-4 flex items-center justify-center flex-col bg-[#181818] border-[#ff8833] border-2 rounded-lg shadow-md w-[300px] h-full">
+                <Form onSubmit={handleAddTag} className="flex items-center justify-center flex-col">
+                  <Form.Group controlId="tagName">
+                    <Form.Label className="mt-4 text-[#ff8833] font-medium text-xl flex items-center justify-center">Tag Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter tag name"
+                      value={tagName}
+                      onChange={(e) => setTagName(e.target.value)}
+                      className="mt-4"
+                    />
+                  </Form.Group>
+                  <button
+                    className="mt-4 mb-4 w-[100px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                    type="submit"
+                  >
+                    Add Tag
+                  </button>
+                </Form>
+              </div>
 
-              {message && (
-                <Alert variant="success" className="mt-3">
-                  {message}
-                </Alert>
-              )}
-              {error && (
-                <Alert variant="danger" className="mt-3">
-                  {error}
-                </Alert>
-              )}
-
-              <h3 className="mt-4">All Tags</h3>
+              <h4 className="mt-4 flex items-center text-white text-2xl">
+                <Hexagon className="text-white w-10 h-10 mr-2" />
+                All Tags
+              </h4>
               {AllTag.length > 0 ? (
-                <ListGroup className="mt-3">
+                <ListGroup className="mt-3 bg-[#181818]">
                   {AllTag.map((tag) => (
-                    <ListGroup.Item key={tag.tags_id}>
-                      {" "}
+                    <ListGroup.Item key={tag.tags_id} className="flex flex-col gap-3 items-center justify-between">
+                      {/* {" "} */}
                       {/* Fallback to index */}
-                      {tag.name}
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleDeleteTag(tag.tags_id)}
-                      >
-                        Delete
-                      </Button>
+                      <div className="gap-2 flex items-center justify-between">
+                        {tag.name}
+                        <button
+                          className="w-[80px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                          onClick={() => handleDeleteTag(tag.tags_id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </ListGroup.Item>
                   ))}
                 </ListGroup>
               ) : (
-                <p>No tags found.</p>
+                <p className="text-white mt-2 flex items-center justify-center">No tags found.</p>
               )}
             </div>
     </div>

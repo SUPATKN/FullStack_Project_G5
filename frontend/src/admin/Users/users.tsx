@@ -189,16 +189,16 @@ export default function Users() {
               <table className="table-auto mx-auto w-[1100px] h-full border-collapse border-black">
                 <thead>
                   <tr className="text-center border-black">
-                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] whitespace-nowrap rounded-tl-[8px]">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap rounded-tl-[8px]">
                       ID
                     </th>
-                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap ">
                       Username
                     </th>
-                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap ">
                       Email
                     </th>
-                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] whitespace-nowrap rounded-tr-lg">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap rounded-tr-lg">
                       Profile
                     </th>
                   </tr>
@@ -206,16 +206,16 @@ export default function Users() {
                 <tbody>
                   {users.map((user) => (
                     <tr key={user.id} className="text-center">
-                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white  whitespace-nowrap rounded-tl-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tl-lg">
                         {user.id}
                       </td>
-                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white  whitespace-nowrap">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap">
                         {user.username}
                       </td>
-                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white  whitespace-nowrap">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap">
                         {user.email}
                       </td>
-                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white  whitespace-nowrap rounded-tr-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tr-lg">
                         <button
                           className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
                           onClick={() =>
@@ -239,16 +239,16 @@ export default function Users() {
               <table className="table-auto mx-auto w-[1100px] h-full border-collapse border-black">
                 <thead>
                   <tr className="text-center">
-                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833]  whitespace-nowrap rounded-tl-[8px]">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px]  whitespace-nowrap rounded-tl-[8px]">
                       Photo ID
                     </th>
-                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap ">
                       User ID
                     </th>
-                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap ">
                       Photo
                     </th>
-                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] whitespace-nowrap rounded-tr-lg">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap rounded-tr-lg">
                       Price
                     </th>
                   </tr>
@@ -256,13 +256,13 @@ export default function Users() {
                 <tbody>
                   {photos.map((photo) => (
                     <tr key={photo.id} className="text-center">
-                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white  whitespace-nowrap rounded-tl-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tl-lg">
                         {photo.id}
                       </td>
-                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white  whitespace-nowrap">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap">
                         {photo.user_id}
                       </td>
-                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white h-full  whitespace-nowrap flex items-center justify-center">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px] h-full  whitespace-nowrap flex items-center justify-center">
                         <Image
                           crossOrigin="anonymous"
                           src={`/api/${photo.path}`}
@@ -274,7 +274,7 @@ export default function Users() {
                           className="cursor-pointer"
                         />
                       </td>
-                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white  whitespace-nowrap rounded-tr-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tr-lg">
                         {photo.price}
                       </td>
                     </tr>
@@ -287,7 +287,7 @@ export default function Users() {
               <Hexagon className="text-white w-10 h-10 mr-2" />
               User Stats Bar Graph
             </h4>
-            <div className="w-[70%] mx-auto">
+            <div className="w-[80%] mx-auto">
               <Bar
                 data={getBarGraphData()}
                 options={{

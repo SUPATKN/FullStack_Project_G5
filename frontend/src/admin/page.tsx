@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React,{ useState } from 'react'
 import OrderHistory from './OrdersHistory/orderhistory';
 import Paymentslips from './PaymentSlips/paymentslips';
 import Transactionhistory from './TransactionsHistory/transactionhistory';
@@ -6,13 +6,12 @@ import Users from './Users/users';
 import LoadingWrapper from '../LoadingWrapper';
 import NavBar from '../components/Navbar';
 import Tag from './Tag/Tag';
+import useAuth from '../hook/useAuth';
 
 
 export default function Page() {
-
+  useAuth();
   const [selectedComponent, setSelectedComponent] = useState("Paymentslips");
-
-
   return (
     <LoadingWrapper>
       <div className="flex flex-col min-h-screen Body bg-[#181818]">

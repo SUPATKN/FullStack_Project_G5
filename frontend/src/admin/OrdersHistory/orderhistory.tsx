@@ -70,16 +70,16 @@ export default function Orderhistory() {
               <table className="table-auto mx-auto w-[1100px] border-collapse border-black">
                 <thead>
                   <tr className="text-center">
-                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833]  whitespace-nowrap rounded-tl-[8px]">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px]  whitespace-nowrap rounded-tl-[8px]">
                       ID
                     </th>
-                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap ">
                       Username
                     </th>
-                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] whitespace-nowrap ">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap ">
                       Email
                     </th>
-                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] whitespace-nowrap rounded-tr-lg">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap rounded-tr-lg">
                       Actions
                     </th>
                   </tr>
@@ -87,16 +87,16 @@ export default function Orderhistory() {
                 <tbody>
                   {users.map((user) => (
                     <tr key={user.id} className="text-center">
-                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white  whitespace-nowrap rounded-tl-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tl-lg">
                         {user.id}
                       </td>
-                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white  whitespace-nowrap">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap">
                         {user.username}
                       </td>
-                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white  whitespace-nowrap">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap">
                         {user.email}
                       </td>
-                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white  whitespace-nowrap rounded-tr-lg">
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tr-lg">
                         <button
                           className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
                           onClick={() =>
