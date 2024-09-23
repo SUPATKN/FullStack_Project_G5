@@ -137,6 +137,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               </PrivateRoute>
             }
           />
+          <Route path="/photodetail/:id" element={<PhotoDetail />} />
         </Routes>
       </Router>
     </QueryClientProvider>

@@ -33,9 +33,12 @@ import {
   photo_albums,
   Photo_tags,
   tags,
-} from "@db/schema";
+  } from "@db/schema";
 import { and, eq, isNotNull } from "drizzle-orm";
 import { param } from "express-validator";
+import { ClientRequest } from "http";
+import { sql } from 'drizzle-orm';
+
 
 type CartType = {
   cart_id: number;
@@ -1818,5 +1821,59 @@ app.get("/api/photo/:photoId/tags", async (req, res) => {
     res.json(Tag);
   } catch (error) {
     res.status(500).json({ error: "Error fetching tags" });
+  }
+});
+
+
+// app.get("/api/photos/search", async (req: Request, res: Response) => {
+//   const { title } = req.query;
+
+//   // ตรวจสอบว่า title มีค่าและเป็น string
+//   if (!title || typeof title !== 'string') {
+//     return res.status(400).json({ error: "Title query parameter is required" });
+//   }
+
+//   try {
+//     const photo = await dbClient.query.images.findMany({
+//       where: eq(images.title, title), // ตรวจสอบให้แน่ใจว่า title เป็น string
+//     });
+
+//     console.log("Photo for title:",images.title);
+
+//     if (!photo) {
+//       return res.status(404).json({ error: "Photo not found" });
+//     }
+
+//     res.status(200).json(photo);
+//   } catch (error) {
+//     console.error("Error searching photos:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+app.get("/api/photos/search", async (req: Request, res: Response) => {
+  const { title } = req.query;
+
+  // ตรวจสอบว่า title มีค่าและเป็น string
+  if (!title || typeof title !== 'string') {
+    return res.status(400).json({ error: "Title query parameter is required" });
+  }
+
+  try {
+    // ใช้ like เพื่อค้นหารูปภาพที่มีชื่อที่ตรงกัน
+    const photos = await dbClient.query.images.findMany({
+      where: sql`${images.title} LIKE ${'%' + title + '%'}` // ใช้ LIKE เพื่อค้นหาชื่อที่มีตัวอักษรนั้น
+    });
+
+    console.log("Photos found for title:", title, photos);
+
+    if (photos.length === 0) {
+      return res.status(404).json({ error: "No photos found" });
+    }
+
+    res.status(200).json(photos); // ส่งคืนอาเรย์ของรูปภาพ
+  } catch (error) {
+    console.error("Error searching photos:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
