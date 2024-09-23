@@ -269,7 +269,7 @@ const PhotoDetail = () => {
     <LoadingWrapper>
       <Layout>
         <div className="flex items-center flex-col justify-center text-ccenter">
-          <h3 className="text-center text-white">PHOTO DETAIL</h3>
+          <h3 className="text-center text-[#ff8833] font-medium">PHOTO DETAIL</h3>
           <div className="flex items-center justify-center flex-col bg-white rounded-lg shadow-lg border w-[600px] h-full">
             {loading ? (
               <p>Loading...</p>

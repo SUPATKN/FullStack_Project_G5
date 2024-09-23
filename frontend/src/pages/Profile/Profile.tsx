@@ -268,7 +268,7 @@ const Profile: React.FC = () => {
     <Layout>
       <div className="flex flex-col items-center justify-center">
         {/* profile */}
-        <h2>MY PROFILE </h2>
+        <h2 className="text-[#ff8833] font-medium">MY PROFILE </h2>
         <div className="w-[600px] h-[450px] bg-white border shadow-md rounded-lg">
           {error ? (
             <p>{error}</p>
@@ -367,7 +367,7 @@ const Profile: React.FC = () => {
         </div>
       </div>
       <div className="flex flex-col items-center justify-center mt-3">
-        <h2>MY PHOTOS</h2>
+        <h2 className="text-[#ff8833] font-medium">MY PHOTOS</h2>
         <div className="flex items-center justify-center gap-3">
           {currentUser?.id === user?.id && (
             <button
@@ -442,7 +442,7 @@ const Profile: React.FC = () => {
       </div>
 
       <div className="flex flex-col items-center justify-center mt-3">
-        <h2>MY ALBUMS</h2>
+        <h2 className="text-[#ff8833] font-medium">MY ALBUMS</h2>
         {currentUser?.id == userId && (
           <button
             className="w-[170px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"

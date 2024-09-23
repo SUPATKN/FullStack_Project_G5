@@ -1,7 +1,6 @@
 import axios from "axios";
-import { useState } from "react";
-import { Alert, Form, ListGroup } from "react-bootstrap";
-import { Button } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Form} from "react-bootstrap";
 import { Hexagon } from "lucide-react";
 
 interface Tag {
@@ -66,6 +65,11 @@ export default function Tag() {
           setError("Error deleting tag.");
         }
       };
+      
+      useEffect(() => {
+        fetchTags();
+      }, []);
+
   return (
     <div>
         <div>
@@ -99,23 +103,25 @@ export default function Tag() {
                 All Tags
               </h4>
               {AllTag.length > 0 ? (
-                <ListGroup className="mt-3 bg-[#181818]">
+                <div className="mt-3 bg-[#181818]">
                   {AllTag.map((tag) => (
-                    <ListGroup.Item key={tag.tags_id} className="flex flex-col gap-3 items-center justify-between">
+                    <div key={tag.tags_id} className="bg-none">
                       {/* {" "} */}
                       {/* Fallback to index */}
-                      <div className="gap-2 flex items-center justify-between">
-                        {tag.name}
+                      <div className="flex items-center justify-between">
+                        <span className="text-[#ff8833]">
+                          {tag.name}
+                        </span>
                         <button
-                          className="w-[80px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                          className="w-[80px] h-[35px] gap-2 bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
                           onClick={() => handleDeleteTag(tag.tags_id)}
                         >
                           Delete
                         </button>
                       </div>
-                    </ListGroup.Item>
+                    </div>
                   ))}
-                </ListGroup>
+                </div>
               ) : (
                 <p className="text-white mt-2 flex items-center justify-center">No tags found.</p>
               )}

@@ -112,8 +112,8 @@ export default function Orderhistory() {
               </table>
             </div>
             {showOrderHistoryModal && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white p-5 h-[600px] w-[700px] rounded-md shadow-md border">
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 h-full">
+                <div className="bg-white p-5 w-[700px] rounded-md shadow-md border max-h-[80vh] overflow-y-auto">
                   <div className="flex items-center justify-between">
                     <h2 className="text-black text-[24px] font-medium ml-5">
                       Order History for{" "}
@@ -127,11 +127,11 @@ export default function Orderhistory() {
                     </button>
                   </div>
                   <div className="overflow-hidden rounded-lg border shadow-md bg-white mt-4">
-                    <table className="table-auto mx-auto w-[600px] border-collapse">
+                    <table className="table-auto mx-auto w-[600px] h-full border-collapse">
                       <thead>
                         <tr className="text-center">
                           <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px] whitespace-nowrap rounded-tl-[8px]">
-                            History Order ID
+                            Order ID
                           </th>
                           <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px] whitespace-nowrap">
                             Price
@@ -163,7 +163,11 @@ export default function Orderhistory() {
                               {order.status}
                             </td>
                             <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap rounded-tr-lg">
-                              {new Date(order.create_at).toLocaleString()}
+                              {new Date(order.create_at).toLocaleDateString("th-TH", {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit"
+                              })}
                             </td>
                           </tr>
                         ))}

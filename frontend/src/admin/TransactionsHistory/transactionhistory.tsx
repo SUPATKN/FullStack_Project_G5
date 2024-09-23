@@ -113,7 +113,7 @@ export default function Transactionhistory() {
             {/* Order Transactions Modal */}
             {showTransactionsModal && (
               <div className="fixed inset-0 bg-black h-full bg-opacity-50 flex items-center justify-center z-50 ">
-                <div className="bg-white p-5 w-[700px] rounded-md shadow-md border">
+                <div className="bg-white p-5 w-[700px] rounded-md shadow-md border max-h-[80vh] overflow-y-auto">
                   <div className="flex items-center justify-between">
                     <h2 className="text-black text-[24px] font-medium ml-5">
                       Transactions History for{" "}
@@ -163,7 +163,11 @@ export default function Transactionhistory() {
                               {trans.description}
                             </td>
                             <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px]  whitespace-nowrap rounded-tr-lg">
-                              {new Date(trans.created_at).toLocaleString()}
+                              {new Date(trans.created_at).toLocaleDateString("th-TH", {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit"
+                              })}
                             </td>
                           </tr>
                         ))}
