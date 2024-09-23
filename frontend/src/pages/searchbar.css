@@ -1,0 +1,56 @@
+/* global.css */
+
+/* Styling for the search input */
+.search-input {
+    border-radius: 20px;
+    border: 1px solid #ced4da;
+    padding: 10px;
+    transition: border-color 0.2s;
+  }
+  
+  .search-input:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  
+  /* Button styling */
+  .btn-outline-secondary {
+    border-radius: 20px;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    transition: background-color 0.2s;
+  }
+  
+  .btn-outline-secondary:hover {
+    background-color: #e2e6ea;
+  }
+  
+  /* Suggestions list */
+  .list-group {
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Individual suggestion item */
+  .list-group-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .list-group-item:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Make sure to set a relative position on the container to position the suggestions correctly */
+  .search-container {
+    position: relative;
+    max-width: 400px; /* กำหนดความกว้างสูงสุด */
+    margin: auto; /* จัดกึ่งกลาง */
+    margin-right: 1%;
+  }
+  
