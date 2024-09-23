@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "../Layout";
 import "../global.css";
-import Logo from "../Logowithbg.png";
+import Logo from "../AnC Coin.png";
 import CoinCard from "./CoinCard";
 import useAuth from "../hook/useAuth";
 
@@ -127,15 +127,15 @@ const Coin = () => {
 
   return (
     <Layout>
-      <div className="container my-5">
+      
+      <div className="container text-center">
+      <h3 className="mb-4 text-center text-[#ff8833] font-light letter-spacing-0-7px">TOP UP</h3>
+      <p className="instructor-p">
+      You can exchange coins to buy pictures on our website.
+                </p>
         <div className="row">
           <div className="col-12 d-flex flex-column align-items-start">
-            <div className="square mb-4">
-              <img src={Logo} alt="Example" className="img-fluid" />
-            </div>
-            <h3 className="ms-4 mb-0">SSS COINS</h3>
-
-            <div className="row mt-4">
+            <div className="row mt-3">
               <div className="col-md-8">
                 <div className="row">
                   {cardsData.map((card, index) => (
@@ -151,12 +151,13 @@ const Coin = () => {
                   ))}
                 </div>
               </div>
+              
               <div className="col-md-4">
                 <div className="summary p-4 border rounded">
-                  <h4 className="mb-4">Selected Price</h4>
-                  <div className="price-display mb-3">
+                  <h4 className="mb-2 s">Selected Price</h4>
+                  <div className="mb-3">
                     {selectedPrice !== null ? (
-                      <p className="h4 text-success">
+                      <p className="text-s">
                         ฿{selectedPrice.toFixed(2)}
                       </p>
                     ) : (
@@ -165,7 +166,7 @@ const Coin = () => {
                   </div>
 
                   <button
-                    className="btn btn-primary w-100 mb-4"
+                    className=" btn-s w-100 mb-2"
                     onClick={handleGenerateQR}
                     disabled={qrCodeUrl !== null}
                   >
@@ -173,28 +174,28 @@ const Coin = () => {
                   </button>
 
                   {qrCodeUrl && (
-                    <div className="mt-4 text-center">
-                      <h4 className="mb-3">Generated QR Code</h4>
+                    <div className="mt-2 boxQR">
+                      <h4 className="mb-2 font-normal">Generated QR Code</h4>
                       <img
                         src={qrCodeUrl}
                         alt="QR Code"
-                        className="img-fluid"
+                        className="img-fluid QR"
                       />
-                      <p className="mt-2 text-muted">
-                        Amount: ฿{selectedPrice?.toFixed(2)}
+                      <p className="mt-2 text-muted amount">
+                        Amount: <div className="amount-num" >฿ {selectedPrice?.toFixed(2)}</div>
                       </p>
 
-                      <h4 className="mb-4">Upload Payment Slip</h4>
+                      <h4 className="mb-4 s">Upload Payment Slip</h4>
                       <div className="mb-3">
                         <input
                           type="file"
-                          className="form-control"
+                          className="form-control w-100"
                           onChange={handleFileChange}
                           accept="image/*"
                         />
                       </div>
                       <button
-                        className="btn btn-success w-100"
+                        className="btn-s w-100"
                         onClick={handleUploadSlip}
                       >
                         Upload Slip

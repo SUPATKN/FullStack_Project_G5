@@ -828,59 +828,62 @@ a:hover {
 }
 
 .card {
-  border: 2px solid #87CEFA; /* ขอบสีฟ้า */
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  background-color: #fff;
+  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.7);
   text-align: left; /* จัดข้อความให้ชิดซ้าย */
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   cursor: pointer;
   transition: transform 0.3s;
 }
 
 .card:hover {
-  transform: scale(1.05);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.7);
+  transform: scale(1.06);
+}
+
+.card:active {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  transform: scale(1.15);
 }
 
 .card-body {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* ให้เนื้อหาและโลโก้อยู่ที่ขอบซ้ายและขวา */
 }
 
 .card-content {
   display: flex;
-  justify-content: space-between;
+  margin: 0;
   width: 100%;
 }
 
 .card-details {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  margin-right: 15px; /* ระยะห่างระหว่างโลโก้กับรายละเอียด */
+  justify-content: center;  
+  margin: 0;
 }
 
 .card-logo {
-  width: 50px; /* ขนาดโลโก้ */
-  height: 50px; /* ขนาดโลโก้ */
-  object-fit: contain; /* ทำให้โลโก้มีขนาดพอดี */
-  border: 5px solid #87CEFA; /* ขอบสีฟ้า */
+  width: 60px; /* ขนาดโลโก้ */
+  height: 60px; /* ขนาดโลโก้ */
+  border: 5px solid #fcbb8c; /* ขอบสีฟ้า */
   border-radius: 50%; /* ขอบกลมเพื่อให้โลโก้มีลักษณะวงกลม */
-  margin-right: 15px; /* ระยะห่างระหว่างโลโก้กับรายละเอียด */
 }
 
 .card-coin {
-  font-size: 1rem;
+  font-size: 16px;
+  letter-spacing: 0.3px;
+  font-weight: 400;
   color: #000000;
 }
 
 .card-price {
-  font-size: 1rem; /* ลดขนาดตัวหนังสือ */
-  color: #000000; /* เปลี่ยนสีให้เป็นสีดำ */
+  font-size: 14px;
+  font-weight: 600;
+  color: #d7722a; 
+  letter-spacing: 0.5px;
 }
 
 
@@ -888,19 +891,60 @@ a:hover {
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
-.price-display p {
-  font-weight: bold;
+.amount{
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.amount-num{
+  color: #FF8833;
+  font-weight: 500;
+}
+.s{
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+.text-s{
+  color: #FF8833;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+}
+.btn-s{
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 300;
+  letter-spacing: 0.7px;
+  background-color: #FF8833;
+  border-color: #FF8833;
+  transition: 0.2s;
 }
 
-.btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
+.btn-s:hover{
+  background-color: #ea6f17;
+  border-color: #ea6f17;
+  transform: scale(1.03);
+  transition: 0.3s;
 }
+.btn-s:active{
+  background-color: #d7722a;
+  border-color: #d7722a;
+  transform: scale(1);
+  transition: 0.2s;
+}
+.boxQR{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.QR{
+  width: 200px;
+  border: 2px solid #FF8833;
+  border-radius: 10px;
+  padding: 5px;
 
-.btn-primary:hover {
-  background-color: #0056b3;
-  border-color: #004085;
 }
 
 .custom-checkbox {

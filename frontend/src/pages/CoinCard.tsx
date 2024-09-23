@@ -1,5 +1,6 @@
 import React from "react";
-import Logo from "../Logowithbg.png"; // นำเข้ารูปโลโก้
+import Logo from "../AnC Coin.png"; // นำเข้ารูปโลโก้
+import "../global.css";
 
 interface CardProps {
   price: number;
