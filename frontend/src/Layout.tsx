@@ -9,20 +9,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <div className="flex flex-col min-h-screen Body">
       <NavBar />
       <Container className="flex-grow my-2">{children}</Container>
-      <footer className="mt-auto flex justify-center bg-[#000000] border-black p-5 shadow-lg border rounded-md w-full h-[5px]">
-        <div className="flex flex-col items-center justify-center">
-          <img
-            src="/LOGOArtandCommunity.png"
-            alt="logo"
-            width={20}
-            height={20}
-            className="z-10"
-          />
-          <p className="text-center text-xs italic font-bold text-white mt-2">
-            © {new Date("2024").getFullYear()} Art and Community. All rights
-            reserved. by CPE 65 - GROUP 5
+
+      <footer className=" justify-center bg-[#000000]">
+          <p className="font-light">
+            © {new Date("2024").getFullYear()} Art and Community. All rights reserved. by CPE 65 - GROUP 5
           </p>
-        </div>
       </footer>
     </div>
   );
