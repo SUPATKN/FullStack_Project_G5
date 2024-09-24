@@ -58,7 +58,7 @@ const SearchBar = () => {
         <InputGroup>
           <Form.Control
             type="text"
-            placeholder="search..."
+            placeholder="Search (case-insensitive)..."
             value={searchTerm}
             onChange={handleInputChange}
             className="search-input"
@@ -68,6 +68,7 @@ const SearchBar = () => {
           </Button>
         </InputGroup>
       </Form>
+
       {suggestions.length > 0 && (
         <ListGroup>
           {suggestions.map((photo: { id: number; title: string }) => (
@@ -75,7 +76,8 @@ const SearchBar = () => {
               key={photo.id}
               onClick={() => handleSuggestionClick(photo.id)}
             >
-              {photo.title}
+              {photo.title}{" "}
+              {/* You can choose to convert this to lower case if you want uniformity */}
             </ListGroup.Item>
           ))}
         </ListGroup>

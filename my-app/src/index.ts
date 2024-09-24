@@ -40,6 +40,7 @@ import { ClientRequest } from "http";
 import { sql } from 'drizzle-orm';
 
 
+
 type CartType = {
   cart_id: number;
   user_id: number;
@@ -1825,32 +1826,6 @@ app.get("/api/photo/:photoId/tags", async (req, res) => {
 });
 
 
-// app.get("/api/photos/search", async (req: Request, res: Response) => {
-//   const { title } = req.query;
-
-//   // ตรวจสอบว่า title มีค่าและเป็น string
-//   if (!title || typeof title !== 'string') {
-//     return res.status(400).json({ error: "Title query parameter is required" });
-//   }
-
-//   try {
-//     const photo = await dbClient.query.images.findMany({
-//       where: eq(images.title, title), // ตรวจสอบให้แน่ใจว่า title เป็น string
-//     });
-
-//     console.log("Photo for title:",images.title);
-
-//     if (!photo) {
-//       return res.status(404).json({ error: "Photo not found" });
-//     }
-
-//     res.status(200).json(photo);
-//   } catch (error) {
-//     console.error("Error searching photos:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
 app.get("/api/photos/search", async (req: Request, res: Response) => {
   const { title } = req.query;
 
@@ -1860,8 +1835,10 @@ app.get("/api/photos/search", async (req: Request, res: Response) => {
   }
 
   try {
+    const lowerCaseTitle = title.toLowerCase(); // Convert search term to lowercase
+
     const photos = await dbClient.query.images.findMany({
-      where: sql`${images.title} LIKE ${'%' + title + '%'}`
+      where: sql`LOWER(${images.title}) LIKE ${'%' + lowerCaseTitle + '%'}` // Use LOWER function in SQL
     });
 
     console.log("Photos found for title:", title, photos);
@@ -1876,3 +1853,60 @@ app.get("/api/photos/search", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// app.get("/api/photo/:photoId/tags", async (req, res) => {
+//   const { photoId } = req.params;  // Extract the photo ID from the request parameters
+
+//   try {
+//     // Ensure that the photoId is a valid number
+//     const parsedPhotoId = parseInt(photoId);
+//     if (isNaN(parsedPhotoId)) {
+//       return res.status(400).json({ error: "Invalid photo ID" });
+//     }
+
+//     // Query to fetch tag names associated with a specific photo
+//     const tagsForPhoto = await dbClient
+//       .select({
+//         tagName: tags.name,       // Select the 'name' field from 'tags' table
+//       })
+//       .from(Photo_tags)            // Start from the 'Photo_tags' table
+//       .innerJoin(tags, eq(Photo_tags.tags_id, tags.tags_id))  // Join with 'tags' table
+//       .where(eq(Photo_tags.photo_id, parsedPhotoId))          // Filter by the given 'photo_id'
+//       .execute();  // Execute the query
+
+//     // Return the result as JSON
+//     res.status(200).json(tagsForPhoto);
+//   } catch (error) {
+//     console.error("Error fetching tags for photo:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+
+app.get("/api/photo/tag/:tagId", async (req, res) => {
+  const { tagId } = req.params;
+  try {
+    const photos = await dbClient
+      .select({
+        id: images.id,
+        path: images.path,
+        user_id: images.user_id,
+        created_at: images.created_at,
+        price: images.price,
+        title: images.title,
+        max_sales: images.max_sales,
+        description: images.description,
+      })
+      .from(images)
+      .innerJoin(Photo_tags, eq(images.id, Photo_tags.photo_id))
+      .where(eq(Photo_tags.tags_id, parseInt(tagId)))
+      .execute();
+
+    console.log("PHOTO:", photos);
+    res.json(photos);
+  } catch (error) {
+    console.error("Error fetching photos by tag:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
