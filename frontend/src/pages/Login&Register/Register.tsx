@@ -72,11 +72,11 @@ const Register: React.FC = () => {
           <h1 className="text-2xl font-bold text-center text-[#ff8833]">
             Create Account
           </h1>
-          <p className="text-center text-gray-500 mt-2">
+          <p className="text-center text-gray-500 text-">
             Join our community today!
           </p>
 
-          <div className="mt-6">
+          <div className="mt-2">
             {/* Username Field */}
             <label
               htmlFor="username"
@@ -178,7 +178,6 @@ const Register: React.FC = () => {
               onClick={handleGoogleLogin}
               className="flex items-center justify-center w-full mt-2 bg-white border border-gray-300 py-2.5 rounded-lg hover:bg-gray-100 transition"
             >
-              //
               <img
                 src="logo_google_g_icon.png"
                 alt="Google logo"

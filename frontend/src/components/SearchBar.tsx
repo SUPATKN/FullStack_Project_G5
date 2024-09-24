@@ -33,7 +33,7 @@ const SearchBar = () => {
         const response = await axios.get(
           `/api/photos/search?title=${searchTerm}`
         );
-        if (response.data.length > 0) {
+        if (response.data) {
           const photoId = response.data[0].id; // ใช้ id ของรูปภาพตัวแรก
           navigate(`/photo/${photoId}`);
         } else {
@@ -58,7 +58,11 @@ const SearchBar = () => {
         <InputGroup>
         <Form.Control
             type="text"
+<<<<<<< HEAD:frontend/src/pages/SearchBar.tsx
             placeholder="Search... "
+=======
+            placeholder="Search (case-insensitive)..."
+>>>>>>> ae1a428bf027ffca7685e463d1612a33393f05ff:frontend/src/components/SearchBar.tsx
             value={searchTerm}
             onChange={handleInputChange}
           />
@@ -67,6 +71,7 @@ const SearchBar = () => {
           </Button>
         </InputGroup>
       </Form>
+
       {suggestions.length > 0 && (
         <ListGroup>
           {suggestions.map((photo: { id: number; title: string }) => (
@@ -74,7 +79,8 @@ const SearchBar = () => {
               key={photo.id}
               onClick={() => handleSuggestionClick(photo.id)}
             >
-              {photo.title}
+              {photo.title}{" "}
+              {/* You can choose to convert this to lower case if you want uniformity */}
             </ListGroup.Item>
           ))}
         </ListGroup>

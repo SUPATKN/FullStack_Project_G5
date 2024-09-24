@@ -76,7 +76,7 @@ const Login: FC = () => {
           <h1 className="text-2xl font-bold text-center text-gray-800">
             Login
           </h1>
-          <p className="text-center text-gray-500 mt-2">
+          <p className="text-center text-gray-500 mt-2 text-sm">
             Welcome back! Please login to your account.
           </p>
 
@@ -134,16 +134,16 @@ const Login: FC = () => {
             </button>
             {/* / */}
             {/* Alternative Login */}
-            <div className="flex items-center justify-center mt-6">
+            <div className="flex items-center justify-center mt-2">
               <div className="border-t border-gray-300 w-1/4"></div>
-              <p className="text-sm text-gray-500 mx-4">or login with</p>
+              <p className="text-sm text-gray-500 mx-2">or login with</p>
               <div className="border-t border-gray-300 w-1/4"></div>
             </div>
 
             {/* Google Login Button */}
             <button
               onClick={handleGoogleLogin}
-              className="flex items-center justify-center w-full mt-4 bg-white border border-gray-300 py-3 rounded-lg hover:bg-gray-100 transition"
+              className="flex items-center justify-center w-full mt-2 bg-white border border-gray-300 py-3 rounded-lg hover:bg-gray-100 transition"
             >
               <img
                 src="logo_google_g_icon.png"
