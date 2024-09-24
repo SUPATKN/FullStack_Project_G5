@@ -1047,14 +1047,19 @@ a:hover {
   cursor: pointer;
   display: none; /* Hidden by default, show for mobile */
 }
-.navbar-toggle :hover{
-  border: 10px solid red;
-}
 
 .navbar-collapse {
   justify-content:space-between;
   flex-wrap: wrap;
   display: flex;
+}
+
+.nav-search{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px; 
+  border-radius: 25px;
 }
 
 .navbar-collapse.active {
@@ -1066,6 +1071,7 @@ a:hover {
 
 .nav-links {
   display: flex !important;
+  align-items: center;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -1091,6 +1097,7 @@ a:hover {
 .nav-link {
   color: #fff;
   text-decoration: none;
+  border: 1px solid red;
 }
 .nav-link.coin:hover{
   font-weight: 350;
@@ -1279,6 +1286,10 @@ a:hover {
   
 
 }@media (max-width: 992px) {
+  .navbar-brand{
+    height: 40px;
+    width: 40px;
+  }
   .containerNav{
     width: 700px;
     margin: 0 auto;
@@ -1296,16 +1307,16 @@ a:hover {
   }
   
   .navbar-collapse.active {
-    width: 220px;
-    height: 160px;
+    width: 240px;
+    height: 200px;
     position: absolute;
-    inset: 60px 0px 0px 0px;
+    inset: 50px 0px 0px 0px;
     justify-content: space-between;
     align-items: center;
     padding:10px 0;
     margin: 0;
     border-radius: 6px;
-    background-color:#181818;
+    background-color:#000000;
     transition: 0.3s;
     z-index: 9998;
   }
@@ -1345,16 +1356,16 @@ a:hover {
   }
   
   .navbar-collapse.active {
-    width: 180px;
-    height: 140px;
+    width: 220px;
+    height: 180px;
     position: absolute;
-    inset: 60px 0px 0px 0px;
+    inset: 50px 0px 0px 0px;
     justify-content: space-between;
     align-items: center;
     padding:10px 0;
     margin: 0;
     border-radius: 6px;
-    background-color:#181818;
+    background-color:#000000;
     transition: 0.3s;
     z-index: 9998;
   }
@@ -1409,16 +1420,16 @@ a:hover {
   }
   
   .navbar-collapse.active {
-    width: 100px;
-    height: 120px;
+    width: 220px;
+    height: 170px;
     position: absolute;
-    inset: 60px 0px 0px 0px;
+    inset: 50px 0px 0px 0px;
     justify-content: space-between;
     align-items: center;
     padding:10px 0;
     margin: 0;
     border-radius: 6px;
-    background-color:#181818;
+    background-color:#000000;
     transition: 0.3s;
     z-index: 9998;
   }
@@ -1481,8 +1492,8 @@ a:hover {
   }
   
   .navbar-collapse.active {
-    width: 100px;
-    height: 120px;
+    width: 220px;
+    height: 170px;
     position: absolute;
     inset: 40px 0px 0px 0px;
     justify-content: space-between;
@@ -1490,7 +1501,7 @@ a:hover {
     padding:10px 0;
     margin: 0;
     border-radius: 6px;
-    background-color:#181818;
+    background-color:#000000;
     transition: 0.3s;
     z-index: 9998;
   }

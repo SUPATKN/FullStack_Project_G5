@@ -67,10 +67,14 @@ const NavBar: React.FC = () => {
                 Instructor
               </Link>
             </li>
+            <li >
+              <div className="nav-search nav-link"><SearchBar /></div>
+            </li>
+            
           </ul>
+          
         </div>
 
-        <SearchBar />
         <div className="nav-actions">
           {!user ? (
             <>

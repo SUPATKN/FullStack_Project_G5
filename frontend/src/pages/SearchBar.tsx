@@ -56,14 +56,13 @@ const SearchBar = () => {
     <div className="search-container">
       <Form onSubmit={handleSearch}>
         <InputGroup>
-          <Form.Control
+        <Form.Control
             type="text"
-            placeholder="search..."
+            placeholder="Search... "
             value={searchTerm}
             onChange={handleInputChange}
-            className="search-input"
           />
-          <Button type="submit" variant="outline-secondary">
+          <Button type="submit" variant="">
             <FaSearch />
           </Button>
         </InputGroup>

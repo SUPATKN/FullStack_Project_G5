@@ -29,7 +29,7 @@ export default function Page() {
                 onClick={() => setSelectedComponent("Tag")}
                 className="text-[18px] w-[200px] text-white  mt-2 h-[47px] hover:bg-orange-500 hover:text-white rounded-[30px] transition-all ease-in-out duration-100 outline-hover"
               >
-                Add a Tag
+                Tag Management
               </button>
               <button
                 onClick={() => setSelectedComponent("Users")}
