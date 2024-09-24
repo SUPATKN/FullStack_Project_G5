@@ -129,9 +129,9 @@ const Coin = () => {
     <Layout>
       
       <div className="container text-center">
-      <h3 className="mb-4 text-center text-[#ff8833] font-light letter-spacing-0-7px">TOP UP</h3>
+      <h3 className="mt-3 mb-3 text-center text-[#ff8833] font-light letter-spacing-0-7px">TOP UP</h3>
       <p className="instructor-p">
-      You can exchange coins to buy pictures on our website.
+      You can exchange coins to buy pictures on our website
                 </p>
         <div className="row">
           <div className="col-12 d-flex flex-column align-items-start">

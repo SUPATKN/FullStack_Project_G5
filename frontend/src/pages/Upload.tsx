@@ -146,7 +146,7 @@ const Upload = () => {
 
   return (
     <Layout>
-      <h2 className="mb-4 text-white">Upload File</h2>
+      <h3 className="mt-3 mb-3 text-center text-[#ff8833] font-light letter-spacing-0-7px">UPLOAD FILE</h3>
       <Form>
         <Form.Group controlId="formFile" className="mb-3 text-white">
           <Form.Label>Select Image</Form.Label>

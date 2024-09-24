@@ -15,7 +15,7 @@ const Instructor = () => {
           className="container-fluid team section  dark-background"
         >
           <div className="container-xl section-title text-center">
-          <h3 className="mb-4 text-center text-[#ff8833] font-light letter-spacing-0-7px">INSTRUCTOR</h3>
+          <h3 className="mt-3 mb-3 text-center text-[#ff8833] font-light letter-spacing-0-7px">INSTRUCTOR</h3>
                 <p className="instructor-p mb-4">
                   Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
                   consectetur velit

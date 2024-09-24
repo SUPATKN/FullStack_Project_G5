@@ -1722,3 +1722,42 @@ a:hover {
 .options-login{
   padding-bottom:2rem ;
 }
+.Cart{
+  background-color: none;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;  
+  padding-bottom: 16px;
+}
+.checkout{
+  background-color: #FF8833;
+  color: #fff;
+  font-weight: 300;
+  font-size: 16px;
+  letter-spacing: 0.9px;
+  padding: 8px;
+  border-radius: 8px;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.checkout:hover{
+  background-color: #ea6f17;
+  scale: 0.97;
+  transition: 0.2s;
+}
+.Total-Price{
+  color: #fff;
+  font-weight: 300;
+  letter-spacing: 0.7px;
+}
+.hr-line{
+  border: 1px solid rgb(194, 194, 194);
+  margin-top: 20px;
+  border-radius: 2px;
+  height: 2px;
+  background-color:  rgb(194, 194, 194);
+}

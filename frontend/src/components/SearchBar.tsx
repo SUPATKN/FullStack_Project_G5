@@ -58,11 +58,7 @@ const SearchBar = () => {
         <InputGroup>
         <Form.Control
             type="text"
-<<<<<<< HEAD:frontend/src/pages/SearchBar.tsx
-            placeholder="Search... "
-=======
-            placeholder="Search (case-insensitive)..."
->>>>>>> ae1a428bf027ffca7685e463d1612a33393f05ff:frontend/src/components/SearchBar.tsx
+            placeholder="Search..."
             value={searchTerm}
             onChange={handleInputChange}
           />

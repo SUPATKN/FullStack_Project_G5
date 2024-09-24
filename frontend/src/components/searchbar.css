@@ -49,10 +49,10 @@
   .search-container input{
     background-color: #0000;
     color: #ffffff;
-    border-right: 1px solid #ffffff;
-    border-bottom: 2px solid #ffffff;
-    border-left: 2px solid #ffffff;
-    border-top: 2px solid #ffffff;
+    border-right: 1px solid #c2c2c2;
+    border-bottom: 2px solid #c2c2c2;
+    border-left: 2px solid #c2c2c2;
+    border-top: 2px solid #c2c2c2;
     height: 36px;
     border-radius: 8px;
     font-weight: 300;
@@ -72,7 +72,7 @@
     font-weight: 300;
     color: #ffffff;
     background-color: #0000;
-    border-right: 1px solid #ffffff;
+    border-right: 1px solid #c2c2c2;
     border-bottom: 2px solid #ff8833;
     border-left: 2px solid #ff8833;
     border-top: 2px solid #ff8833;
@@ -87,16 +87,16 @@
     background-color: #0000;
     border-radius: 8px;
     transition: 0.4s;
-    border: 2px solid rgb(255, 255, 255);
+    border: 2px solid #c2c2c2;
     color: #ffffff;
   }
   .search-container Button:hover{
     background-color: #0000;
     transition: 0.3s;
     border-radius: 50px;
-    border-top: 2px solid #ffffff;
+    border-top: 2px solid #c2c2c2;
     border-bottom: 2px solid  #ff8833;
-    border-left: 2px solid #ffffff;
+    border-left: 2px solid #c2c2c2;
     border-right: 2px solid #ff8833;
   }
   

@@ -4,6 +4,10 @@ import { Row, Col, Button, Card, Spinner, Alert } from "react-bootstrap";
 import Layout from "../Layout";
 import "../global.css";
 import useAuth from "../hook/useAuth";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUpload } from "@fortawesome/free-solid-svg-icons";
+
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState<
@@ -126,14 +130,17 @@ const Cart = () => {
 
   return (
     <Layout>
-      <h3 className="mb-4 text-center">MY CART</h3>
+      <h3 className="mt-3 mb-3 text-center text-[#ff8833] font-light letter-spacing-0-7px">MY CART</h3>
+        <p className="instructor-p mb-4 text-center">
+        Add the images you want to buy to your cart and pay in one go
+        </p>
       <Row>
-        <Col md={8}>
+        <Col md={12}>
           {cartItems.length > 0 ? (
             <Row>
               {cartItems.map((photo) => (
-                <Col key={photo.id} xs={12} md={6} lg={4} className="mb-4">
-                  <Card className="h-100">
+                <Col key={photo.id} xs={12} md={6} lg={2} className="mb-4">
+                  <Card className="h-fit">
                     <Card.Img
                       variant="top"
                       src={`/api/${photo.path}`}
@@ -161,32 +168,33 @@ const Cart = () => {
           ) : (
             <p className="text-center w-100">Your cart is empty.</p>
           )}
-        </Col>
-        <Col md={4}>
-          <Card className="p-3">
-            <Card.Body>
-              <Card.Title>Total Price</Card.Title>
-              <Card.Text className="mb-4">
-                <h3>${totalPrice.toFixed(2)}</h3>
-              </Card.Text>
-              {error && <Alert variant="danger">{error}</Alert>}
-              {success && <Alert variant="success">{success}</Alert>}
-              <Button
-                variant="primary"
-                onClick={handleCheckout}
-                disabled={loading}
-                className="w-100"
-              >
-                {loading ? (
-                  <Spinner animation="border" />
-                ) : (
-                  "Proceed to Checkout"
-                )}
-              </Button>
-            </Card.Body>
-          </Card>
-        </Col>
+        </Col> 
       </Row>
+
+      <hr className="hr-line"/>
+
+      <div className="Cart">
+        <div className="p-3">
+          <h4 className="Total-Price mb-2 text-center">Total Price</h4>
+            <div className="text-s text-center">
+              <h4 >${totalPrice.toFixed(2)}</h4>
+            </div>
+          
+        </div>
+        <div
+            onClick={handleCheckout}
+            className="checkout w-100 mb-2"
+          >
+            {loading ? (
+              <Spinner animation="border" />
+            ) : (
+              "Proceed to Checkout"
+            )}
+        </div>
+      </div>
+
+      <hr className="hr-line"/>
+      
     </Layout>
   );
 };
