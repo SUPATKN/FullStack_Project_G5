@@ -1860,9 +1860,8 @@ app.get("/api/photos/search", async (req: Request, res: Response) => {
   }
 
   try {
-    // ใช้ like เพื่อค้นหารูปภาพที่มีชื่อที่ตรงกัน
     const photos = await dbClient.query.images.findMany({
-      where: sql`${images.title} LIKE ${'%' + title + '%'}` // ใช้ LIKE เพื่อค้นหาชื่อที่มีตัวอักษรนั้น
+      where: sql`${images.title} LIKE ${'%' + title + '%'}`
     });
 
     console.log("Photos found for title:", title, photos);

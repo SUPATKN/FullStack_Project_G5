@@ -7,7 +7,7 @@ import axios from "axios";
 import useAuth from "../hook/useAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import SearchBar from "../pages/SearchBar"; // อย่าลืมเปลี่ยน path ให้ถูกต้อง
+import SearchBar from "./SearchBar"; // อย่าลืมเปลี่ยน path ให้ถูกต้อง
 
 const NavBar: React.FC = () => {
   const { user, refetch } = useAuth();

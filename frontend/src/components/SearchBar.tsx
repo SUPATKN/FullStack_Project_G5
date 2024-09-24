@@ -33,7 +33,7 @@ const SearchBar = () => {
         const response = await axios.get(
           `/api/photos/search?title=${searchTerm}`
         );
-        if (response.data.length > 0) {
+        if (response.data) {
           const photoId = response.data[0].id; // ใช้ id ของรูปภาพตัวแรก
           navigate(`/photo/${photoId}`);
         } else {
