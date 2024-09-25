@@ -127,12 +127,13 @@ const Coin = () => {
 
   return (
     <Layout>
-      
       <div className="container text-center">
-      <h3 className="mt-3 mb-3 text-center text-[#ff8833] font-light letter-spacing-0-7px">TOP UP</h3>
-      <p className="instructor-p">
-      You can exchange coins to buy pictures on our website
-                </p>
+        <h3 className="mt-3 mb-3 text-center text-[#ff8833] font-light letter-spacing-0-7px">
+          TOP UP
+        </h3>
+        <p className="instructor-p">
+          You can exchange coins to buy pictures on our website
+        </p>
         <div className="row">
           <div className="col-12 d-flex flex-column align-items-start">
             <div className="row mt-3">
@@ -151,15 +152,13 @@ const Coin = () => {
                   ))}
                 </div>
               </div>
-              
+
               <div className="col-md-4">
                 <div className="summary p-4 border rounded">
                   <h4 className="mb-2 s">Selected Price</h4>
                   <div className="mb-3">
                     {selectedPrice !== null ? (
-                      <p className="text-s">
-                        ฿{selectedPrice.toFixed(2)}
-                      </p>
+                      <p className="text-s">฿{selectedPrice.toFixed(2)}</p>
                     ) : (
                       <p className="text-muted">No price selected</p>
                     )}
@@ -175,16 +174,28 @@ const Coin = () => {
 
                   {qrCodeUrl && (
                     <div className="mt-2 boxQR">
-                      <h4 className="mb-2 font-normal">Generated QR Code</h4>
+                      {/* <h4 className="mb-2 font-normal">Generated QR Code</h4> */}
                       <img
-                        src={qrCodeUrl}
-                        alt="QR Code"
-                        className="img-fluid QR"
+                        src={
+                          "https://secure1.zimple.cloud/images/thai_qr_payment.png"
+                        }
+                        alt=""
+                        className="h-20"
                       />
+                      <img src={qrCodeUrl} alt="QR Code" className="h-25" />
+                      <span className="flex justify-center text-[#4fbeae]">
+                        สแกน QR เพื่อโอนเงินเข้าบัญชี
+                      </span>
+                      <span className="flex justify-center mr-auto ml-auto">
+                        ชื่อ: นาย สิปปกร คำมีสว่าง
+                      </span>
+                      {/* <hr className="custom-hr m-2" /> */}
                       <p className="mt-2 text-muted amount">
-                        Amount: <div className="amount-num" >฿ {selectedPrice?.toFixed(2)}</div>
+                        Amount:{" "}
+                        <div className="amount-num">
+                          ฿ {selectedPrice?.toFixed(2)}
+                        </div>
                       </p>
-
                       <h4 className="mb-4 s">Upload Payment Slip</h4>
                       <div className="mb-3">
                         <input
