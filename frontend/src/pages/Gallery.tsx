@@ -256,6 +256,7 @@ const Gallery = () => {
     }
   };
 
+
   // Handle tag click
   // const handleTagSelect = (tagId: number) => {
   //   setSelectedTag(tagId);
@@ -290,35 +291,38 @@ const Gallery = () => {
       {error && <p className="text-danger text-center">{error}</p>}
 
       {/* Display Tags as Buttons */}
-      <div className="mb-4 d-flex flex-wrap justify-content-center">
+      <div className="tag-container mb-4 d-flex flex-wrap justify-content-center">
+
+        {/* Map through the existing tags */}
         {tags.map((tag) => (
-          <Button
+          <button
             key={tag.tags_id}
-            variant={
-              selectedTag === tag.tags_id ? "primary" : "outline-primary"
-            }
-            className="m-2"
+            className={`m-2 ${selectedTag === tag.tags_id ? 'TagOnClick' : ' TagOffClick '}`} // Existing logic for individual tags
             onClick={() => handleTagSelect(tag.tags_id)}
           >
             {tag.name}
-          </Button>
+          </button>
         ))}
       </div>
 
       {/* Filter Dropdowns */}
-      <div className="mb-4">
-        <Dropdown>
-          <Dropdown.Toggle variant="success" id="dropdown-basic">
-            Sort by:{" "}
-            {sortCriteria
-              ? sortCriteria === "time"
-                ? "Time"
-                : "Price"
-              : "Select an option"}
+      <div className="mb-4 Filter-container">
+        <Dropdown >
+          <Dropdown.Toggle className={` ${sortCriteria ? 'FilterButton' : ''}`} id="dropdown-basic">
+            Sort by :{" "}
+            {sortCriteria ? (
+              sortCriteria === "time" ? (
+                "Time"
+              ) : (
+                "Price"
+              )
+            ) : (
+              "Select an option"
+            )}
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
-            <Dropdown.Item onClick={() => handleSortChange("time")}>
+            <Dropdown.Item  onClick={() => handleSortChange("time")}>
               Sort by Time
             </Dropdown.Item>
             <Dropdown.Item onClick={() => handleSortChange("price")}>
