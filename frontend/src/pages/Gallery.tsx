@@ -308,7 +308,7 @@ const Gallery = () => {
       {/* Filter Dropdowns */}
       <div className="mb-4 Filter-container">
         <Dropdown >
-          <Dropdown.Toggle className={` ${sortCriteria ? 'FilterButton' : ''}`} id="dropdown-basic">
+          <Dropdown.Toggle className={`Filter ${sortCriteria ? 'FilterButton' : ''}`} id="dropdown-basic">
             Sort by :{" "}
             {sortCriteria ? (
               sortCriteria === "time" ? (
@@ -321,30 +321,30 @@ const Gallery = () => {
             )}
           </Dropdown.Toggle>
 
-          <Dropdown.Menu>
-            <Dropdown.Item  onClick={() => handleSortChange("time")}>
+          <Dropdown.Menu className="Filter-menu">
+            <Dropdown.Item  className="menu" onClick={() => handleSortChange("time")}>
               Sort by Time
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleSortChange("price")}>
+            <Dropdown.Item className="menu" onClick={() => handleSortChange("price")}>
               Sort by Price
             </Dropdown.Item>
             <Dropdown.Divider />
             {sortCriteria === "time" && (
               <>
-                <Dropdown.Item onClick={() => handleOrderChange("desc")}>
+                <Dropdown.Item className="menu" onClick={() => handleOrderChange("desc")}>
                   Latest First
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => handleOrderChange("asc")}>
+                <Dropdown.Item className="menu" onClick={() => handleOrderChange("asc")}>
                   Oldest First
                 </Dropdown.Item>
               </>
             )}
             {sortCriteria === "price" && (
               <>
-                <Dropdown.Item onClick={() => handleOrderChange("asc")}>
+                <Dropdown.Item className="menu" onClick={() => handleOrderChange("asc")}>
                   Cheapest First
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => handleOrderChange("desc")}>
+                <Dropdown.Item className="menu" onClick={() => handleOrderChange("desc")}>
                   Most Expensive First
                 </Dropdown.Item>
               </>

@@ -1818,9 +1818,10 @@ footer{
   border-radius: 8px;
   font-size: 16px;
   letter-spacing: 0.7px;
+  transition: 0.3s;
   font-weight: 350;
   text-shadow: #3a3a3a87 0.5px 0.5px 0.5px  ;
-  background-color: #FF8833;
+  background-color: #FF8833 !important;
 }
 
 .Filter-container .FilterButton:hover{
@@ -1830,3 +1831,33 @@ footer{
   background-color: #ea6f17;
 }
 
+.Filter-container .Filter:active{
+  background-color: #c05d17 !important;
+  transition: 0.3s;
+}
+.Filter-container .Filter-menu .menu{
+  font-size: 16px;
+  font-weight: 350;
+  letter-spacing: 0.7px;
+  padding-left: 16px;
+  text-decoration: none;
+  color: 000000;
+}
+.Filter-container .Filter-menu .menu:hover{
+  background-color: #ffffff !important;
+  color:#ff6a00;
+  scale: 0.97;
+  transition: 0.2s;
+}
+.Filter-container .Filter-menu .menu:active{
+  background-color: #ffffff !important;
+  color:#ff6a00;
+  transition: 0.3s;
+}
+.Filter-container .Filter-menu {
+  padding: 8px 0;
+  margin: 0;
+  text-decoration: none;
+
+  color: #fff;
+}
