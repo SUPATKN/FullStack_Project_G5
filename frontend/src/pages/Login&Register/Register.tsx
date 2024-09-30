@@ -69,10 +69,10 @@ const Register: React.FC = () => {
     <Layout>
       <div className="flex justify-center items-center  bg-gray-50">
         <div className="w-full max-w-md p-6 bg-white rounded-lg ">
-          <h1 className="text-2xl font-bold text-center text-[#ff8833]">
+          <h1 className="text-2xl font-normal text-center text-[#ff8833]">
             Create Account
           </h1>
-          <p className="text-center text-gray-500 text-">
+          <p className="text-center text-gray-500 font-normal">
             Join our community today!
           </p>
 
@@ -80,7 +80,7 @@ const Register: React.FC = () => {
             {/* Username Field */}
             <label
               htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-normal text-gray-700 letter-spacing-0-7px"
             >
               Username
             </label>
@@ -96,7 +96,7 @@ const Register: React.FC = () => {
             {/* Email Field */}
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mt-4"
+              className="block text-sm font-normal text-gray-700 mt-4 letter-spacing-0-7px"
             >
               Email Address or Phone Number
             </label>
@@ -112,7 +112,7 @@ const Register: React.FC = () => {
             {/* Password Field */}
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mt-4"
+              className="block text-sm font-normal text-gray-700 mt-4 letter-spacing-0-7px"
             >
               Password
               <FontAwesomeIcon
@@ -133,7 +133,7 @@ const Register: React.FC = () => {
             {/* Confirm Password Field */}
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700 mt-4"
+              className="block text-sm font-normal text-gray-700 mt-4 letter-spacing-0-7px"
             >
               Confirm Password
               <FontAwesomeIcon
@@ -161,7 +161,7 @@ const Register: React.FC = () => {
             <button
               onClick={handleRegister}
               disabled={loading}
-              className="w-full mt-6 bg-[#ff8833] text-white font-semibold py-2.5 rounded-lg hover:bg-[#f16501] transition duration-200 ease-in-out disabled:bg-gray-400"
+              className="w-full mt-6 bg-[#ff8833] letter-spacing-0-7px text-white font-normal text-sm py-2.5 rounded-lg hover:bg-[#f16501] transition duration-200 ease-in-out disabled:bg-gray-400"
             >
               {loading ? "Signing Up..." : "SIGN UP"}
             </button>
@@ -183,7 +183,7 @@ const Register: React.FC = () => {
                 alt="Google logo"
                 className="w-5 h-5 mr-2"
               />
-              <span className="text-gray-700 font-semibold">
+              <span className="text-gray-700 font-normal letter-spacing-0-7px" >
                 Sign Up with Google
               </span>
             </button>

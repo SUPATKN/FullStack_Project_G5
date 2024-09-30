@@ -73,7 +73,7 @@ const Login: FC = () => {
     <Layout>
       <div className="flex justify-center items-center bg-gray-50">
         <div className="w-full max-w-md p-6 bg-white rounded-lg ">
-          <h1 className="text-2xl font-bold text-center text-gray-800">
+          <h1 className="text-2xl mb-3 font-normal text-center text-[#ff8833]">
             Login
           </h1>
           <p className="text-center text-gray-500 mt-2 text-sm">
@@ -84,7 +84,7 @@ const Login: FC = () => {
             {/* Email Field */}
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-normal text-gray-700 mt-4 letter-spacing-0-7px"
             >
               Email or Phone Number
             </label>
@@ -100,7 +100,7 @@ const Login: FC = () => {
             {/* Password Field */}
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mt-4"
+              className="block text-sm font-normal text-gray-700 mt-4 letter-spacing-0-7px"
             >
               Password
               <FontAwesomeIcon
@@ -128,7 +128,7 @@ const Login: FC = () => {
             <button
               onClick={handleLogin}
               disabled={loading}
-              className="w-full mt-6 bg-[#ff8833] text-white font-semibold py-3 rounded-lg hover:bg-[#f16501] transition duration-200 ease-in-out disabled:bg-gray-400"
+              className="w-full mt-6 mb-2 bg-[#ff8833] letter-spacing-0-7px text-white font-normal text-sm py-2.5 rounded-lg hover:bg-[#f16501] transition duration-200 ease-in-out disabled:bg-gray-400"
             >
               {loading ? "Logging in..." : "LOG IN"}
             </button>
@@ -150,7 +150,7 @@ const Login: FC = () => {
                 alt="Google logo"
                 className="w-5 h-5 mr-2"
               />
-              <span className="text-gray-700 font-semibold">
+              <span className="text-gray-700 font-normal letter-spacing-0-7px">
                 Login with Google
               </span>
             </button>
