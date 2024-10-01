@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Image, Row, Col, Dropdown, Button } from "react-bootstrap";
+import { Image, Row, Col, Dropdown} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Layout from "../Layout";
@@ -367,7 +367,7 @@ const Gallery = () => {
                     crossOrigin="anonymous"
                     src={`/api/${photo.path}`}
                     alt={`Image ${photo.id}`}
-                    className="w-[250px] h-[200px] rounded-md cursor-pointer"
+                    className="rounded-md cursor-pointer"
                     onClick={() => handlePhotoClick(photo.id)}
                     onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
                   />

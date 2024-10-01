@@ -300,7 +300,7 @@ const PhotoDetail = () => {
                     crossOrigin="anonymous"
                     src={`/api/${photo.path}`}
                     alt={`Image ${photo.id}`}
-                    className="w-[550px] h-[350px] rounded-lg relative"
+                    className="w-[550px] h-full rounded-lg relative"
                     onContextMenu={
                       photo.price > 0 && !hasPurchased
                         ? handleImageContextMenu

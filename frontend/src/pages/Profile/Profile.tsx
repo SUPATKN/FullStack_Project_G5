@@ -216,6 +216,7 @@ const Profile: React.FC = () => {
     if (user?.avatarURL) {
       fetchUserProfile(parseInt(userId!, 10)); // Refetch the updated profile if avatarURL changes
     }
+    fetchTags();
   }, [user?.avatarURL, userId]);
 
   // useEffect(() => {
@@ -262,6 +263,21 @@ const Profile: React.FC = () => {
   //     link.click();
   //   }
   // };
+
+  const { id } = useParams<{ id: string }>();
+  const [tags, setTags] = useState<string[]>([]);
+
+  const fetchTags = async () => {
+    try {
+      const { data } = await axios.get<{ name: string }[]>(
+        `/api/photo/${id}/tags`
+      );
+      const tagNames = data.map((tag) => tag.name);
+      setTags(tagNames);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+    }
+  };
 
   const handleCloseUpload = () => setIsUpload(false);
   return (
@@ -393,7 +409,7 @@ const Profile: React.FC = () => {
             .filter((photo) => photo.user_id == user?.id?.toString())
             .map((photo) => (
               <Col key={photo.id} xs={12} md={4} lg={3}>
-                <div className="flex flex-col w-[300px] h-auto bg-white rounded-lg shadow-md border p-2">
+                <div className="flex flex-col w-[300px] h-full bg-white rounded-lg shadow-md border p-2">
                   <div className="flex items-center justify-between mt-3">
                     <h3 className="text-[16px] ml-4">{photo.title}</h3>
                     <SquareArrowUpRight className="mr-4" />
@@ -401,7 +417,15 @@ const Profile: React.FC = () => {
                   <h2 className="text-[12px] flex justify-start ml-4">Brand</h2>
                   <div className="flex items-center justify-start gap-2 ml-4">
                     <Tag className="text-[#ff8833]" />
-                    <h2 className="text-[16px]">Animal</h2>
+                    {tags.length > 0 ? (
+                      tags.map((tag, index) => (
+                        <h2 key={index} className="text-[16px]">
+                          {tag}
+                        </h2>
+                      ))
+                    ) : (
+                      <h2 className="text-[16px]">No tags</h2>
+                    )}
                   </div>
                   <div className="position-relative flex flex-col items-center justify-center mt-2">
                     <Image
@@ -409,7 +433,7 @@ const Profile: React.FC = () => {
                       src={`/api/${photo.path}`}
                       onClick={() => handlePhotoClick(photo.id)}
                       onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
-                      className="cursor-pointer w-[90%] h-[250px] object-cover rounded-lg"
+                      className="cursor-pointer w-[90%] object-cover rounded-lg"
                       alt={`Image ${photo.id}`}
                     />
                     <div className="mr-14 mt-2 text-sm">
