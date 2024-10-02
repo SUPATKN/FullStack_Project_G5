@@ -284,43 +284,41 @@ const Profile: React.FC = () => {
     <Layout>
       <div className="flex flex-col items-center justify-center">
         {/* profile */}
-        <h2 className="text-[#ff8833] font-medium">MY PROFILE </h2>
-        <div className="w-[600px] h-[450px] bg-white border shadow-md rounded-lg">
-          {error ? (
-            <p>{error}</p>
-          ) : (
-            user && (
-              <div className="mt-3 flex flex-col items-center justify-center">
-                <h5>{user.username}</h5>
-                <p>Email: {user.email}</p>
-                <p>ID: {user.id}</p>
-                <p>COINS: {user.coin} coins</p>
-              </div>
-            )
-          )}
-          <div className="mt-3 flex items-center justify-center">
+        <h3 className="mt-3 mb-4 text-center text-[#ff8833] font-light letter-spacing-0-7px">MY PROFILE </h3>
+
+        <div className="p-5 w-[fit-content] h-[fit-content] bg-white border shadow-md rounded-lg">
+        <div className="mt-2 flex items-center justify-center">
             {user?.avatarURL ? (
               <Image
                 src={`${user.avatarURL}`}
                 alt="Profile Picture"
-                className="w-36 h-36 rounded-full"
-                width={150}
-                height={150}
+                className="profile-pic w-36 h-36 rounded-full "
               />
             ) : (
               <Image
                 src="https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
                 alt="Default Avatar"
-                width={150}
-                height={150}
-                className="w-36 h-36 rounded-full"
+                className="profile-pic w-36 h-36 rounded-full"
               />
             )}
           </div>
-          <div className="flex items-center justify-center gap-3 mt-5">
+          {error ? (
+            <p>{error}</p>
+          ) : (
+            user && (
+              <div className="mt-3 flex flex-col items-center justify-center">
+                <h5 className="font-semibold letter-spacing-0-7px">{user.username}</h5>
+                <p className="font-normal text-gray-700 letter-spacing-0-7px">Email : {user.email}</p>
+                <p className="font-normal text-gray-700 letter-spacing-0-7px">ID : {user.id}</p>
+                <p className="font-normal text-gray-700 letter-spacing-0-7px">COINS : {user.coin} coins</p>
+              </div>
+            )
+          )}
+          
+          <div className="flex items-center justify-center gap-3 mt-2">
             {currentUser?.id == userId && (
               <button
-                className="w-[170px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                className="font-normal letter-spacing-0-7px p-2 px-4 w-[fit-content] h-[fit-content] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-[#ff6600] flex items-center justify-center text-center no-underline hover:no-underline"
                 onClick={handleUploadPic}
               >
                 Upload profile picture
@@ -328,14 +326,14 @@ const Profile: React.FC = () => {
             )}
             <Link
               to="/"
-              className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+              className="font-normal letter-spacing-0-7px p-2 px-4 w-[fit-content] h-[fit-content] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
             >
               Back
             </Link>
           </div>
           {isUpload && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <div className="bg-white p-5 rounded-lg shadow-lg relative">
+              <div className="bg-white p-6 rounded-lg shadow-lg relative">
                 <h3 className="text-xl mb-3 text-center">Select Image</h3>
                 <Form>
                   <Form.Group controlId="formFile" className="mb-3">
@@ -365,13 +363,13 @@ const Profile: React.FC = () => {
                 </Form>
                 <div className="flex items-center justify-center gap-3 mt-2">
                   <button
-                    className="w-[100px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                    className="font-normal letter-spacing-0-7px p-2 px-4 w-[fit-content] h-[fit-content] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-[#ff6600] flex items-center justify-center text-center no-underline hover:no-underline"
                     onClick={handleUpload}
                   >
                     Upload
                   </button>
                   <button
-                    className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                    className="font-normal letter-spacing-0-7px p-2 px-4 w-[fit-content] h-[fit-content] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
                     onClick={handleCloseUpload}
                   >
                     Cancel
