@@ -148,8 +148,8 @@ const Upload = () => {
     <Layout>
       <h3 className="mt-3 mb-3 text-center text-[#ff8833] font-light letter-spacing-0-7px">UPLOAD FILE</h3>
       <Form>
-        <Form.Group controlId="formFile" className="mb-3 text-white">
-          <Form.Label>Select Image</Form.Label>
+        <Form.Group controlId="formFile" className="mb-3 text-[#ff8833] letter-spacing-0-7px">
+          <Form.Label>◆ Select Image</Form.Label>
           <Form.Control
             type="file"
             onChange={handleFileChange}
@@ -157,8 +157,8 @@ const Upload = () => {
           />
         </Form.Group>
         {selectedImage && (
-          <div className="mb-3">
-            <h3>Image Preview:</h3>
+          <div className="mt-3 mb-3 text-[#ff8833] letter-spacing-0-7px ">
+            <Form.Label className="mb-3">◆ Image Preview</Form.Label>
             <Image
               src={selectedImage}
               alt="Selected Image"
@@ -168,8 +168,8 @@ const Upload = () => {
             />
           </div>
         )}
-        <Form.Group controlId="formTitle" className="mb-3 text-white">
-          <Form.Label>Title</Form.Label>
+        <Form.Group controlId="formTitle" className="mb-3 text-[#ff8833] letter-spacing-0-7px">
+          <Form.Label>◆ Title</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter title"
@@ -178,8 +178,8 @@ const Upload = () => {
             data-cy="title-input"
           />
         </Form.Group>
-        <Form.Group controlId="formDescription" className="mb-3 text-white">
-          <Form.Label>Description</Form.Label>
+        <Form.Group controlId="formDescription" className="mb-3 text-[#ff8833] letter-spacing-0-7px">
+          <Form.Label>◆ Description</Form.Label>
           <Form.Control
             as="textarea"
             rows={3}
@@ -189,27 +189,31 @@ const Upload = () => {
             data-cy="description-input"
           />
         </Form.Group>
-        <Form.Group controlId="formIsFree" className="mb-3 text-white">
+
+        <Form.Group controlId="formIsFree" className="mb-3 text-[#ffffff] letter-spacing-0-7px">
           <Form.Check
             type="checkbox"
             label="Free Image"
             checked={isFree}
+            className="checkbox font-thin "
             onChange={(e) => setIsFree(e.target.checked)}
           />
         </Form.Group>
         {!isFree && (
-          <Form.Group controlId="formPrice" className="mb-3 text-white">
-            <Form.Label>Price</Form.Label>
+          <Form.Group controlId="formPrice" className="mb-3 text-white letter-spacing-0-7px">
+            <Form.Label className=" text-[#ff8833] letter-spacing-0-7px" >◆ Price</Form.Label>
             <Form.Control
               type="number"
               placeholder="Enter price"
               value={price}
+              className="mb-3 letter-spacing-0-7px"
               onChange={(e) => setPrice(Number(e.target.value))}
               data-cy="price-input"
             />
             <Form.Check
               type="checkbox"
               label="Limit Sales"
+              className="checkbox font-thin "
               checked={limitSales}
               onChange={(e) => setLimitSales(e.target.checked)}
             />
@@ -224,19 +228,21 @@ const Upload = () => {
           />
         </Form.Group> */}
         {limitSales && (
-          <Form.Group controlId="formMaxSales" className="mb-3 text-white">
-            <Form.Label>Maximum Sales Allowed</Form.Label>
+          <Form.Group controlId="formMaxSales" className="mb-3 text-white letter-spacing-0-7px">
+            <Form.Label className=" text-[#ff8833] letter-spacing-0-7px">◆ Maximum Sales Allowed</Form.Label>
             <Form.Control
               type="number"
               placeholder="Enter maximum sales"
               value={maxSales}
+              className="mb-3letter-spacing-0-7px"
               onChange={(e) => setMaxSales(Number(e.target.value))}
               data-cy="max-sales-input"
             />
           </Form.Group>
         )}
-        <Form.Group controlId="formTags" className="mb-3 text-white">
-          <Form.Label>Select Tags</Form.Label>
+        <Form.Label className="mb-3 text-[#ff8833] letter-spacing-0-7px">◆ Select Tags</Form.Label>
+        <Form.Group controlId="formTags" className="tagbox mb-4">
+          
           {tags.map((tag) => (
             <Form.Check
               key={tag.tags_id}
@@ -244,6 +250,7 @@ const Upload = () => {
               label={tag.name}
               value={tag.tags_id}
               checked={selectedTags.includes(tag.tags_id)}
+              className="checkbox font-thin text-[#ffffff] " 
               onChange={(e) => {
                 const tagId = parseInt(e.target.value);
                 if (e.target.checked) {
@@ -257,7 +264,7 @@ const Upload = () => {
         </Form.Group>
 
         <Button
-          variant="primary"
+          className="upload-b w-100 mb-2 "
           onClick={handleUpload}
           data-cy="upload-button"
         >
