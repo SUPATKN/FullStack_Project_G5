@@ -28,13 +28,13 @@ const Upload = () => {
 
   // New states for free image, price, title, description, and max sales
   const [isFree, setIsFree] = useState<boolean>(true);
-  const [price, setPrice] = useState<number | "">(0);
+  const [price, setPrice] = useState<number | "">();
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
   // New states for limiting sales
   const [limitSales, setLimitSales] = useState<boolean>(false);
-  const [maxSales, setMaxSales] = useState<number>(0);
+  const [maxSales, setMaxSales] = useState<number>();
   const [tags, setTags] = useState<Tag[]>([]); // State for all tags
   const [selectedTags, setSelectedTags] = useState<number[]>([]); // State for selected tag IDs
 
@@ -200,7 +200,7 @@ const Upload = () => {
           />
         </Form.Group>
         {!isFree && (
-          <Form.Group controlId="formPrice" className="mb-3 text-white letter-spacing-0-7px">
+          <Form.Group controlId="formPrice" className=" mb-3 text-white letter-spacing-0-7px ">
             <Form.Label className=" text-[#ff8833] letter-spacing-0-7px" >◆ Price</Form.Label>
             <Form.Control
               type="number"

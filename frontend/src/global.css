@@ -1882,6 +1882,7 @@ footer{
   font-weight: 350;
   letter-spacing: 0.7px;
 }
+
 .checkbox input[type="checkbox"] + label:before {
   content: "";
   display: block;
