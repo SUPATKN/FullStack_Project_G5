@@ -21,6 +21,12 @@ interface Photo {
   created_at: string;
 }
 
+interface Tag {
+  tags_id: number;
+  name: string;
+}
+
+
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   const year = date.getFullYear();
@@ -43,6 +49,8 @@ const Profile: React.FC = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
   const [isCreateAlbum, setCreateAlbum] = useState(false);
+  
+  
   const [albums, setAlbums] = useState<Album[]>([]);
   // const [albumPhotosMap, setAlbumPhotosMap] = useState<Record<string, Photo[]>>(
   //   {}
@@ -209,14 +217,15 @@ const Profile: React.FC = () => {
       setError("User profile not found");
     }
     fetchPhotos();
+    fetchTags();
     fetchUserAlbums();
   }, [location.state, userId]);
 
   useEffect(() => {
+    fetchTags();
     if (user?.avatarURL) {
       fetchUserProfile(parseInt(userId!, 10)); // Refetch the updated profile if avatarURL changes
     }
-    fetchTags();
   }, [user?.avatarURL, userId]);
 
   // useEffect(() => {
@@ -381,48 +390,46 @@ const Profile: React.FC = () => {
         </div>
       </div>
       <div className="flex flex-col items-center justify-center mt-3">
-        <h2 className="text-[#ff8833] font-medium">MY PHOTOS</h2>
+        <h3 className="mt-3 mb-4 text-center text-[#ff8833] font-light letter-spacing-0-7px">MY PHOTOS</h3>
         <div className="flex items-center justify-center gap-3">
           {currentUser?.id === user?.id && (
             <button
-              className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+              className="p-2 px-3 w-[fit-content] h-[fit-content] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
               onClick={() => handleEdit()}
             >
-              <SquarePen className="text-white w-10 h-[20px] mr-2" />
+              <SquarePen className="text-white  h-[20px] mr-1" />
               Edit
             </button>
           )}
           {currentUser?.id == userId && (
             <button
-              className="w-[230px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+              className=" p-2 px-3 w-[fit-content] h-[fit-content] bg-[#64c55b] rounded-md text-white cursor-pointer hover:bg-[#54ab4c] flex items-center justify-center text-center no-underline hover:no-underline"
               onClick={handleViewPurchasedPhotos}
             >
-              <ShoppingBag className="text-white w-10 h-[20px] mr-2" />
+              <ShoppingBag className="text-white h-[20px] mr-2" />
               View Purchased Photos
             </button>
           )}
         </div>
-        <Row className="flex flex-wrap justify-center gap-4 mt-4">
+        <Row className="flex flex-wrap justify-center gap-1 mt-4">
           {photos
             .filter((photo) => photo.user_id == user?.id?.toString())
             .map((photo) => (
               <Col key={photo.id} xs={12} md={4} lg={3}>
-                <div className="flex flex-col w-[300px] h-full bg-white rounded-lg shadow-md border p-2">
-                  <div className="flex items-center justify-between mt-3">
-                    <h3 className="text-[16px] ml-4">{photo.title}</h3>
-                    <SquareArrowUpRight className="mr-4" />
+                <div className="flex flex-col  w-[full] h-[fit-content] bg-white rounded-lg shadow-md border p-3 mb-4 mt-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-[18px]">{photo.title}</h3>
                   </div>
-                  <h2 className="text-[12px] flex justify-start ml-4">Brand</h2>
-                  <div className="flex items-center justify-start gap-2 ml-4">
-                    <Tag className="text-[#ff8833]" />
+                  <div className="flex items-center align-center gap-2 Tag">
+                    <Tag className="text-[#ff8833] w-4 h-4" />
                     {tags.length > 0 ? (
                       tags.map((tag, index) => (
-                        <h2 key={index} className="text-[16px]">
+                        <p key={index} className="text-[14px] justify-center align-center Tag">
                           {tag}
-                        </h2>
+                        </p>
                       ))
                     ) : (
-                      <h2 className="text-[16px]">No tags</h2>
+                      <h2 className="text-[14px] text-gray-500 justify-center align-center Tag">No tags</h2>
                     )}
                   </div>
                   <div className="position-relative flex flex-col items-center justify-center mt-2">
@@ -464,10 +471,10 @@ const Profile: React.FC = () => {
       </div>
 
       <div className="flex flex-col items-center justify-center mt-3">
-        <h2 className="text-[#ff8833] font-medium">MY ALBUMS</h2>
+        <h3 className=" mb-4 text-center text-[#ff8833] font-light letter-spacing-0-7px">MY ALBUMS</h3>
         {currentUser?.id == userId && (
           <button
-            className="w-[170px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+            className="w-[170px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
             onClick={handleIsCreate}
           >
             <SquarePen className="text-white w-10 h-[20px] mr-2" />
