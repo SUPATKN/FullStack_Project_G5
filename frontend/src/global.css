@@ -915,6 +915,10 @@ a:hover {
   border-radius: 8px;
   color: #ffffff;
   font-weight: 300;
+  display: flex;
+    align-items: center;
+  justify-content: center;
+  gap: 10px;
   letter-spacing: 0.7px;
   background-color: #FF8833;
   border-color: #FF8833;
@@ -1763,6 +1767,7 @@ a:hover {
 .Total-Price{
   color: #fff;
   font-weight: 300;
+  margin-bottom: 0 !important;
   letter-spacing: 0.7px;
 }
 .hr-line{
@@ -1957,4 +1962,86 @@ footer{
   font-weight: 400;
   margin-bottom: 0 !important;
   justify-content: start;
+}
+
+.SelectAlbumModal{
+  display: flex;
+  width: 100% !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 16px;
+}
+.SelectAlbumModal-header{
+  border: 0 !important;
+  
+}
+.SelectAlbumModal-title{
+  font-weight: 400 !important;
+}
+.SelectAlbumModal-body{
+  border: 0px solid red !important;
+  padding: 0!important;
+}
+.SelectAlbumModal-list{
+    display: flex;
+    flex-direction: column;
+    border-radius: 0px !important;
+  max-height: 300px; /* Adjust as needed */
+  overflow-y: auto !important;
+  position: relative !important;
+  margin: 0 !important;
+  transition: 0.3s !important;
+}
+.SelectAlbumModal-list-item{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e5e5e5;
+  cursor: pointer;
+  transition: 0.3s !important;
+  letter-spacing: 0.7px;
+  font-weight: 350;
+  scale: 0.95;
+}
+.SelectAlbumModal-list-item:hover{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ff8833 !important;
+  border-bottom: 0 !important;
+  cursor: pointer;
+  scale: 0.97;
+  transition: 0.2s !important;
+}
+.SelectAlbumModal-list-item:focus{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ff6a00 !important;
+  border-bottom: 0 !important;
+  color: #fff !important;
+  cursor: pointer;
+}
+.SelectAlbumModal-footer{
+  border: 0 !important;
+}
+.SelectAlbumModal-footer-button{
+  border: 1px solid #FF8833 !important;
+  background-color: #FF8833 !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  font-weight: 350 !important;
+  font-size: 16px !important;
+  letter-spacing: 0.7px !important;
+  transition: 0.2s !important;
+} 
+.SelectAlbumModal-footer-button:hover{
+  background-color: #ea6f17 !important;
+  transition: 0.3s;
+  scale: 0.97;  
+}
+.SelectAlbumModal-footer-button:focus{
+  background-color: #ea6f17 !important;
+  transition: 0.3s;
 }

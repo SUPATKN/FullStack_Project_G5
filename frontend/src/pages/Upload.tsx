@@ -28,13 +28,13 @@ const Upload = () => {
 
   // New states for free image, price, title, description, and max sales
   const [isFree, setIsFree] = useState<boolean>(true);
-  const [price, setPrice] = useState<number | "">();
+  const [price, setPrice] = useState<number | "">(0);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
   // New states for limiting sales
   const [limitSales, setLimitSales] = useState<boolean>(false);
-  const [maxSales, setMaxSales] = useState<number>();
+  const [maxSales, setMaxSales] = useState<number>(0);
   const [tags, setTags] = useState<Tag[]>([]); // State for all tags
   const [selectedTags, setSelectedTags] = useState<number[]>([]); // State for selected tag IDs
 

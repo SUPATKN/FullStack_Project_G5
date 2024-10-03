@@ -293,7 +293,7 @@ const Profile: React.FC = () => {
     <Layout>
       <div className="flex flex-col items-center justify-center">
         {/* profile */}
-        <h3 className="mt-3 mb-4 text-center text-[#ff8833] font-light letter-spacing-0-7px">MY PROFILE </h3>
+        <h3 className="mt-3 mb-4 text-center text-[#ff8833] font-light letter-spacing-0-7px"> MY PROFILE </h3>
 
         <div className="p-5 w-[fit-content] h-[fit-content] bg-white border shadow-md rounded-lg">
         <div className="mt-2 flex items-center justify-center">
@@ -318,8 +318,8 @@ const Profile: React.FC = () => {
               <div className="mt-3 flex flex-col items-center justify-center">
                 <h5 className="font-semibold letter-spacing-0-7px">{user.username}</h5>
                 <p className="font-normal text-gray-700 letter-spacing-0-7px">Email : {user.email}</p>
-                <p className="font-normal text-gray-700 letter-spacing-0-7px">ID : {user.id}</p>
-                <p className="font-normal text-gray-700 letter-spacing-0-7px">COINS : {user.coin} coins</p>
+                <p className="font-normal text-gray-700 letter-spacing-0-7px">User ID : {user.id}</p>
+                <p className="font-normal text-gray-700 letter-spacing-0-7px">Coins : {user.coin} coins</p>
               </div>
             )
           )}
@@ -327,7 +327,7 @@ const Profile: React.FC = () => {
           <div className="flex items-center justify-center gap-3 mt-2">
             {currentUser?.id == userId && (
               <button
-                className="font-normal letter-spacing-0-7px p-2 px-4 w-[fit-content] h-[fit-content] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-[#ff6600] flex items-center justify-center text-center no-underline hover:no-underline"
+                className="font-normal p-2 px-4 w-[fit-content] h-[fit-content] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-[#ff6600] flex items-center justify-center text-center no-underline hover:no-underline"
                 onClick={handleUploadPic}
               >
                 Upload profile picture
@@ -335,9 +335,15 @@ const Profile: React.FC = () => {
             )}
             <Link
               to="/"
-              className="font-normal letter-spacing-0-7px p-2 px-4 w-[fit-content] h-[fit-content] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+              className="gap-[6px] font-normal p-2 px-4 w-[fit-content] h-[fit-content] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
             >
+              
+
               Back
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+</svg>
+
             </Link>
           </div>
           {isUpload && (
@@ -416,7 +422,7 @@ const Profile: React.FC = () => {
             .filter((photo) => photo.user_id == user?.id?.toString())
             .map((photo) => (
               <Col key={photo.id} xs={12} md={4} lg={3}>
-                <div className="flex flex-col  w-[full] h-[fit-content] bg-white rounded-lg shadow-md border p-3 mb-4 mt-1">
+                <div className="flex flex-col  w-[full] h-[fit-content] bg-[#ffffff] rounded-lg shadow-md  p-3 mb-4 mt-1">
                   <div className="flex items-center justify-between">
                     <h3 className="text-[18px]">{photo.title}</h3>
                   </div>
@@ -432,34 +438,43 @@ const Profile: React.FC = () => {
                       <h2 className="text-[14px] text-gray-500 justify-center align-center Tag">No tags</h2>
                     )}
                   </div>
-                  <div className="position-relative flex flex-col items-center justify-center mt-2">
+                  <div className="position-relative flex flex-col  justify-center mt-2 ">
                     <Image
                       crossOrigin="anonymous"
                       src={`/api/${photo.path}`}
                       onClick={() => handlePhotoClick(photo.id)}
                       onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
-                      className="cursor-pointer w-[90%] object-cover rounded-lg"
+                      className="cursor-pointer w-[100%] object-cover rounded-lg"
                       alt={`Image ${photo.id}`}
                     />
-                    <div className="mr-14 mt-2 text-sm">
-                      <p>Date: {formatDate(photo.created_at)}</p>
-                      <p>Price: {photo.price}</p>
+                    <div className="align-start mt-3 text-sm ">
+                      <p>Date : {formatDate(photo.created_at)}</p>
+                      <p className="text-[#ff8833] font-medium text-[16px]">Price : {photo.price}</p>
                     </div>
                     {isEdit && (
-                      <div className="flex items-center justify-center gap-3 mt-2">
+                      <div className="flex items-center justify-center gap-3">
                         <button
-                          className="w-[80px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                          className="gap-1 p-2 px-3 w-[fit-content] h-[fit-content] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
                           onClick={() =>
                             handleDelete(photo.path.split("/").pop()!)
                           }
                         >
-                          Delete
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 ">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+</svg>
+
+                          Delete 
                         </button>
                         <button
-                          className="w-[120px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                          className="gap-1 p-2 px-3 w-[fit-content] h-[fit-content] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-700 flex items-center justify-center text-center no-underline hover:no-underline"
                           onClick={() => handleAddPhotoClick(photo.id)}
                         >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+  <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
+</svg>
+
                           Add to album
+                          
                         </button>
                       </div>
                     )}
@@ -474,23 +489,23 @@ const Profile: React.FC = () => {
         <h3 className=" mb-4 text-center text-[#ff8833] font-light letter-spacing-0-7px">MY ALBUMS</h3>
         {currentUser?.id == userId && (
           <button
-            className="w-[170px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+            className=" p-2 px-3 w-[fit-content] h-[fit-content] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-[#ff6600] flex items-center justify-center text-center no-underline hover:no-underline"
             onClick={handleIsCreate}
           >
-            <SquarePen className="text-white w-10 h-[20px] mr-2" />
+            <SquarePen className="text-white h-[20px] mr-1" />
             Create Album
           </button>
         )}
         {isCreateAlbum && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-5 rounded-lg shadow-lg relative w-[400px]">
+            <div className="bg-white p-4 rounded-lg shadow-lg relative w-[400px]">
               <div className="flex items-center justify-between">
-                <h3 className="text-xl">Create Album</h3>
+                <h3 className="text-xl mb-3">Create Album ✦ </h3>
                 <button
-                  className="w-[100px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                  className="p-2 px-3 w-[fit-content] h-[fit-content] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
                   onClick={handleCloseCreateAlbum}
                 >
-                  Cancel
+                  ✕
                 </button>
               </div>
               <div className="">
@@ -499,14 +514,14 @@ const Profile: React.FC = () => {
             </div>
           </div>
         )}
-        <div className="flex flex-wrap gap-[31px] mt-3">
+        <div className="album flex items-center justify-center flex-wrap gap-[28px] mt-4">
           {albums.map((album) => (
-            <div className="flex flex-col w-[300px] h-auto bg-white rounded-lg shadow-md border p-2">
+            <div className="flex flex-col w-[full] h-auto bg-white rounded-lg shadow-md border p-3">
               <div key={album.album_id} className="">
-                <h4 className="text-[20px] font-semibold mt-3 ml-4">
-                  Album Name: {album.title}
+                <h4 className="text-[18px] font-medium ">
+                  Album Name : {album.title}
                 </h4>
-                <p className="ml-4">Description: {album.description}</p>
+                <p className="text-[14px] text-gray-700">Description : {album.description}</p>
                 <div className="mt-2 flex-wrap flex items-center justify-center w-[280px] h-auto bg-gray-200 shadow-lg border rounded-lg">
                   {/* {albumPhotosMap[album.album_id]?.map((photo) => {
                     return (
@@ -533,21 +548,30 @@ const Profile: React.FC = () => {
                     );
                   })} */}
                 </div>
-                <div className="flex items-center justify-center gap-4 mt-2">
+                <div className=" flex items-center justify-center gap-3 mt-3">
                   <button
-                    className="w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                    className="gap-2 p-2 px-3 w-[fit-content] h-[fit-content] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-[#ff6600] flex items-center justify-center text-center no-underline hover:no-underline"
                     onClick={() => navigate(`/album/${album.album_id}/photos`)} // Navigate to new page
                   >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" class="size-5">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+</svg>
+
                     View Albums
                   </button>
                   {currentUser?.id == userId && (
                     <button
-                      className="w-[110px] h-[35px] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
+                      className="gap-2 p-2 px-3 w-[fit-content] h-[fit-content] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
                       onClick={() =>
                         handleDeleteAlbum(album.album_id.toString())
                       }
                     >
-                      Delete Album
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" class="size-5">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+</svg>
+
+                      Delete
                     </button>
                   )}
                 </div>

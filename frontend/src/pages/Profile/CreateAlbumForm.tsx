@@ -17,25 +17,28 @@ const CreateAlbumForm: React.FC<CreateAlbumFormProps> = ({ onCreateAlbum }) => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Form.Group controlId="formTitle">
-        <Form.Label>Title</Form.Label>
+      <Form.Group controlId="formTitle" className="mb-3">
+        <Form.Label >Title</Form.Label>
         <Form.Control
           type="text"
           value={title}
+          placeholder="Enter album title"
           onChange={(e) => setTitle(e.target.value)}
         />
       </Form.Group>
-      <Form.Group controlId="formDescription">
+      <Form.Group controlId="formDescription" className="mb-3">
         <Form.Label>Description</Form.Label>
         <Form.Control
           type="text"
           value={description}
+          placeholder="Enter album description"
           onChange={(e) => setDescription(e.target.value)}
         />
       </Form.Group>
+
       <div className="flex items-center justify-center">
         <button 
-          className="mt-3 w-[110px] h-[35px] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-500 flex items-center justify-center text-center no-underline hover:no-underline"
+          className="p-2 px-3 w-[fit-content] h-[fit-content] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-[#ff6600] flex items-center justify-center text-center no-underline hover:no-underline"
           type="submit"
         >
           Create Album

@@ -175,19 +175,25 @@ const Cart = () => {
 
       <div className="Cart">
         <div className="p-3">
-          <h4 className="Total-Price mb-2 text-center">Total Price</h4>
+          <h4 className="Total-Price mb-2 text-center gap-2 flex justify-content-center align-center"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-5 mt-[5px] mr-[1px]">
+  <path fill-rule="evenodd" d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.865 1.679l-1.263 12A1.875 1.875 0 0 0 4.25 22.5h15.5a1.875 1.875 0 0 0 1.865-2.071l-1.263-12a1.875 1.875 0 0 0-1.865-1.679H16.5V6a4.5 4.5 0 1 0-9 0ZM12 3a3 3 0 0 0-3 3v.75h6V6a3 3 0 0 0-3-3Zm-3 8.25a3 3 0 1 0 6 0v-.75a.75.75 0 0 1 1.5 0v.75a4.5 4.5 0 1 1-9 0v-.75a.75.75 0 0 1 1.5 0v.75Z" clip-rule="evenodd" />
+</svg>
+Total Price</h4>
             <div className="text-s text-center">
               <h4 >${totalPrice.toFixed(2)}</h4>
             </div>
           
         </div>
+        
         <div
+        
             onClick={handleCheckout}
             className="checkout w-100 mb-2"
           >
             {loading ? (
               <Spinner animation="border" />
             ) : (
+              
               "Proceed to Checkout"
             )}
         </div>
