@@ -6,6 +6,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Layout from "../../Layout";
 import { User } from "../../types/api";
 import "./AlbumPhotosPage.css";
+import { ChevronRight,  ChevronLeft } from 'lucide-react';
 
 interface Photo {
   id: string;
@@ -194,9 +195,9 @@ const ViewAlbumPhotos: React.FC = () => {
     }
   };
 
-  const handleNextPhoto = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % photos.length);
-  };
+  // const handleNextPhoto = () => {
+  //   setCurrentIndex((prevIndex) => (prevIndex + 1) % photos.length);
+  // };
 
   const toggleOverlay = () => {
     setOverlayVisible(!overlayVisible);
@@ -232,6 +233,13 @@ const ViewAlbumPhotos: React.FC = () => {
 
   // const currentPhoto = photos[currentIndex];
 
+  const handlePreviousPhoto = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + photos.length) % photos.length);
+  };
+  
+  const handleNextPhoto = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % photos.length);
+  };
   return (
     <Layout>
       <div
@@ -239,10 +247,11 @@ const ViewAlbumPhotos: React.FC = () => {
         onClick={toggleOverlay}
       />
       <div className="album-container">
-        <div className="album-details">
-          <h1>{album?.title}</h1>
-          <p>{album?.description}</p>
+        <div className="flex items-center justify-center flex-col">
+          <h1 className="text-[#ff8833] text-[80px] font-bold">{album?.title}</h1>
+          <p className="text-white ">Description: {album?.description}</p>
         </div>
+
         <div className="card-container">
           {photos.length > 0 && (
             <TransitionGroup>
@@ -251,34 +260,47 @@ const ViewAlbumPhotos: React.FC = () => {
                 timeout={500}
                 classNames="fade"
               >
-                <div className="card-content">
-                  <div className="photo-info">
+                <div className="card-content flex items-center">
+                  <div className="photo-navigation flex-shrink-0">
+                    <div
+                      className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg cursor-pointer hover:text-[#ff8833]"
+                      onClick={handlePreviousPhoto}
+                    >
+                      <ChevronLeft />
+                    </div>
+                  </div>
+                  <div className="photo-info flex-grow">
                     <h4>{photos[currentIndex].title}</h4>
                     <p>{photos[currentIndex].description}</p>
                     <p>
-                      <strong>Date:</strong>{" "}
-                      {formatDate(photos[currentIndex].created_at)}
+                      <strong>Date:</strong> {formatDate(photos[currentIndex].created_at)}
                     </p>
                     <p>
                       <strong>Price:</strong> {photos[currentIndex].price}
                     </p>
                   </div>
-                  <div className="photo-image-container">
+                  <div className="photo-image-container flex-grow">
                     <Image
                       src={`/api/${photos[currentIndex].path}`}
                       thumbnail
-                      className="photo-image"
+                      className="photo-image w-full h-auto"
                       alt={`Image ${photos[currentIndex].id}`}
                     />
+                  </div>
+                  <div className="photo-navigation flex-shrink-0">
+                    <div
+                      className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg cursor-pointer hover:text-[#ff8833]"
+                      onClick={handleNextPhoto}
+                    >
+                      <ChevronRight />
+                    </div>
                   </div>
                 </div>
               </CSSTransition>
             </TransitionGroup>
           )}
-          <Button onClick={handleNextPhoto} className="mt-3">
-            Next Photo
-          </Button>
         </div>
+
         <div className="export-container">
           <Button
             variant="success"
