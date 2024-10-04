@@ -11,6 +11,18 @@
   text-transform: uppercase; /* เปลี่ยนเป็นตัวพิมพ์ใหญ่ */
 }
 
+.album-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%);
+    width: 1000px;
+    height: 600px;
+    background: #373737;
+    box-shadow: 0 30px 50px #3d3d3d;
+    
+}
+
 .album-details p {
   font-size: 18px;
   text-align: center;
@@ -42,50 +54,53 @@
 }
 
 
-.card-container {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .card-content {
   display: flex;
   justify-content: space-between;
-  gap: 40px;
+  gap: 20px;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 
 .photo-info {
-  width: 40%;
-}
-
-
-.photo-image {
-  border: none;
-  padding: 0;
-  border-radius: 100px;
-
+  width: 35%;
 }
 
 .photo-image-container {
+  flex: 1; /* Each image takes equal space */
+}
+.photo-image {
+  width: 100%; /* Ensure image takes full width of container */
+  height: auto; /* Maintain aspect ratio */
+}
+
+
+/* .photo-image-container {
   width: 400px;
   height: 500px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 20px; /* ขอบมนสำหรับกรอบรูปภาพ */
-  overflow: hidden; /* ตัดขอบภาพที่เกินออกจากกรอบ */
+  border-radius: 20px; 
+  overflow: hidden;
+} */
+
+.photo-images-container {
+  display: flex;
+  justify-content: center; /* Center images */
+  gap: 10px; /* Adjust spacing between images */
 }
+
+.photo-image-container {
+  width: 200px;
+}
+
 .photo-image-container img {
   width: 100%; /* ขยายรูปภาพให้ครอบคลุมความกว้างเต็มที่ */
-  height: 100%; /* ขยายรูปภาพให้ครอบคลุมความสูงเต็มที่ */
+  height:50%; /* ขยายรูปภาพให้ครอบคลุมความสูงเต็มที่ */
   object-fit: contain; /* คงสัดส่วนของรูปภาพและครอบคลุมพื้นที่ที่กำหนด */
   border-radius: 50px; /* ขอบมนสำหรับรูปภาพ */
-  background:none; /* เพิ่มพื้นหลังสีดำเพื่อให้ดูดีขึ้น */
 
 }
 
@@ -102,7 +117,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
 }
 
 .preview-container {
@@ -192,4 +206,9 @@ body {
 
 .dark-overlay {
   background-color: rgba(0, 0, 0, 0.7); /* ทำให้พื้นหลังมีความมืด */
+}
+
+.custom-text-size {
+  font-size: 10px; /* เปลี่ยนค่าตามที่คุณต้องการ */
+  color: blue; /* เปลี่ยนเป็นสีน้ำเงิน */
 }

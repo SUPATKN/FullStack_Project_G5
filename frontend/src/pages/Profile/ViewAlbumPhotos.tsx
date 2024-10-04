@@ -5,8 +5,9 @@ import { Button, Image } from "react-bootstrap";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Layout from "../../Layout";
 import { User } from "../../types/api";
+import useAuth from "../../hook/useAuth";
 import "./AlbumPhotosPage.css";
-import { ChevronRight,  ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from "lucide-react";
 
 interface Photo {
   id: string;
@@ -24,16 +25,6 @@ interface Album {
   user_id: string;
 }
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${year}/${month}/${day} : ${hours}:${minutes}`;
-};
-
 const ViewAlbumPhotos: React.FC = () => {
   const { albumId } = useParams();
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -42,6 +33,7 @@ const ViewAlbumPhotos: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [overlayVisible, setOverlayVisible] = useState(false);
+  const { user: currentUser, refetch } = useAuth();
 
   const navigate = useNavigate();
 
@@ -53,6 +45,8 @@ const ViewAlbumPhotos: React.FC = () => {
       console.error("Error fetching user profile:", error);
     }
   };
+
+  console.log("DATA", currentUser?.username);
 
   const fetchAlbumPhotos = async () => {
     try {
@@ -98,9 +92,14 @@ const ViewAlbumPhotos: React.FC = () => {
       ctx.textAlign = "center";
       ctx.fillText(`${album?.title || ""}`, canvasWidth / 2, 50);
 
-      // ctx.font = "28px Arial";
-      // ctx.fillText(`${user?.username || "Unknown"}`, canvasWidth / 2, 90);
+      ctx.font = "28px Arial";
+      ctx.fillText(
+        `${currentUser?.username || "Unknown"}`,
+        canvasWidth / 2,
+        90
+      );
 
+      console.log("user:", user);
       ctx.font = "60px Arial";
       ctx.fillText(
         `----------------------------------------------------`,
@@ -120,10 +119,10 @@ const ViewAlbumPhotos: React.FC = () => {
           x: padding + containerWidth + padding,
           y: 100 + padding + containerHeight + padding,
         },
-        { x: padding, y: 100 + 2 * (containerHeight + padding) },
+        { x: padding, y: 150 + 2 * (containerHeight + padding) },
         {
           x: padding + containerWidth + padding,
-          y: 100 + 2 * (containerHeight + padding),
+          y: 150 + 2 * (containerHeight + padding),
         },
       ];
 
@@ -208,48 +207,53 @@ const ViewAlbumPhotos: React.FC = () => {
     fetchAlbumDetails();
   }, [albumId]);
 
-  useEffect(() => {
-    if (photos.length > 0) {
-      // Update the background image
-      const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
-      const prevPhoto = photos[prevIndex];
-
-      // ทำให้การเปลี่ยนพื้นหลังมีการเคลื่อนไหวที่สมูท
-      document.body.style.transition =
-        "background-image 1s ease-in-out, background-size 1s ease-in-out, background-position 1s ease-in-out";
-      document.body.style.backgroundImage = `url(/api/${prevPhoto.path})`;
-      document.body.style.backgroundSize = "cover";
-      document.body.style.backgroundPosition = "center";
-      document.body.style.backgroundRepeat = "no-repeat";
-      document.body.classList.add("dark-overlay");
-    }
-
-    return () => {
-      document.body.style.transition = ""; // ลบ transition เมื่อลบพื้นหลัง
-      document.body.style.backgroundImage = "";
-      document.body.classList.remove("dark-overlay");
-    };
-  }, [currentIndex, photos]);
-
-  // const currentPhoto = photos[currentIndex];
-
   const handlePreviousPhoto = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + photos.length) % photos.length);
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + photos.length) % photos.length
+    );
   };
-  
+
   const handleNextPhoto = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % photos.length);
   };
+
+  // Get the previous photo to set as background
+  const previousIndex = (currentIndex - 1 + photos.length) % photos.length;
+  const backgroundImage =
+    photos.length > 0 ? `/api/${photos[previousIndex].path}` : "";
+
+  // const visiblePhotos = [
+  //   photos[currentIndex % photos.length],
+  //   photos[(currentIndex + 1) % photos.length],
+  //   photos[(currentIndex + 2) % photos.length],
+  // ];
+
   return (
     <Layout>
       <div
         className={`overlay ${overlayVisible ? "active" : ""}`}
         onClick={toggleOverlay}
       />
-      <div className="album-container">
-        <div className="flex items-center justify-center flex-col">
-          <h1 className="text-[#ff8833] text-[80px] font-bold">{album?.title}</h1>
-          <p className="text-white ">Description: {album?.description}</p>
+      <div
+        className="album-container"
+        style={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: "cover", // Cover the entire area
+          backgroundPosition: "center", // Center the image
+          padding: "20px", // Add some padding for content
+          position: "relative", // Make positioning relative for overlay
+          color: "white", // Text color for readability
+        }}
+      >
+        <div className="flex flex-col items-start justify-start">
+          {" "}
+          {/* ใช้ items-start และ justify-start */}
+          <h1 className="text-[#ff8833] text-[40px] font-bold">
+            {album?.title}
+          </h1>
+          <p className="text-white custom-text-size ">
+            Description: {album?.description}
+          </p>
         </div>
 
         <div className="card-container">
@@ -269,16 +273,16 @@ const ViewAlbumPhotos: React.FC = () => {
                       <ChevronLeft />
                     </div>
                   </div>
-                  <div className="photo-info flex-grow">
-                    <h4>{photos[currentIndex].title}</h4>
-                    <p>{photos[currentIndex].description}</p>
-                    <p>
-                      <strong>Date:</strong> {formatDate(photos[currentIndex].created_at)}
-                    </p>
-                    <p>
-                      <strong>Price:</strong> {photos[currentIndex].price}
+                  <div className="photo-info flex-grow mb-5">
+                    <h4 className="mt-2">{photos[currentIndex].title}</h4>{" "}
+                    {/* ปรับ margin-top */}
+                    <p className="custom-text-size mb-5">
+                      {" "}
+                      {/* ปรับ margin-top */}
+                      {photos[currentIndex].description}
                     </p>
                   </div>
+
                   <div className="photo-image-container flex-grow">
                     <Image
                       src={`/api/${photos[currentIndex].path}`}
@@ -299,33 +303,32 @@ const ViewAlbumPhotos: React.FC = () => {
               </CSSTransition>
             </TransitionGroup>
           )}
-        </div>
-
-        <div className="export-container">
-          <Button
-            variant="success"
-            onClick={handleExportAlbum}
-            className="me-2"
-          >
-            Export Album
-          </Button>
-          <Button variant="secondary" onClick={() => navigate(-1)}>
-            Go Back
-          </Button>
-        </div>
-        {previewImage && (
-          <div className="preview-container">
-            <h3>Album Preview:</h3>
-            <img
-              src={previewImage}
-              alt="Album Preview"
-              className="preview-image"
-            />
-            <Button onClick={handleDownload} className="mt-2">
-              Download Preview
+          <div className="export-container ">
+            <Button
+              variant="success"
+              onClick={handleExportAlbum}
+              className="me-2"
+            >
+              Export Album
+            </Button>
+            <Button variant="secondary" onClick={() => navigate(-1)}>
+              Go Back
             </Button>
           </div>
-        )}
+          {previewImage && (
+            <div className="preview-container">
+              <h3>Album Preview:</h3>
+              <img
+                src={previewImage}
+                alt="Album Preview"
+                className="preview-image"
+              />
+              <Button onClick={handleDownload} className="mt-2">
+                Download Preview
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </Layout>
   );
