@@ -358,21 +358,21 @@ const Gallery = () => {
           (photo) => (
             <Col key={photo.id} xs={12} md={4} lg={3} className="mb-4">
               <div
-                className="relative flex flex-col w-[300px] h-full bg-white bg-opacity-10 rounded-lg shadow-md border border-black mt-3 p-2"
+                className="relative flex flex-col w-[fit-content] h-[fit-content] bg-white bg-opacity-10 rounded-lg shadow-md border border-black mt-3 p-2"
                 onMouseEnter={() => setHoveredPhotoId(photo.id)}
                 onMouseLeave={() => setHoveredPhotoId(null)}
               >
-                <div className="relative flex flex-col items-center justify-center mt-3">
+                <div className="relative flex flex-col items-center justify-center">
                   <Image
                     crossOrigin="anonymous"
                     src={`/api/${photo.path}`}
                     alt={`Image ${photo.id}`}
-                    className="rounded-md cursor-pointer"
+                    className="rounded-md cursor-pointer "
                     onClick={() => handlePhotoClick(photo.id)}
                     onContextMenu={(e) => handlePhotoContextMenu(e, photo.id)}
                   />
                   {hoveredPhotoId === photo.id && (
-                    <div className="absolute w-[250px] object-cover h-full bg-black bg-opacity-50 flex flex-col items-center justify-start text-white p-4 pointer-events-none">
+                    <div className="absolute w-full object-cover h-full bg-black bg-opacity-50 flex flex-col items-center justify-start text-white p-4 pointer-events-none">
                       <h3 className="text-[20px] text-[#ff8833]">
                         {photo.title}
                       </h3>
@@ -400,7 +400,7 @@ const Gallery = () => {
                           </span>
                         </h5>
                       )}
-                      <div className="flex gap-4 mt-5">
+                      <div className="flex gap-4 mt-2">
                         <div className="flex items-center">
                           <Heart className="mr-2" />
                           {getLikeCount(photo.id)}
