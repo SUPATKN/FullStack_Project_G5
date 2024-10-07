@@ -246,7 +246,7 @@ await new Promise<void>((resolve) => {
         onClick={toggleOverlay}
       />
       <div
-        className="album-container mt-3 mb-5"
+        className="album-container mt-3 mb-5 flex flex-col h-screen"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: "cover", // Cover the entire area
@@ -256,7 +256,7 @@ await new Promise<void>((resolve) => {
           color: "white", // Text color for readability
         }}
       >
-        <div className="flex flex-col items-start justify-start">
+        <div className="flex  items-center justify-center">
           {" "}
           {/* ใช้ items-start และ justify-start */}
           <h1 className="text-[#ff8833] text-[40px] font-bold">
@@ -273,16 +273,7 @@ await new Promise<void>((resolve) => {
                 classNames="fade"
               >
                 <div className="card-content flex items-center">
-                  <div className="photo-navigation flex-shrink-0">
-                    <div
-                      className="w-12 h-12 flex items-center justify-center rounded-full text-black bg-white shadow-lg cursor-pointer hover:text-[#ff8833]"
-                      onClick={handlePreviousPhoto}
-                    >
-                      <ChevronLeft />
-                    </div>
-                  </div>
-                  
-                  <div className="photo-info flex-grow mb-5">
+                  <div className="photo-info flex-grow mb-5 ml-2">
                     <h4 className="mt-2">{photos[currentIndex].title}</h4>{" "}
                     {/* ปรับ margin-top */}
                     <p className="custom-text-size mb-5">
@@ -300,32 +291,40 @@ await new Promise<void>((resolve) => {
                       alt={`Image ${photos[currentIndex].id}`}
                     />
                   </div>
-                  <div className="photo-navigation flex-shrink-0">
-                    <div
-                      className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black shadow-lg cursor-pointer hover:text-[#ff8833]"
-                      onClick={handleNextPhoto}
-                    >
-                      <ChevronRight />
-                    </div>
-                  </div>
                 </div>
               </CSSTransition>
             </TransitionGroup>
           )}
 
-          
-          <div className="export-container">
-            <Button
-              variant="success"
-              onClick={handleExportAlbum}
-              className="me-2"
-            >
-              Export Album
-            </Button>
-            <Button variant="secondary" onClick={() => navigate(-1)}>
-              Go Back
-            </Button>
+          <div className="absolute -bottom-[105px] left-0 right-0 flex items-center justify-center flex-col mb-2 mt-3">
+            <div className="flex items-center justify-center gap-2"> 
+              <div
+                className="w-12 h-12 flex items-center justify-center rounded-full text-black bg-white shadow-lg cursor-pointer hover:text-[#ff8833]"
+                onClick={handlePreviousPhoto}
+              >
+                <ChevronLeft />
+              </div>
+              <div
+                className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black shadow-lg cursor-pointer hover:text-[#ff8833]"
+                onClick={handleNextPhoto}
+              >
+                <ChevronRight />
+              </div>
+            </div>
+            <div className="flex gap-2 mt-2">
+              <Button
+                variant="success"
+                onClick={handleExportAlbum}
+                className="me-2"
+              >
+                Export Album
+              </Button>
+              <Button variant="secondary" onClick={() => navigate(-1)}>
+                Go Back
+              </Button>
+            </div>
           </div>
+
           {previewImage && (
             <div className="preview-container">
               <h3>Album Preview:</h3>
