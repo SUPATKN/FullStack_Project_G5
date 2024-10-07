@@ -21,7 +21,7 @@ const handleAddPhotoToAlbum = async (albumId: string, photoId: string) => {
   }
 };
 
-const SelectAlbumModal: React.FC< SelectAlbumModalProps> = ({
+const SelectAlbumModal: React.FC<SelectAlbumModalProps> = ({
   albums,
   photo_id,
   onClose,
@@ -38,27 +38,30 @@ const SelectAlbumModal: React.FC< SelectAlbumModalProps> = ({
   };
 
   return (
-    <Modal show onHide={onClose} className="SelectAlbumModal">
-      <Modal.Header closeButton className="SelectAlbumModal-header">
-        <Modal.Title className="SelectAlbumModal-title">Select an Album ✦</Modal.Title>
+    <Modal show onHide={onClose}>
+      <Modal.Header closeButton className="flex items-center justify-center w-full h-full">
+        <Modal.Title>Select an Album</Modal.Title>
       </Modal.Header>
-      <Modal.Body className="SelectAlbumModal-body" >
-        <ListGroup className="SelectAlbumModal-list">
+
+      <Modal.Body className="flex items-center justify-center w-full h-full">
+        <ListGroup>
           {albums.map((album) => (
             <ListGroup.Item
               key={album.album_id}
-              className="SelectAlbumModal-list-item"
               action
               onClick={() => setSelectedAlbumId(album.album_id.toString())}
-
             >
               {album.title}
             </ListGroup.Item>
           ))}
         </ListGroup>
       </Modal.Body>
-      <Modal.Footer className="SelectAlbumModal-footer">
-        <Button className="SelectAlbumModal-footer-button" onClick={handleSelect}>
+
+      <Modal.Footer className="flex items-center justify-center w-full h-full">
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
+        <Button variant="primary" onClick={handleSelect}>
           Add Photo
         </Button>
       </Modal.Footer>
