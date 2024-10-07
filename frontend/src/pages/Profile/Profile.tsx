@@ -456,7 +456,7 @@ const Profile: React.FC = () => {
                           key={index}
                           className="text-[14px] justify-center align-center Tag"
                         >
-                          {tag}
+                          {tag} |
                         </p>
                       ))
                     ) : (

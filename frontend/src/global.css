@@ -2045,3 +2045,64 @@ footer{
   background-color: #ea6f17 !important;
   transition: 0.3s;
 }
+.closepage-link{
+  padding: 6px 12px;
+}
+.btnLike{
+ 
+}
+.btnLike:hover{
+  color: #fff;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+.HeartLike{
+  color: #FF8833;
+  font-size: 24px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.HeartLike:hover{
+  color: #ea6f17;
+  transition: 0.2s;
+  scale: 1.2;
+}
+.filled {
+  transition: 0.3s;
+  fill: currentColor;
+}
+.btnComment{
+  color: #000000;
+  transition: 0.2s;
+}
+.btnComment:hover{
+  color: #FF8833 !important;
+  scale: 1.2;
+  transition: 0.2s;
+}
+.btnDownload{
+  color: #ffffff;
+  border: 1px solid #FF8833 !important;
+  background-color: #ff8833 !important;
+  transition: 0.2s;
+  border-radius: 8px !important;
+  padding: 6px 18px  6px 20px!important;
+  letter-spacing: 0.7px ;
+  display: flex !important;
+  font-weight: 350 !important;
+  margin-bottom: 0 !important;
+  margin-left: 8px !important;
+}
+.btnDownload:hover{
+  color: #ffffff !important;
+  scale: 1.06 ;
+  margin-bottom: 0;
+  transition: 0.2s;
+}
+.letter-spacing{
+  letter-spacing:0.7px
+
+}
+.disnone{
+  display: none !important;
+}

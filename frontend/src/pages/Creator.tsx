@@ -216,7 +216,7 @@ const Creator = () => {
                 </div>
                 {/* Team Details */}
                 <div className="single_advisor_details_info">
-                  <h6>650610xxx</h6>
+                  <h6>650610800</h6>
                   <h6>Phurinon F.</h6>
                   <p className="designation">Front-End Developer</p>
                   <hr></hr>

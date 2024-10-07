@@ -10,6 +10,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Logo from "../LOGOArtandCommunity.png";
 import Layout from "../Layout";
 import useAuth from "../hook/useAuth";
+import { shuffle } from "lodash";
 
 
 const Home = () => {
@@ -146,6 +147,7 @@ const Home = () => {
       console.error("Error adding photo to cart:", error);
     }
   };
+  
   return (
     <Layout>
       <div className="Home">
@@ -203,7 +205,7 @@ const Home = () => {
         <div className="photo-box">
           <div className="photo-box-inner">
           <Row className="rowpic">
-              {photos.slice(0, 4).map((photo) => (
+              {shuffle(photos.slice()).slice(0, 4).map((photo) =>(
                 <Col key={photo.id} xs={12} md={4} lg={3} className="mb-2">
                   <div
                     className="pict relative"
