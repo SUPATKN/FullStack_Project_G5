@@ -39,6 +39,7 @@
 }
 
 .photo-info p {
+  font-size: 20px;
   color: #fff; /* White text color */
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6); /* Black shadow with some transparency */
 }
@@ -117,13 +118,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  margin-top: 200px;
 }
 
 .preview-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   margin-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  z-index: 1000; 
 
 }
 
@@ -212,3 +220,14 @@ body {
   font-size: 10px; /* เปลี่ยนค่าตามที่คุณต้องการ */
   color: blue; /* เปลี่ยนเป็นสีน้ำเงิน */
 }
+
+/* .container{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1000px;
+  height: 600px;
+  background: #f5f5f5;
+  box-shadow: 0 30px 50px #dbdbdb;
+} */

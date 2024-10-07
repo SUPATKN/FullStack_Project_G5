@@ -78,112 +78,123 @@ const ViewAlbumPhotos: React.FC = () => {
       canvas.width = canvasWidth;
       canvas.height = canvasHeight;
       const ctx = canvas.getContext("2d");
-
+  
       if (!ctx) {
         console.error("Failed to get canvas context.");
         return;
       }
-
-      ctx.fillStyle = "#b9b9b9b9";
+  
+      // Gradient Background
+      const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+      gradient.addColorStop(0, "#a8edea");
+      gradient.addColorStop(1, "#fed6e3");
+      ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-      ctx.fillStyle = "#000";
-      ctx.font = "bold 36px 'Press Start 2P', cursive";
+  
+      // Album Title
+      ctx.fillStyle = "#3e3e3e";
+      ctx.font = "bold 56px 'Press Start 2P', cursive";
       ctx.textAlign = "center";
-      ctx.fillText(`${album?.title || ""}`, canvasWidth / 2, 50);
-
-      ctx.font = "28px Arial";
-      ctx.fillText(
-        `${currentUser?.username || "Unknown"}`,
-        canvasWidth / 2,
-        90
-      );
-
-      console.log("user:", user);
-      ctx.font = "60px Arial";
-      ctx.fillText(
-        `----------------------------------------------------`,
-        canvasWidth / 2,
-        150
-      );
-
-      const containerWidth = 500;
-      const containerHeight = 500;
-      const padding = 50;
-
+      ctx.shadowColor = "rgba(0,0,0,0.5)";
+      ctx.shadowBlur = 8;
+      ctx.fillText(`${album?.title || "Album Title"}`, canvasWidth / 2, 120);
+  
+      // Username
+      ctx.font = "40px 'Arial', sans-serif";
+      ctx.fillStyle = "#555";
+      ctx.fillText(`${currentUser?.username || "Unknown User"}`, canvasWidth / 2, 180);
+  
+      // Decorative Line
+      ctx.font = "30px Arial";
+      ctx.fillStyle = "#888";
+      ctx.fillText("––––––––––––––––––––––––", canvasWidth / 2, 240);
+  
+      // Image positions
+      const containerWidth = 450;
+      const containerHeight = 450;
+      const padding = 40;
+  
       const positions = [
-        { x: padding, y: 100 + padding },
-        { x: padding + containerWidth + padding, y: 100 + padding },
-        { x: padding, y: 100 + padding + containerHeight + padding },
-        {
-          x: padding + containerWidth + padding,
-          y: 100 + padding + containerHeight + padding,
-        },
-        { x: padding, y: 150 + 2 * (containerHeight + padding) },
-        {
-          x: padding + containerWidth + padding,
-          y: 150 + 2 * (containerHeight + padding),
-        },
+        { x: padding, y: 300 + padding },
+        { x: padding + containerWidth + padding, y: 300 + padding },
+        { x: padding, y: 300 + padding + containerHeight + padding },
+        { x: padding + containerWidth + padding, y: 300 + padding + containerHeight + padding },
+        { x: padding, y: 300 + 2 * (containerHeight + padding) },
+        { x: padding + containerWidth + padding, y: 300 + 2 * (containerHeight + padding) },
       ];
-
+  
       await Promise.all(
         photos.slice(0, 6).map(async (photo, i) => {
           try {
             const response = await fetch(`/api/${photo.path}`);
             const blob = await response.blob();
             const imageBitmap = await createImageBitmap(blob);
-
-            const scale = Math.min(
-              containerWidth / imageBitmap.width,
-              containerHeight / imageBitmap.height
-            );
+  
+            const scale = Math.min(containerWidth / imageBitmap.width, containerHeight / imageBitmap.height);
             const width = imageBitmap.width * scale;
             const height = imageBitmap.height * scale;
-
+  
             const offsetX = (containerWidth - width) / 2;
             const offsetY = (containerHeight - height) / 2;
-
+  
             const pos = positions[i];
-
-            ctx.drawImage(
-              imageBitmap,
-              pos.x + offsetX,
-              pos.y + offsetY,
-              width,
-              height
-            );
+  
+            // Shadow and Border for Images
+            ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+            ctx.shadowBlur = 15;
+            ctx.drawImage(imageBitmap, pos.x + offsetX, pos.y + offsetY, width, height);
+            
+            ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+            ctx.shadowBlur = 5;
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 5;
+            ctx.strokeRect(pos.x + offsetX, pos.y + offsetY, width, height);
+            ctx.shadowBlur = 0;
+  
           } catch (error) {
-            console.error(
-              `Failed to fetch or render image: ${photo.path}`,
-              error
-            );
+            console.error(`Failed to fetch or render image: ${photo.path}`, error);
           }
         })
       );
+  
+      const logoImage = new window.Image(); 
+logoImage.src = '/LOGOArtandCommunity.png';
 
+await new Promise<void>((resolve) => {
+  logoImage.onload = () => {
+    const logoWidth = 200; // ขนาดโลโก้
+    const logoHeight = 100; // ขนาดโลโก้
+    ctx.drawImage(logoImage, canvasWidth - logoWidth - 20, 70, logoWidth, logoHeight); // วางโลโก้ในมุมขวาบน โดยเลื่อนลงมา 50px
+    resolve();
+  };
+});
+
+  
+      // Date and Time
       const now = new Date();
       const date = now.toLocaleDateString();
       const time = now.toLocaleTimeString();
-
-      ctx.fillStyle = "#000";
-      ctx.font = "24px Arial";
-      ctx.textAlign = "center";
-      ctx.fillText(`Date: ${date}`, canvasWidth / 2, canvasHeight - 120);
-      ctx.fillText(`Time: ${time}`, canvasWidth / 2, canvasHeight - 90);
-
-      ctx.font = "60px Arial";
-      ctx.fillText(
-        `----------------------------------------------------`,
-        canvasWidth / 2,
-        canvasHeight - 40
-      );
-
+  
+      ctx.fillStyle = "#3e3e3e";
+      ctx.font = "bold 30px Arial";
+      ctx.fillText(`Date: ${date}`, canvasWidth / 2, canvasHeight - 180);
+      ctx.fillText(`Time: ${time}`, canvasWidth / 2, canvasHeight - 140);
+  
+      // Decorative Line at the Bottom
+      ctx.font = "30px Arial";
+      ctx.fillStyle = "#888";
+      ctx.fillText("––––––––––––––––––––––––", canvasWidth / 2, canvasHeight - 80);
+  
+      // Create preview URL
       const previewUrl = canvas.toDataURL("image/png");
       setPreviewImage(previewUrl);
+  
     } catch (error) {
       console.error("Error exporting album:", error);
     }
   };
+  
+  
 
   const handleDownload = () => {
     if (previewImage) {
@@ -235,7 +246,7 @@ const ViewAlbumPhotos: React.FC = () => {
         onClick={toggleOverlay}
       />
       <div
-        className="album-container"
+        className="album-container mt-3 mb-5"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: "cover", // Cover the entire area
@@ -249,11 +260,8 @@ const ViewAlbumPhotos: React.FC = () => {
           {" "}
           {/* ใช้ items-start และ justify-start */}
           <h1 className="text-[#ff8833] text-[40px] font-bold">
-            {album?.title}
+            {album?.title}  -  {album?.description}
           </h1>
-          <p className="text-white custom-text-size ">
-            Description: {album?.description}
-          </p>
         </div>
 
         <div className="card-container">
@@ -267,12 +275,13 @@ const ViewAlbumPhotos: React.FC = () => {
                 <div className="card-content flex items-center">
                   <div className="photo-navigation flex-shrink-0">
                     <div
-                      className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg cursor-pointer hover:text-[#ff8833]"
+                      className="w-12 h-12 flex items-center justify-center rounded-full text-black bg-white shadow-lg cursor-pointer hover:text-[#ff8833]"
                       onClick={handlePreviousPhoto}
                     >
                       <ChevronLeft />
                     </div>
                   </div>
+                  
                   <div className="photo-info flex-grow mb-5">
                     <h4 className="mt-2">{photos[currentIndex].title}</h4>{" "}
                     {/* ปรับ margin-top */}
@@ -283,7 +292,7 @@ const ViewAlbumPhotos: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="photo-image-container flex-grow">
+                  <div className="photo-image-container">
                     <Image
                       src={`/api/${photos[currentIndex].path}`}
                       thumbnail
@@ -293,7 +302,7 @@ const ViewAlbumPhotos: React.FC = () => {
                   </div>
                   <div className="photo-navigation flex-shrink-0">
                     <div
-                      className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg cursor-pointer hover:text-[#ff8833]"
+                      className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black shadow-lg cursor-pointer hover:text-[#ff8833]"
                       onClick={handleNextPhoto}
                     >
                       <ChevronRight />
@@ -303,7 +312,9 @@ const ViewAlbumPhotos: React.FC = () => {
               </CSSTransition>
             </TransitionGroup>
           )}
-          <div className="export-container ">
+
+          
+          <div className="export-container">
             <Button
               variant="success"
               onClick={handleExportAlbum}
@@ -323,9 +334,17 @@ const ViewAlbumPhotos: React.FC = () => {
                 alt="Album Preview"
                 className="preview-image"
               />
-              <Button onClick={handleDownload} className="mt-2">
-                Download Preview
-              </Button>
+              <div className="flex items-center justify-center gap-2 flex-row">
+                <Button onClick={handleDownload} className="mt-2">
+                  Download Preview
+                </Button>
+                <Button
+                  onClick={() => setPreviewImage(null)}
+                  className="mt-2"
+                >
+                  Close
+                </Button>
+              </div>
             </div>
           )}
         </div>
