@@ -1,7 +1,7 @@
-import { Hexagon } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Image, Modal } from 'react-bootstrap';
-import axios from 'axios';
+import { Hexagon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Image, Modal } from "react-bootstrap";
+import axios from "axios";
 
 interface Slip {
   slip_id: number;
@@ -130,12 +130,14 @@ export default function PaymentSlips() {
                     </td>
                     <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[183px] gap-2 whitespace-nowrap rounded-tr-lg">
                       <button
+                        data-cy="approve-btn"
                         className="bg-[#ff8833] hover:bg-orange-500 text-white w-[70px] h-[30px] rounded-md"
                         onClick={() => handleApproveSlip(slip.slip_id)}
                       >
                         Approve
                       </button>
                       <button
+                        data-cy="reject-btn"
                         className="bg-[#ff8833] ml-2 hover:bg-orange-500 text-white w-[70px] h-[30px] rounded-md"
                         onClick={() => handleRejectSlip(slip.slip_id)}
                       >

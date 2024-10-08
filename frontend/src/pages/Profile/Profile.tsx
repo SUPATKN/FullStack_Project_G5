@@ -339,6 +339,7 @@ const Profile: React.FC = () => {
           <div className="flex items-center justify-center gap-3 mt-2">
             {currentUser?.id == userId && (
               <button
+                data-cy="upload-btn"
                 className="font-normal p-2 px-4 w-[fit-content] h-[fit-content] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-[#ff6600] flex items-center justify-center text-center no-underline hover:no-underline"
                 onClick={handleUploadPic}
               >
@@ -398,12 +399,14 @@ const Profile: React.FC = () => {
                 </Form>
                 <div className="flex items-center justify-center gap-3 mt-2">
                   <button
+                    data-cy="ok-btn"
                     className="font-normal letter-spacing-0-7px p-2 px-4 w-[fit-content] h-[fit-content] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-[#ff6600] flex items-center justify-center text-center no-underline hover:no-underline"
                     onClick={handleUpload}
                   >
                     Upload
                   </button>
                   <button
+                    data-cy="cancel-btn"
                     className="font-normal letter-spacing-0-7px p-2 px-4 w-[fit-content] h-[fit-content] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
                     onClick={handleCloseUpload}
                   >
@@ -422,6 +425,7 @@ const Profile: React.FC = () => {
         <div className="flex items-center justify-center gap-3">
           {currentUser?.id === user?.id && (
             <button
+              data-cy="edit-btn"
               className="p-2 px-3 w-[fit-content] h-[fit-content] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
               onClick={() => handleEdit()}
             >
@@ -431,6 +435,7 @@ const Profile: React.FC = () => {
           )}
           {currentUser?.id == userId && (
             <button
+              data-cy="viewpur-btn"
               className=" p-2 px-3 w-[fit-content] h-[fit-content] bg-[#64c55b] rounded-md text-white cursor-pointer hover:bg-[#54ab4c] flex items-center justify-center text-center no-underline hover:no-underline"
               onClick={handleViewPurchasedPhotos}
             >
@@ -483,6 +488,7 @@ const Profile: React.FC = () => {
                     {isEdit && (
                       <div className="flex items-center justify-center gap-3">
                         <button
+                          data-cy="delete-btn"
                           className="gap-1 p-2 px-3 w-[fit-content] h-[fit-content] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
                           onClick={() =>
                             handleDelete(photo.path.split("/").pop()!)
@@ -505,6 +511,7 @@ const Profile: React.FC = () => {
                           Delete
                         </button>
                         <button
+                          data-cy="add-btn"
                           className="gap-1 p-2 px-3 w-[fit-content] h-[fit-content] bg-[#007bff] rounded-md text-white cursor-pointer hover:bg-blue-700 flex items-center justify-center text-center no-underline hover:no-underline"
                           onClick={() => handleAddPhotoClick(photo.id)}
                         >
@@ -537,6 +544,7 @@ const Profile: React.FC = () => {
         </h3>
         {currentUser?.id == userId && (
           <button
+            data-cy="create-btn"
             className=" p-2 px-3 w-[fit-content] h-[fit-content] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-[#ff6600] flex items-center justify-center text-center no-underline hover:no-underline"
             onClick={handleIsCreate}
           >
@@ -600,6 +608,7 @@ const Profile: React.FC = () => {
                 </div>
                 <div className=" flex items-center justify-center gap-3 mt-3">
                   <button
+                    data-cy="viewalbum-btn"
                     className="gap-2 p-2 px-3 w-[fit-content] h-[fit-content] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-[#ff6600] flex items-center justify-center text-center no-underline hover:no-underline"
                     onClick={() => navigate(`/album/${album.album_id}/photos`)} // Navigate to new page
                   >
@@ -626,6 +635,7 @@ const Profile: React.FC = () => {
                   </button>
                   {currentUser?.id == userId && (
                     <button
+                      data-cy="delete-btn"
                       className="gap-2 p-2 px-3 w-[fit-content] h-[fit-content] bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
                       onClick={() =>
                         handleDeleteAlbum(album.album_id.toString())

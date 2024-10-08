@@ -159,6 +159,7 @@ const Register: React.FC = () => {
 
             {/* Register Button */}
             <button
+              data-cy="confirm-button"
               onClick={handleRegister}
               disabled={loading}
               className="w-full mt-6 bg-[#ff8833] letter-spacing-0-7px text-white font-normal text-sm py-2.5 rounded-lg hover:bg-[#f16501] transition duration-200 ease-in-out disabled:bg-gray-400"

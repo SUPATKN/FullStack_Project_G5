@@ -126,6 +126,8 @@ const Login: FC = () => {
 
             {/* Login Button */}
             <button
+              data-cy="login-button"
+              // class="btn"
               onClick={handleLogin}
               disabled={loading}
               className="w-full mt-6 mb-2 bg-[#ff8833] letter-spacing-0-7px text-white font-normal text-sm py-2.5 rounded-lg hover:bg-[#f16501] transition duration-200 ease-in-out disabled:bg-gray-400"
@@ -142,6 +144,7 @@ const Login: FC = () => {
 
             {/* Google Login Button */}
             <button
+              data-cy="google-login-button"
               onClick={handleGoogleLogin}
               className="flex items-center justify-center w-full mt-2 bg-white border border-gray-300 py-3 rounded-lg hover:bg-gray-100 transition"
             >

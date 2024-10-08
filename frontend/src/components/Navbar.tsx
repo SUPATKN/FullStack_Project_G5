@@ -67,12 +67,12 @@ const NavBar: React.FC = () => {
                 Instructor
               </Link>
             </li>
-            <li >
-              <div className="nav-search nav-link"><SearchBar /></div>
+            <li>
+              <div className="nav-search nav-link">
+                <SearchBar />
+              </div>
             </li>
-            
           </ul>
-          
         </div>
 
         <div className="nav-actions">
@@ -116,12 +116,14 @@ const NavBar: React.FC = () => {
             <>
               <Link
                 to="/upload"
+                data-cy="start-upload"
                 className={`nav-link start-upload ${
                   location.pathname === "/upload" ? "active" : ""
                 }`}
               >
                 <FontAwesomeIcon icon={faUpload} />
                 <div
+                  data-cy="start-upload"
                   className={`nav-link start-upload ${
                     location.pathname === "/upload" ? "active" : ""
                   }`}
@@ -133,6 +135,7 @@ const NavBar: React.FC = () => {
               <div className="nav-actions pro">
                 <Link
                   to="/coin"
+                  data-cy="coin-btn"
                   className={`nav-link coin ${
                     location.pathname === "/coin" ? "active" : ""
                   }`}
@@ -142,6 +145,7 @@ const NavBar: React.FC = () => {
 
                 <Link
                   to="/cart"
+                  data-cy="cart-btn"
                   className={`nav-link cart ${
                     location.pathname === "/cart" ? "active" : ""
                   }`}
@@ -151,6 +155,7 @@ const NavBar: React.FC = () => {
 
                 <Link
                   to={`/profile/${user.id}`}
+                  data-cy="profile-btn"
                   className={`nav-link profile ${
                     location.pathname === "/profile" ? "active" : ""
                   }`}
@@ -159,13 +164,27 @@ const NavBar: React.FC = () => {
                 </Link>
               </div>
 
-              <Link to="/" onClick={handleLogout} className="nav-link logout gap-2">
-              
+              <Link
+                to="/"
+                onClick={handleLogout}
+                data-cy="logout-btn"
+                className="nav-link logout gap-2"
+              >
                 Logout
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-              </svg>
-
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
+                  />
+                </svg>
               </Link>
             </>
           )}
