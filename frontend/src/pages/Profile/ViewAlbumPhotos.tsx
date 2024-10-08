@@ -78,19 +78,24 @@ const ViewAlbumPhotos: React.FC = () => {
       canvas.width = canvasWidth;
       canvas.height = canvasHeight;
       const ctx = canvas.getContext("2d");
-  
+
       if (!ctx) {
         console.error("Failed to get canvas context.");
         return;
       }
-  
+
       // Gradient Background
-      const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+      const gradient = ctx.createLinearGradient(
+        0,
+        0,
+        canvasWidth,
+        canvasHeight
+      );
       gradient.addColorStop(0, "#a8edea");
       gradient.addColorStop(1, "#fed6e3");
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-  
+
       // Album Title
       ctx.fillStyle = "#3e3e3e";
       ctx.font = "bold 56px 'Press Start 2P', cursive";
@@ -98,103 +103,130 @@ const ViewAlbumPhotos: React.FC = () => {
       ctx.shadowColor = "rgba(0,0,0,0.5)";
       ctx.shadowBlur = 8;
       ctx.fillText(`${album?.title || "Album Title"}`, canvasWidth / 2, 120);
-  
+
       // Username
       ctx.font = "40px 'Arial', sans-serif";
       ctx.fillStyle = "#555";
-      ctx.fillText(`${currentUser?.username || "Unknown User"}`, canvasWidth / 2, 180);
-  
+      ctx.fillText(
+        `${currentUser?.username || "Unknown User"}`,
+        canvasWidth / 2,
+        180
+      );
+
       // Decorative Line
       ctx.font = "30px Arial";
       ctx.fillStyle = "#888";
       ctx.fillText("––––––––––––––––––––––––", canvasWidth / 2, 240);
-  
+
       // Image positions
       const containerWidth = 450;
       const containerHeight = 450;
       const padding = 40;
-  
+
       const positions = [
         { x: padding, y: 300 + padding },
         { x: padding + containerWidth + padding, y: 300 + padding },
         { x: padding, y: 300 + padding + containerHeight + padding },
-        { x: padding + containerWidth + padding, y: 300 + padding + containerHeight + padding },
+        {
+          x: padding + containerWidth + padding,
+          y: 300 + padding + containerHeight + padding,
+        },
         { x: padding, y: 300 + 2 * (containerHeight + padding) },
-        { x: padding + containerWidth + padding, y: 300 + 2 * (containerHeight + padding) },
+        {
+          x: padding + containerWidth + padding,
+          y: 300 + 2 * (containerHeight + padding),
+        },
       ];
-  
+
       await Promise.all(
         photos.slice(0, 6).map(async (photo, i) => {
           try {
             const response = await fetch(`/api/${photo.path}`);
             const blob = await response.blob();
             const imageBitmap = await createImageBitmap(blob);
-  
-            const scale = Math.min(containerWidth / imageBitmap.width, containerHeight / imageBitmap.height);
+
+            const scale = Math.min(
+              containerWidth / imageBitmap.width,
+              containerHeight / imageBitmap.height
+            );
             const width = imageBitmap.width * scale;
             const height = imageBitmap.height * scale;
-  
+
             const offsetX = (containerWidth - width) / 2;
             const offsetY = (containerHeight - height) / 2;
-  
+
             const pos = positions[i];
-  
+
             // Shadow and Border for Images
             ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
             ctx.shadowBlur = 15;
-            ctx.drawImage(imageBitmap, pos.x + offsetX, pos.y + offsetY, width, height);
-            
+            ctx.drawImage(
+              imageBitmap,
+              pos.x + offsetX,
+              pos.y + offsetY,
+              width,
+              height
+            );
+
             ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
             ctx.shadowBlur = 5;
             ctx.strokeStyle = "#fff";
             ctx.lineWidth = 5;
             ctx.strokeRect(pos.x + offsetX, pos.y + offsetY, width, height);
             ctx.shadowBlur = 0;
-  
           } catch (error) {
-            console.error(`Failed to fetch or render image: ${photo.path}`, error);
+            console.error(
+              `Failed to fetch or render image: ${photo.path}`,
+              error
+            );
           }
         })
       );
-  
-      const logoImage = new window.Image(); 
-logoImage.src = '/LOGOArtandCommunity.png';
 
-await new Promise<void>((resolve) => {
-  logoImage.onload = () => {
-    const logoWidth = 200; // ขนาดโลโก้
-    const logoHeight = 100; // ขนาดโลโก้
-    ctx.drawImage(logoImage, canvasWidth - logoWidth - 20, 70, logoWidth, logoHeight); // วางโลโก้ในมุมขวาบน โดยเลื่อนลงมา 50px
-    resolve();
-  };
-});
+      const logoImage = new window.Image();
+      logoImage.src = "/LOGOArtandCommunity.png";
 
-  
+      await new Promise<void>((resolve) => {
+        logoImage.onload = () => {
+          const logoWidth = 200; // ขนาดโลโก้
+          const logoHeight = 100; // ขนาดโลโก้
+          ctx.drawImage(
+            logoImage,
+            canvasWidth - logoWidth - 20,
+            70,
+            logoWidth,
+            logoHeight
+          ); // วางโลโก้ในมุมขวาบน โดยเลื่อนลงมา 50px
+          resolve();
+        };
+      });
+
       // Date and Time
       const now = new Date();
       const date = now.toLocaleDateString();
       const time = now.toLocaleTimeString();
-  
+
       ctx.fillStyle = "#3e3e3e";
       ctx.font = "bold 30px Arial";
       ctx.fillText(`Date: ${date}`, canvasWidth / 2, canvasHeight - 180);
       ctx.fillText(`Time: ${time}`, canvasWidth / 2, canvasHeight - 140);
-  
+
       // Decorative Line at the Bottom
       ctx.font = "30px Arial";
       ctx.fillStyle = "#888";
-      ctx.fillText("––––––––––––––––––––––––", canvasWidth / 2, canvasHeight - 80);
-  
+      ctx.fillText(
+        "––––––––––––––––––––––––",
+        canvasWidth / 2,
+        canvasHeight - 80
+      );
+
       // Create preview URL
       const previewUrl = canvas.toDataURL("image/png");
       setPreviewImage(previewUrl);
-  
     } catch (error) {
       console.error("Error exporting album:", error);
     }
   };
-  
-  
 
   const handleDownload = () => {
     if (previewImage) {
@@ -260,7 +292,7 @@ await new Promise<void>((resolve) => {
           {" "}
           {/* ใช้ items-start และ justify-start */}
           <h1 className="text-[#ff8833] text-[40px] font-bold">
-            {album?.title}  -  {album?.description}
+            {album?.title} - {album?.description}
           </h1>
         </div>
 
@@ -297,14 +329,16 @@ await new Promise<void>((resolve) => {
           )}
 
           <div className="absolute -bottom-[105px] left-0 right-0 flex items-center justify-center flex-col mb-2 mt-3">
-            <div className="flex items-center justify-center gap-2"> 
+            <div className="flex items-center justify-center gap-2">
               <div
+                data-cy="pre-btn"
                 className="w-12 h-12 flex items-center justify-center rounded-full text-black bg-white shadow-lg cursor-pointer hover:text-[#ff8833]"
                 onClick={handlePreviousPhoto}
               >
                 <ChevronLeft />
               </div>
               <div
+                data-cy="next-btn"
                 className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black shadow-lg cursor-pointer hover:text-[#ff8833]"
                 onClick={handleNextPhoto}
               >
@@ -337,10 +371,7 @@ await new Promise<void>((resolve) => {
                 <Button onClick={handleDownload} className="mt-2">
                   Download Preview
                 </Button>
-                <Button
-                  onClick={() => setPreviewImage(null)}
-                  className="mt-2"
-                >
+                <Button onClick={() => setPreviewImage(null)} className="mt-2">
                   Close
                 </Button>
               </div>
