@@ -341,7 +341,7 @@ const Gallery = () => {
             className={`Filter ${sortCriteria ? "FilterButton" : ""}`}
             id="dropdown-basic"
           >
-            Sort by :{" "}
+            Sort by:{" "}
             {sortCriteria
               ? sortCriteria === "time"
                 ? "Time"
@@ -354,13 +354,13 @@ const Gallery = () => {
               className="menu"
               onClick={() => handleSortChange("time")}
             >
-              Sort by Time
+              {sortCriteria === "time" && <span>&#10003;</span>} Sort by Time
             </Dropdown.Item>
             <Dropdown.Item
               className="menu"
               onClick={() => handleSortChange("price")}
             >
-              Sort by Price
+              {sortCriteria === "price" && <span>&#10003;</span>} Sort by Price
             </Dropdown.Item>
             <Dropdown.Divider />
             {sortCriteria === "time" && (
@@ -369,13 +369,13 @@ const Gallery = () => {
                   className="menu"
                   onClick={() => handleOrderChange("desc")}
                 >
-                  Latest First
+                  {sortOrder === "desc" && <span>&#10003;</span>} Latest First
                 </Dropdown.Item>
                 <Dropdown.Item
                   className="menu"
                   onClick={() => handleOrderChange("asc")}
                 >
-                  Oldest First
+                  {sortOrder === "asc" && <span>&#10003;</span>} Oldest First
                 </Dropdown.Item>
               </>
             )}
@@ -385,13 +385,14 @@ const Gallery = () => {
                   className="menu"
                   onClick={() => handleOrderChange("asc")}
                 >
-                  Cheapest First
+                  {sortOrder === "asc" && <span>&#10003;</span>} Cheapest First
                 </Dropdown.Item>
                 <Dropdown.Item
                   className="menu"
                   onClick={() => handleOrderChange("desc")}
                 >
-                  Most Expensive First
+                  {sortOrder === "desc" && <span>&#10003;</span>} Most Expensive
+                  First
                 </Dropdown.Item>
               </>
             )}

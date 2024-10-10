@@ -438,7 +438,7 @@ const PhotoDetail = () => {
                     />
                     <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
                   </svg>
-                  Limit Download :{" "}
+                  Limit Sales :{" "}
                   {photo.max_sales === null
                     ? "Unlimited"
                     : photo.max_sales === 0

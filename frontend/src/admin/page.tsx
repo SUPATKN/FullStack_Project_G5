@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import OrderHistory from "./OrdersHistory/orderhistory";
 import Paymentslips from "./PaymentSlips/paymentslips";
+import WithdrawMoney from "./Withdrawmoney/Withdrawmoney";
 import Transactionhistory from "./TransactionsHistory/transactionhistory";
+import WithdrawHistory from "./WithdrawHistory/page";
 import Users from "./Users/users";
 import LoadingWrapper from "../LoadingWrapper";
 import NavBar from "../components/Navbar";
@@ -23,6 +25,13 @@ export default function Page() {
               className=" focus:bg-orange-500 text-[18px] w-full text-white p-3 text-center font-light letter-spacing-0-7p hover:bg-orange-500 hover:text-white transition-all ease-in-out duration-100 outline-hover"
             >
               Payment Slips
+            </button>
+            <button
+              onClick={() => setSelectedComponent("WithdrawMoney")}
+              autoFocus
+              className=" focus:bg-orange-500 text-[18px] w-full text-white p-3 text-center font-light letter-spacing-0-7p hover:bg-orange-500 hover:text-white transition-all ease-in-out duration-100 outline-hover"
+            >
+              Withdraw Money
             </button>
             <button
               onClick={() => setSelectedComponent("Tag")}
@@ -48,15 +57,24 @@ export default function Page() {
             >
               Transaction History
             </button>
+            <button
+              onClick={() => setSelectedComponent("Withdrawhistory")}
+              className=" focus:bg-orange-500 text-[18px] w-[100%] text-white p-3 text-center text-[#ff8833] font-light letter-spacing-0-7px  hover:bg-orange-500 hover:text-white transition-all ease-in-out duration-100 outline-hover"
+            >
+              Withdraw History
+            </button>
           </div>
 
           <div className="pl-16 pt-4 ml-16 w-[100%] h-[100%] min-h-640px bg-[#181818] flex items-start justify-center">
             {selectedComponent === "OrderHistory" && <OrderHistory />}
             {selectedComponent === "Paymentslips" && <Paymentslips />}
+            {selectedComponent === "WithdrawMoney" && <WithdrawMoney />}
+
             {selectedComponent === "Tag" && <Tag />}
             {selectedComponent === "Transactionhistory" && (
               <Transactionhistory />
             )}
+            {selectedComponent === "Withdrawhistory" && <WithdrawHistory />}
             {selectedComponent === "Users" && <Users />}
           </div>
         </main>

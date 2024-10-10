@@ -179,6 +179,20 @@
     admin_note: text("admin_note"),
   });
 
+    export const withdrwaslips = pgTable("withdrawslips", {
+    slip_id: serial("slip_id").primaryKey(),
+    user_id: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    amount: integer("amount").notNull(),
+    coins: integer("coins").notNull(),
+    slip_path: text("slip_path").notNull(),
+    status: varchar("status", { length: 20 }).notNull().default("pending"),
+    created_at: timestamp("created_at").defaultNow().notNull(),
+    updated_at: timestamp("updated_at").defaultNow().notNull(),
+    admin_note: text("admin_note"),
+  });
+
   export const orders = pgTable("orders", {
     order_id: serial("order_id").primaryKey(),
     user_id: integer("user_id")
@@ -196,6 +210,31 @@
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     order_id: integer("order_id")
+      .notNull()
+      .references(() => orders.order_id, { onDelete: "cascade" }), // Foreign key reference to orders table
+    coins: integer("coins").notNull(), // จำนวนเหรียญที่ซื้อ
+    price: integer("price").notNull(), // ราคาเหรียญที่ซื้อ
+    status: varchar("status", { length: 20 }).notNull().default(""),
+    create_at: timestamp("create_at").defaultNow().notNull(), // วันที่ซื้อ
+  });
+
+    export const withdraws = pgTable("withdraws", {
+    withdraw_id: serial("withdraw_id").primaryKey(),
+    user_id: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    price: decimal("price", { precision: 10, scale: 2 }).notNull(), // ราคาเหรียญที่สั่งซื้อ
+    quantity: integer("quantity").notNull(), // จำนวนเหรียญที่สั่งซื้อ
+    status: varchar("status", { length: 20 }).notNull().default("pending"), // สถานะการสั่งซื้อ: pending, approved, rejected
+    created_at: timestamp("created_at").defaultNow().notNull(),
+  });
+
+    export const withdraws_history = pgTable("withdraws_history", {
+    history_id: serial("history_id").primaryKey(),
+    user_id: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    withdraw_id: integer("withdraw_id")
       .notNull()
       .references(() => orders.order_id, { onDelete: "cascade" }), // Foreign key reference to orders table
     coins: integer("coins").notNull(), // จำนวนเหรียญที่ซื้อ

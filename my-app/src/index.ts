@@ -33,6 +33,9 @@ import {
   photo_albums,
   Photo_tags,
   tags,
+  withdrwaslips,
+  withdraws,
+  withdraws_history,
   } from "@db/schema";
 import { and, eq, isNotNull } from "drizzle-orm";
 import { param } from "express-validator";
@@ -107,6 +110,16 @@ const storage3 = multer.diskStorage({
   },
 });
 
+// ตั้งค่า Multer สำหรับการอัปโหลดไฟล์
+const storage4 = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../withdrawslips")); // ที่เก็บสลิป
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // ตั้งชื่อไฟล์ไม่ให้ซ้ำ
+  },
+});
+
 const upload = multer({ storage: storage1 });
 app.use("/api/images", express.static(path.join(__dirname, "../images")));
 
@@ -118,6 +131,9 @@ app.use(
 
 const upload_slip = multer({ storage: storage3 });
 app.use("/api/slip", express.static(path.join(__dirname, "../slips")));
+
+const withdrawslips = multer({ storage: storage4 });
+app.use("/api/slip", express.static(path.join(__dirname, "../withdrawslips")));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
@@ -651,7 +667,6 @@ app.get("/api/cart/:id", async (req: Request, res: Response) => {
   }
 });
 
-// API Endpoint สำหรับการคิดเงินใน Cart
 app.post("/api/cart/checkout", async (req: Request, res: Response) => {
   const { user_id } = req.body;
 
@@ -707,12 +722,18 @@ app.post("/api/cart/checkout", async (req: Request, res: Response) => {
         }
 
         if (photo.max_sales !== null && photo.max_sales <= 0) {
-      return res
-        .status(400)
-        .json({ error: "This photo has reached its sales limit" });
-    }
+          return res
+            .status(400)
+            .json({ error: "This photo has reached its sales limit" });
+        }
 
-
+        // ลดค่า max_sales ลง 1
+        if (photo.max_sales !== null) {
+          await trx
+            .update(images)
+            .set({ max_sales: photo.max_sales - 1 })
+            .where(eq(images.id, photo.id));
+        }
 
         // Update coins for buyer and seller
         await trx
@@ -1941,3 +1962,341 @@ app.get("/api/photo/tag/:tagId", async (req, res) => {
   }
 });
 
+app.post(
+  "/api/withdrawals/upload",
+  withdrawslips.single("slip"),
+  async (req: Request, res: Response) => {
+    const filePath = req.file?.filename;
+    const { amount, coins, user_id } = req.body;
+
+  console.log("Received data:");
+    console.log("File Path:", filePath);
+    console.log("Amount:", amount);
+    console.log("Coins:", coins);
+    console.log("User ID:", user_id);
+
+    // Validate required inputs
+    if (!filePath) {
+      return res.status(400).json({
+        success: false,
+        message: "File upload failed. Please provide a valid file.",
+      });
+    }
+
+    if (!user_id || isNaN(Number(user_id))) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required and must be a valid number.",
+      });
+    }
+
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Amount is required and must be a positive number.",
+      });
+    }
+
+    if (!coins || isNaN(Number(coins)) || Number(coins) <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Coins value is required and must be a positive number.",
+      });
+    }
+
+    try {
+      // Check if a previous withdrawal slip exists for this user
+      const existingWithdrawal = await dbClient
+        .select()
+        .from(withdrwaslips)
+        .where(eq(withdrwaslips.user_id, Number(user_id)))
+        .limit(1)
+        .execute();
+
+      // If a previous slip exists, delete the old file and its record
+      if (existingWithdrawal.length > 0) {
+        const oldFilePath = existingWithdrawal[0].slip_path;
+
+        if (oldFilePath) {
+          const fullPath = path.join(__dirname, "../withdrawslips", oldFilePath);
+
+          try {
+            if (fs.existsSync(fullPath)) {
+              fs.unlinkSync(fullPath); // Remove the old slip file
+            }
+          } catch (error) {
+            console.error("Error deleting old slip file:", error);
+          }
+        }
+
+        const formattedPrice = parseFloat(amount).toFixed(2); // Format price as a decimal with 2 places
+
+    await dbClient.insert(withdraws).values({
+      user_id: Number(user_id),
+      price: formattedPrice, // Keep price as a string in decimal format
+      quantity: Number(coins),
+      status: "pending",
+      created_at: new Date(),
+    });
+
+        // Delete the previous slip record from the database
+        await dbClient
+          .delete(withdrwaslips)
+          .where(eq(withdrwaslips.user_id, Number(user_id)))
+          .execute();
+      }
+
+      // Insert the new withdrawal slip record into the database
+      const result = await dbClient
+        .insert(withdrwaslips)
+        .values({
+          user_id: Number(user_id),
+          amount: parseInt(amount, 10),
+          coins: parseInt(coins, 10),
+          slip_path: filePath,
+          status: "pending", // Initial status
+          created_at: new Date(),
+          updated_at: new Date(),
+          admin_note: "up slip", // Initial admin note
+        })
+        .returning({ slip_id: withdrwaslips.slip_id, slip_path: withdrwaslips.slip_path })
+        .execute();
+
+      // Respond with success and the new slip details
+      res.json({
+        success: true,
+        slipId: result[0].slip_id,
+        filePath: result[0].slip_path,
+      });
+    } catch (error) {
+      console.error("Error saving withdrawal slip path to the database:", error);
+      res.status(500).json({
+        success: false,
+        message: "An internal server error occurred while processing your request.",
+      });
+    }
+  }
+);
+
+
+app.get("/api/wirhdrawslips/get", async (req: Request, res: Response) => {
+  try {
+    const result = await dbClient.query.withdrwaslips.findMany();
+
+    if (!result) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(result);
+  } catch (error) {
+    console.error("Error retrieving images from the database:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+// app.get("/api/wirhdrawslips", async (req: Request, res: Response) => {
+//   try {
+//     const result = await dbClient.query.withdrwaslips.findMany();
+//     res.json(result);
+//   } catch (error) {
+//     console.error("Error retrieving images from the database:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+app.post("/api/withdrawslips/approve/:slipId", async (req: Request, res: Response) => {
+  const slipId = parseInt(req.params.slipId, 10);
+
+console.log("Received slip ID from params:", req.params.slipId);
+  if (isNaN(slipId)) {
+    return res.status(400).json({ error: "Invalid slip ID" });
+  }
+
+  try {
+    // Fetch the slip
+    const slip = await dbClient.query.withdrwaslips.findFirst({
+      where: eq(withdrwaslips.slip_id, slipId),
+    });
+
+    console.log("Slip found:", slip);
+
+    if (!slip || slip.status !== "pending") {
+      return res
+        .status(404)
+        .json({ error: "Slip not found or already processed" });
+    }
+
+    // Fetch the user
+    const user = await dbClient.query.users.findFirst({
+      where: eq(users.id, slip.user_id),
+    });
+    console.log("Fetched user:", user); // Log user details
+
+    const username = users.username;  // หรือ user.username ขึ้นอยู่กับโครงสร้างของ user
+    console.log("Username:", username);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Fetch the associated order
+    const withdraw = await dbClient.query.withdraws.findFirst({
+      where: eq(withdraws.user_id, slip.user_id),
+      
+    });
+    console.log("Fetched withdraw:", withdraw); // Log withdraw details
+
+
+    if (!withdraw) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    // Update user coins based on the approved slip
+    await dbClient
+      .update(users)
+      .set({ coin: user.coin - slip.coins })
+      .where(eq(users.id, slip.user_id))
+      .execute();
+
+      console.log("User coins updated successfully");
+
+
+    // Insert the order into orders_history
+    await dbClient
+      .insert(withdraws_history)
+      .values({
+        user_id: slip.user_id,
+        withdraw_id: withdraw.withdraw_id,
+        coins: slip.coins,
+        price: slip.amount,
+        status: "Approved",
+        create_at: new Date(),
+      })
+      .execute();
+
+    // Delete the slip after approving
+    await dbClient.delete(withdrwaslips).where(eq(withdrwaslips.slip_id, slipId)).execute();
+      console.log("Slip deleted successfully");
+
+    res
+      .status(200)
+      .json({ message: "Slip approved, coins added, and order recorded" ,
+        username: username
+      });
+  } catch (error) {
+    console.error("Error approving slip:", error);
+    res.status(500).json({ error: "Failed to approve slip" });
+  }
+});
+
+// Reject Slip
+app.post("/api/wirhdrawslips/reject/:slipId", async (req: Request, res: Response) => {
+  const slipId = parseInt(req.params.slipId, 10);
+
+  if (isNaN(slipId)) {
+    return res.status(400).json({ error: "Invalid slip ID" });
+  }
+
+  try {
+    // Fetch the slip
+    const slip = await dbClient.query.withdrwaslips.findFirst({
+      where: eq(withdrwaslips.slip_id, slipId),
+    });
+
+    if (!slip || slip.status !== "pending") {
+      return res
+        .status(404)
+        .json({ error: "Slip not found or already processed" });
+    }
+
+    // Fetch the user
+    const user = await dbClient.query.users.findFirst({
+      where: eq(users.id, slip.user_id),
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Fetch the associated order
+    const withdraw = await dbClient.query.withdraws.findFirst({
+      where: eq(withdraws.user_id, slip.user_id),
+      // Assumes you want the latest order, adjust if needed
+    });
+
+
+    if (!withdraw) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    // Insert the order into orders_history with status "rejected"
+    await dbClient
+      .insert(withdraws_history)
+      .values({
+        user_id: slip.user_id,
+        withdraw_id: withdraw.withdraw_id, // Use the found order_id
+        coins: slip.coins,
+        price: slip.amount, // Assuming slip.amount corresponds to the price
+        status: "Rejected",
+        create_at: new Date(), // or use timestamp if preferred
+      })
+      .execute();
+
+    // Delete the slip upon rejection
+    await dbClient.delete(withdrwaslips).where(eq(withdrwaslips.slip_id, slipId)).execute();
+
+    res
+      .status(200)
+      .json({ message: "Slip rejected, order recorded in history" });
+  } catch (error) {
+    console.error("Error rejecting slip:", error);
+    res.status(500).json({ error: "Failed to reject slip" });
+  }
+});
+
+app.post("/api/selectedwithdraw", async (req, res) => {
+  const { price, coins, user_id } = req.body;
+
+  console.log("Price:", price);
+  console.log("Quantity:", coins);
+  console.log("User_Id:", user_id);
+
+  try {
+    // Convert price to string if necessary
+    const formattedPrice = parseFloat(price).toFixed(2); // Format price as a decimal with 2 places
+
+    await dbClient.insert(withdraws).values({
+      user_id: Number(user_id),
+      price: formattedPrice, // Keep price as a string in decimal format
+      quantity: Number(coins),
+      status: "pending",
+      created_at: new Date(),
+    });
+
+    res.status(201).json({ message: "Orders added successfully" });
+  } catch (error) {
+    console.error("Error inserting order into the database:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/withdraw/history", async (req: Request, res: Response) => {
+  try {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    // ดึงรายการคำสั่งซื้อของผู้ใช้จากฐานข้อมูล
+    const withdrawHistory = await dbClient
+      .select()
+      .from(withdraws_history)
+      .where(eq(withdraws_history.user_id, Number(user_id)))
+      .orderBy(withdraws_history.create_at)
+      .execute();
+
+    res.status(200).json(withdrawHistory);
+  } catch (error) {
+    console.error("Error fetching order history:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
