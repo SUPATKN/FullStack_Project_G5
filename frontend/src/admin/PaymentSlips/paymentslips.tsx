@@ -74,30 +74,30 @@ export default function PaymentSlips() {
         <div className="text-red-500">{error}</div>
       ) : (
         <>
-          <h4 className="flex items-center text-white text-2xl">
-            <Hexagon className="text-white w-10 h-10 mr-2" />
-            Payment Slips
+          <h4 className="flex items-center text-white text-2xl text-center font-light letter-spacing-0-7px mb-4">
+            ◆ Payment Slips
           </h4>
-          <div className="overflow-hidden rounded-lg border w-[1100px] shadow-md bg-white bg-opacity-10 border-black">
-            <table className="table-auto mx-auto w-[1100px] h-full border-collapse border-black">
+          
+          <div className="overflow-hidden w-[1100px] shadow-md bg-white bg-opacity-10 border-black">
+            <table className="table-auto mx-auto w-[1100px] h-full ">
               <thead>
                 <tr className="text-center">
-                  <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[183px] whitespace-nowrap rounded-tl-lg">
+                  <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap">
                     Slip ID
                   </th>
-                  <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[183px] whitespace-nowrap">
+                  <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap">
                     Amount
                   </th>
-                  <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[183px] whitespace-nowrap">
+                  <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap">
                     Coins
                   </th>
-                  <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[183px] whitespace-nowrap">
+                  <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap">
                     Status
                   </th>
-                  <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[185px] whitespace-nowrap">
+                  <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[185px] whitespace-nowrap">
                     Slip Image
                   </th>
-                  <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[183px] whitespace-nowrap rounded-tr-lg">
+                  <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap rounded-tr-lg">
                     Actions
                   </th>
                 </tr>
@@ -105,40 +105,47 @@ export default function PaymentSlips() {
               <tbody>
                 {slips.map((slip) => (
                   <tr key={slip.slip_id} className="text-center">
-                    <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[183px] whitespace-nowrap rounded-tl-lg">
+                    <td className="border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[183px] whitespace-nowrap rounded-tl-lg">
                       {slip.slip_id}
                     </td>
-                    <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[183px] whitespace-nowrap">
+                    <td className="border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[183px] whitespace-nowrap">
                       {slip.amount}
                     </td>
-                    <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[183px] whitespace-nowrap">
+                    <td className="border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[183px] whitespace-nowrap">
                       {slip.coins}
                     </td>
-                    <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[183px] whitespace-nowrap">
+                    <td className="border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[183px] whitespace-nowrap">
                       {slip.status}
                     </td>
-                    <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[185px] flex items-center justify-center whitespace-nowrap">
+                    <td className="border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[185px] flex items-center justify-center whitespace-nowrap">
                       <Image
                         crossOrigin="anonymous"
                         src={`/api/slip/${slip.slip_path}`}
                         alt={`Slip ${slip.slip_id}`}
                         width={100}
-                        height={100}
                         onClick={() => handleShowSlip(slip)}
                         className="cursor-pointer"
                       />
                     </td>
-                    <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[183px] gap-2 whitespace-nowrap rounded-tr-lg">
+                    <td className=" border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[183px] gap-2 whitespace-nowrap rounded-tr-lg">
                       <button
+<<<<<<< Updated upstream
                         data-cy="approve-btn"
                         className="bg-[#ff8833] hover:bg-orange-500 text-white w-[70px] h-[30px] rounded-md"
+=======
+                        className="p-2 bg-[#ff8833] hover:bg-orange-600 text-white w-[fit-content] h-[fit-content] rounded-md"
+>>>>>>> Stashed changes
                         onClick={() => handleApproveSlip(slip.slip_id)}
                       >
                         Approve
                       </button>
                       <button
+<<<<<<< Updated upstream
                         data-cy="reject-btn"
                         className="bg-[#ff8833] ml-2 hover:bg-orange-500 text-white w-[70px] h-[30px] rounded-md"
+=======
+                        className="p-2 bg-red-600 ml-2 hover:bg-red-700 text-white w-[fit-content] h-[fit-content] rounded-md"
+>>>>>>> Stashed changes
                         onClick={() => handleRejectSlip(slip.slip_id)}
                       >
                         Reject

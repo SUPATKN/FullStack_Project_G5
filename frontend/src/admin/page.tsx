@@ -13,48 +13,55 @@ export default function Page() {
   const [selectedComponent, setSelectedComponent] = useState("Paymentslips");
   return (
     <LoadingWrapper>
-      <div className="flex flex-col min-h-screen Body bg-[#181818]">
+      <div className="flex flex-col min-h-screen  bg-[#181818] !important">
         <NavBar />
-        <main className="bg-[#181818] w-full h-full">
-          <div className="w-full hidden max-h-screen sm:block space-y-[100px] lg:grid grid-cols-[1fr_9fr]">
-            <div className="p-4 bg-[#292828] shadow-md border-black w-full h-full flex flex-col items-center justify-start font-bold text-black gap-5">
+        <main className="bg-[#000000] flex ">
+          
+
+            <div className="fixed left-0  bg-[#000000] shadow-md border-black max-w-[250px] w-[100%] min-h-[640px] h-[100%] flex flex-col items-center justify-start font-bold text-black ">
               <button
                 data-cy="pay-btn"
                 onClick={() => setSelectedComponent("Paymentslips")}
-                className="text-[18px] w-[200px] text-white  mt-2 h-[47px] hover:bg-orange-500 hover:text-white rounded-[30px] transition-all ease-in-out duration-100 outline-hover"
+                autoFocus
+                className=" focus:bg-orange-500 text-[18px] w-full text-white p-3 text-center font-light letter-spacing-0-7p hover:bg-orange-500 hover:text-white transition-all ease-in-out duration-100 outline-hover"
               >
                 Payment Slips
               </button>
               <button
                 data-cy="tag-btn"
                 onClick={() => setSelectedComponent("Tag")}
-                className="text-[18px] w-[200px] text-white  mt-2 h-[47px] hover:bg-orange-500 hover:text-white rounded-[30px] transition-all ease-in-out duration-100 outline-hover"
+                className="focus:bg-orange-500 text-[18px] w-[100%]  text-white  p-3 text-center text-[#ff8833] font-light letter-spacing-0-7px hover:bg-orange-500 hover:text-white transition-all ease-in-out duration-100 outline-hover"
               >
                 Tag Management
               </button>
               <button
                 data-cy="users-btn"
                 onClick={() => setSelectedComponent("Users")}
-                className="text-[18px] w-[200px] text-white h-[47px] hover:bg-orange-500 hover:text-white rounded-[30px] transition-all ease-in-out duration-100  outline-hover"
+                className=" focus:bg-orange-500 text-[18px] w-[100%] text-white p-3  text-center text-[#ff8833] font-light letter-spacing-0-7px  hover:bg-orange-500 hover:text-white transition-all ease-in-out duration-100 outline-hover"
               >
                 Users
               </button>
               <button
                 data-cy="order-btn"
                 onClick={() => setSelectedComponent("OrderHistory")}
-                className="text-[18px] w-[200px] text-white h-[47px] hover:bg-orange-500 hover:text-white rounded-[30px] transition-all ease-in-out duration-100  outline-hover"
+                className="focus:bg-orange-500 text-[18px] w-[100%] text-white p-3  text-center text-[#ff8833] font-light letter-spacing-0-7px  hover:bg-orange-500 hover:text-white transition-all ease-in-out duration-100 outline-hover"
               >
                 Order History
               </button>
               <button
                 data-cy="trans-btn"
                 onClick={() => setSelectedComponent("Transactionhistory")}
-                className="text-[18px] w-[200px] text-white h-[47px] hover:bg-orange-500 hover:text-white rounded-[30px] transition-all ease-in-out duration-100  outline-hover"
+                className=" focus:bg-orange-500 text-[18px] w-[100%] text-white p-3 text-center text-[#ff8833] font-light letter-spacing-0-7px  hover:bg-orange-500 hover:text-white transition-all ease-in-out duration-100 outline-hover"
               >
                 Transaction History
               </button>
             </div>
+<<<<<<< Updated upstream
             <div className="mt-4 overflow-y-auto overflow-x-hidden h-screen flex items-start justify-center">
+=======
+
+            <div className='pl-16 pt-4 ml-16 w-[100%] h-[100%] min-h-640px bg-[#181818] flex items-start justify-center'>
+>>>>>>> Stashed changes
               {selectedComponent === "OrderHistory" && <OrderHistory />}
               {selectedComponent === "Paymentslips" && <Paymentslips />}
               {selectedComponent === "Tag" && <Tag />}
@@ -63,8 +70,9 @@ export default function Page() {
               )}
               {selectedComponent === "Users" && <Users />}
             </div>
-          </div>
+
         </main>
+<<<<<<< Updated upstream
         <footer className="mt-auto flex justify-center bg-[#000000] border-black p-5 shadow-lg border rounded-md w-full h-[110px]">
           <div className="flex flex-col items-center justify-center">
             <img
@@ -80,7 +88,17 @@ export default function Page() {
             </p>
           </div>
         </footer>
+=======
+        
+        
+>>>>>>> Stashed changes
       </div>
+      
     </LoadingWrapper>
+<<<<<<< Updated upstream
   );
+=======
+    
+  )
+>>>>>>> Stashed changes
 }
