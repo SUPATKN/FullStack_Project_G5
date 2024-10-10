@@ -680,6 +680,7 @@ const PhotoDetail = () => {
                     currentUser ? (
                       <div className="flex items-center justify-center ml-2 float-right">
                         <button
+                          data-cy="download-btn"
                           className="text-[16px] gap-2 w-[fit-content] h-[fit-content] rounded-md cursor-pointer btnDownload flex items-center justify-center text-center no-underline hover:no-underline"
                           onClick={() =>
                             window.open(`/api/${photo.path}`, "_blank")
