@@ -59,91 +59,6 @@ export default function Orderhistory() {
 
   return (
     <div>
-<<<<<<< Updated upstream
-      <h4 className="flex items-center text-white text-2xl">
-        <Hexagon className="text-white w-10 h-10 mr-2" />
-        Orders History
-      </h4>
-      <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
-        <table className="table-auto mx-auto w-[1100px] border-collapse border-black">
-          <thead>
-            <tr className="text-center">
-              <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px]  whitespace-nowrap rounded-tl-[8px]">
-                ID
-              </th>
-              <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap ">
-                Username
-              </th>
-              <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap ">
-                Email
-              </th>
-              <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap rounded-tr-lg">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id} className="text-center">
-                <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tl-lg">
-                  {user.id}
-                </td>
-                <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap">
-                  {user.username}
-                </td>
-                <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap">
-                  {user.email}
-                </td>
-                <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tr-lg">
-                  <button
-                    data-cy="view-btn"
-                    className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
-                    onClick={() =>
-                      handleShowOrderHistory(user.id, user.username)
-                    }
-                  >
-                    View Orders
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {showOrderHistoryModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 h-full">
-          <div className="bg-white p-5 w-[700px] rounded-md shadow-md border max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between">
-              <h2 className="text-black text-[24px] font-medium ml-5">
-                Order History for{" "}
-                <span style={{ color: "green" }}>{selectedUserName}</span>
-              </h2>
-              <button
-                onClick={() => setShowOrderHistoryModal(false)}
-                className="p-2 bg-red-700 text-white rounded-md"
-              >
-                Close
-              </button>
-            </div>
-            <div className="overflow-hidden rounded-lg border shadow-md bg-white mt-4">
-              <table className="table-auto mx-auto w-[600px] h-full border-collapse">
-                <thead>
-                  <tr className="text-center">
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px] whitespace-nowrap rounded-tl-[8px]">
-                      Order ID
-                    </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px] whitespace-nowrap">
-                      Price
-                    </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px] whitespace-nowrap">
-                      Coins
-                    </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px] whitespace-nowrap">
-                      Status
-                    </th>
-                    <th className="border px-2 py-3 text-[16px] font-bold text-black w-[120px] whitespace-nowrap rounded-tr-[8px]">
-                      Created At
-=======
             <h4 className=" flex items-center text-white text-2xl text-center font-light letter-spacing-0-7px mb-4">
               ◆ Orders History
           </h4>
@@ -162,33 +77,10 @@ export default function Orderhistory() {
                     </th>
                     <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap">
                       Actions
->>>>>>> Stashed changes
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-<<<<<<< Updated upstream
-                  {orderHistory.map((order) => (
-                    <tr key={order.history_id} className="text-center">
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap rounded-tl-lg">
-                        {order.history_id}
-                      </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap">
-                        {order.price}
-                      </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap">
-                        {order.coins}
-                      </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap">
-                        {order.status}
-                      </td>
-                      <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap rounded-tr-lg">
-                        {new Date(order.create_at).toLocaleDateString("th-TH", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })}
-=======
                   {users.map((user) => (
                     <tr key={user.id} className="text-center">
                       <td className="border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[275px]  whitespace-nowrap rounded-tl-lg">
@@ -209,18 +101,12 @@ export default function Orderhistory() {
                         >
                           View Orders
                         </button>
->>>>>>> Stashed changes
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-<<<<<<< Updated upstream
-          </div>
-        </div>
-      )}
-=======
             {showOrderHistoryModal && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 h-full">
                 <div className="bg-white p-4 w-[700px] rounded-md shadow-md border max-h-[80vh] overflow-y-auto">
@@ -287,7 +173,6 @@ export default function Orderhistory() {
                 </div>
               </div>
             )}
->>>>>>> Stashed changes
     </div>
   );
 }

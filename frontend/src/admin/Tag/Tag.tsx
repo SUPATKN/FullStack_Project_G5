@@ -71,59 +71,6 @@ export default function Tag() {
 
   return (
     <div>
-<<<<<<< Updated upstream
-      <div>
-        <h4 className="flex items-center text-white text-2xl">
-          <Hexagon className="text-white w-10 h-10 mr-2" />
-          Add a Tag
-        </h4>
-        <div className="mt-4 flex items-center justify-center flex-col bg-[#181818] border-[#ff8833] border-2 rounded-lg shadow-md w-[300px] h-full">
-          <Form
-            onSubmit={handleAddTag}
-            className="flex items-center justify-center flex-col"
-          >
-            <Form.Group controlId="tagName">
-              <Form.Label className="mt-4 text-[#ff8833] font-medium text-xl flex items-center justify-center">
-                Tag Name
-              </Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter tag name"
-                value={tagName}
-                onChange={(e) => setTagName(e.target.value)}
-                className="mt-4"
-              />
-            </Form.Group>
-            <button
-              data-cy="add-btn"
-              className="mt-4 mb-4 w-[100px] h-[35px] bg-[#ff8833] rounded-md text-white cursor-pointer hover:bg-orange-500 flex items-center justify-center text-center no-underline hover:no-underline"
-              type="submit"
-            >
-              Add Tag
-            </button>
-          </Form>
-        </div>
-
-        <h4 className="mt-4 flex items-center text-white text-2xl">
-          <Hexagon className="text-white w-10 h-10 mr-2" />
-          All Tags
-        </h4>
-        {AllTag.length > 0 ? (
-          <div className="mt-3 bg-[#181818]">
-            {AllTag.map((tag) => (
-              <div key={tag.tags_id} className="bg-none">
-                {/* {" "} */}
-                {/* Fallback to index */}
-                <div className="flex items-center justify-between">
-                  <span className="text-[#ff8833]">{tag.name}</span>
-                  <button
-                    data-cy="delete-btn"
-                    className="w-[80px] h-[35px] gap-2 bg-red-600 rounded-md text-white cursor-pointer hover:bg-red-500 flex items-center justify-center text-center no-underline hover:no-underline"
-                    onClick={() => handleDeleteTag(tag.tags_id)}
-                  >
-                    Delete
-                  </button>
-=======
         <div className="flex flex-col items-center justify-start w-full h-full">
               <h4 className="flex items-center text-white text-2xl text-center font-light letter-spacing-0-7px mb-2">
             ◆ Tag Management
@@ -173,11 +120,7 @@ export default function Tag() {
                       </div>
                     </div>
                   ))}
->>>>>>> Stashed changes
                 </div>
-              </div>
-            ))}
-          </div>
         ) : (
           <p className="text-white mt-2 flex items-center justify-center">
             No tags found.

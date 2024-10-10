@@ -1,7 +1,7 @@
-import { Hexagon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Image, Modal } from "react-bootstrap";
-import axios from "axios";
+import { Hexagon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Image, Modal } from 'react-bootstrap';
+import axios from 'axios';
 
 interface Slip {
   slip_id: number;
@@ -127,25 +127,15 @@ export default function PaymentSlips() {
                         className="cursor-pointer"
                       />
                     </td>
-                    <td className=" border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[183px] gap-2 whitespace-nowrap rounded-tr-lg">
+                    <td className=" border-black px-2 py-3 text-[16px] font-medium text-white w-[183px] gap-2 whitespace-nowrap rounded-tr-lg">
                       <button
-<<<<<<< Updated upstream
-                        data-cy="approve-btn"
-                        className="bg-[#ff8833] hover:bg-orange-500 text-white w-[70px] h-[30px] rounded-md"
-=======
-                        className="p-2 bg-[#ff8833] hover:bg-orange-600 text-white w-[fit-content] h-[fit-content] rounded-md"
->>>>>>> Stashed changes
+                        className="p-2 bg-[#ff8833] hover:bg-orange-500 text-white w-[fit-content] h-[fit-content] rounded-md"
                         onClick={() => handleApproveSlip(slip.slip_id)}
                       >
                         Approve
                       </button>
                       <button
-<<<<<<< Updated upstream
-                        data-cy="reject-btn"
-                        className="bg-[#ff8833] ml-2 hover:bg-orange-500 text-white w-[70px] h-[30px] rounded-md"
-=======
                         className="p-2 bg-red-600 ml-2 hover:bg-red-700 text-white w-[fit-content] h-[fit-content] rounded-md"
->>>>>>> Stashed changes
                         onClick={() => handleRejectSlip(slip.slip_id)}
                       >
                         Reject
