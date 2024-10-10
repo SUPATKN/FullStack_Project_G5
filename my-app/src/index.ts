@@ -538,6 +538,32 @@ app.post("/api/cart/add", async (req: Request, res: Response) => {
         .json({ error: "Cannot add your own photo to the cart" });
     }
 
+    if (photo.max_sales !== null && photo.max_sales <= 0) {
+      return res
+        .status(400)
+        .json({ error: "This photo has reached its sales limit" });
+    }
+
+        // ตรวจสอบว่าผู้ใช้เคยซื้อรูปภาพนี้แล้วหรือยัง
+    const ownership = await dbClient
+      .select()
+      .from(image_ownerships)
+      .where(
+        and(
+          eq(image_ownerships.user_id, Number(user_id)),
+          eq(image_ownerships.image_id, Number(photo_id))
+        )
+      )
+      .limit(1)
+      .execute()
+      .then((result) => result[0]);
+
+    if (ownership) {
+      return res
+        .status(400)
+        .json({ error: "You already own this photo, cannot add to cart" });
+    }
+
     // ค้นหา cart ที่มีอยู่แล้วสำหรับ user_id นี้
     let cart: CartType | undefined = await dbClient
       .select()
@@ -578,9 +604,8 @@ app.post("/api/cart/add", async (req: Request, res: Response) => {
       .set({ updated_at: new Date() })
       .where(eq(carts.cart_id, cart.cart_id));
 
-    res
-      .status(201)
-      .json({ message: "Item added to cart and cart updated successfully" });
+    res.sendStatus(201); // ส่งสถานะ 201 โดยไม่มีข้อความเพิ่มเติม
+
   } catch (error) {
     console.error("Error adding item to cart:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -680,6 +705,12 @@ app.post("/api/cart/checkout", async (req: Request, res: Response) => {
         if (!seller) {
           throw new Error(`Seller with ID ${photo.user_id} not found`);
         }
+
+        if (photo.max_sales !== null && photo.max_sales <= 0) {
+      return res
+        .status(400)
+        .json({ error: "This photo has reached its sales limit" });
+    }
 
 
 
@@ -935,9 +966,7 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Invalid photo ID or user ID" });
   }
 
-  // const photo = await dbClient.query.images.findFirst({
-  //         where: eq(images.id, photoId),
-  //       });
+
 
   try {
     const photo = await dbClient.query.images.findFirst({
@@ -1028,40 +1057,42 @@ app.post("/api/photo/:photoId/buy", async (req: Request, res: Response) => {
   }
 });
 // Get all photos purchased by a specific user
-app.get(
-  "/api/user/:userId/purchased-photos",
-  async (req: Request, res: Response) => {
-    const userId = req.params.userId;
+app.get("/api/user/:userId/purchased-photos", async (req: Request, res: Response) => {
+  const userId = req.params.userId;
 
-    if (!userId) {
-      return res.status(400).json({ error: "User ID is required" });
-    }
-
-    try {
-      // ค้นหารูปภาพที่ผู้ใช้ได้ซื้อ
-      const purchasedPhotos = await dbClient
-        .select({
-          id: image_ownerships.id,
-          path: image_ownerships.path,
-          price: images.price,
-          purchased_at: image_ownerships.purchased_at,
-        })
-        .from(image_ownerships) // หรือตารางที่เก็บข้อมูลการซื้อ
-        .leftJoin(images, eq(image_ownerships.image_id, images.id))
-        .where(eq(image_ownerships.user_id, Number(userId)))
-        .execute();
-
-      if (purchasedPhotos.length === 0) {
-        return res.json([]);
-      }
-
-      res.json(purchasedPhotos);
-    } catch (error) {
-      console.error("Error fetching purchased photos:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required" });
   }
-);
+
+  try {
+    // ค้นหารูปภาพที่ผู้ใช้ได้ซื้อพร้อมชื่อผู้ขาย
+    const purchasedPhotos = await dbClient
+      .select({
+        id: image_ownerships.id,
+        path: image_ownerships.path,
+        price: images.price,
+        title: images.title,
+        image_id: image_ownerships.image_id,
+        purchased_at: image_ownerships.purchased_at,
+        sellerName: users.username,  // เพิ่มฟิลด์ username ของผู้ขาย
+      })
+      .from(image_ownerships) 
+      .leftJoin(images, eq(image_ownerships.image_id, images.id))
+      .leftJoin(users, eq(images.user_id, users.id)) 
+      .where(eq(image_ownerships.user_id, Number(userId)))
+      .execute();
+
+    if (purchasedPhotos.length === 0) {
+      return res.json([]);
+    }
+
+    res.json(purchasedPhotos);
+  } catch (error) {
+    console.error("Error fetching purchased photos:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 // Get aggregated likes
 app.get("/api/getcountlikes", async (req: Request, res: Response) => {
@@ -1835,10 +1866,10 @@ app.get("/api/photos/search", async (req: Request, res: Response) => {
   }
 
   try {
-    const lowerCaseTitle = title.toLowerCase(); // Convert search term to lowercase
+    const lowerCaseTitle = title.toLowerCase();
 
     const photos = await dbClient.query.images.findMany({
-      where: sql`LOWER(${images.title}) LIKE ${'%' + lowerCaseTitle + '%'}` // Use LOWER function in SQL
+      where: sql`LOWER(${images.title}) LIKE ${'%' + lowerCaseTitle + '%'}` 
     });
 
     console.log("Photos found for title:", title, photos);

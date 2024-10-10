@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Image, Row, Col, Dropdown} from "react-bootstrap";
+import { Image, Row, Col, Dropdown } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Layout from "../Layout";
 import useAuth from "../hook/useAuth";
 import { Heart, MessageCircleMore } from "lucide-react";
@@ -143,25 +145,29 @@ const Gallery = () => {
 
   const handleAddToCart = async (photoId: string) => {
     if (!me) {
-      console.error("User is not logged in");
+      // console.error("User is not logged in");
+      toast.error("You need to log in to add items to your cart.");
       return;
     }
 
     const photo = photos.find((photo) => photo.id === photoId);
 
     if (!photo) {
+      toast.error("Photo not found.");
       return;
     }
 
     const alreadyInCart = cartItems.some((item) => item.id === photoId);
 
     if (alreadyInCart) {
-      alert("This item is already in your cart.");
+      // alert("This item is already in your cart.");
+      toast.warning("This item is already in your cart.");
       return;
     }
 
     if (photo.user_id === me.id.toString()) {
-      alert("You cannot add your own photo to the cart.");
+      // alert("You cannot add your own photo to the cart.");
+      toast.warning("You cannot add your own photo to the cart.");
       return;
     }
 
@@ -170,10 +176,33 @@ const Gallery = () => {
         user_id: me.id,
         photo_id: photoId,
       });
+      // ตรวจสอบว่ามีข้อความใน response หรือไม่
+      // if (response.data.message) {
+      //   toast.success(response.data.message);
+      // } else {
+      //   toast.success("Item added to cart successfully."); // กรณีไม่มีข้อความ
+      // }
 
-      alert(response.data.message); // Display success message
+      toast.success("Item added to cart successfully.");
+
+      // toast.success(response.data.message);
       fetchCartItems(); // Refresh cart items after successful addition
-    } catch (error) {
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        // เช็คว่า error เป็น AxiosError
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error
+        ) {
+          toast.error(error.response.data.error);
+        } else {
+          toast.error("An unexpected error occurred while adding to the cart.");
+        }
+      } else {
+        // จัดการข้อผิดพลาดอื่นๆ ที่ไม่ใช่ AxiosError
+        toast.error("An unexpected error occurred.");
+      }
       console.error("Error adding photo to cart:", error);
     }
   };
@@ -256,7 +285,6 @@ const Gallery = () => {
     }
   };
 
-
   // Handle tag click
   // const handleTagSelect = (tagId: number) => {
   //   setSelectedTag(tagId);
@@ -292,12 +320,13 @@ const Gallery = () => {
 
       {/* Display Tags as Buttons */}
       <div className="tag-container mb-4 d-flex flex-wrap justify-content-center">
-
         {/* Map through the existing tags */}
         {tags.map((tag) => (
           <button
             key={tag.tags_id}
-            className={`m-2 ${selectedTag === tag.tags_id ? 'TagOnClick' : ' TagOffClick '}`} // Existing logic for individual tags
+            className={`m-2 ${
+              selectedTag === tag.tags_id ? "TagOnClick" : " TagOffClick "
+            }`} // Existing logic for individual tags
             onClick={() => handleTagSelect(tag.tags_id)}
           >
             {tag.name}
@@ -307,44 +336,61 @@ const Gallery = () => {
 
       {/* Filter Dropdowns */}
       <div className="mb-4 Filter-container">
-        <Dropdown >
-          <Dropdown.Toggle className={`Filter ${sortCriteria ? 'FilterButton' : ''}`} id="dropdown-basic">
+        <Dropdown>
+          <Dropdown.Toggle
+            className={`Filter ${sortCriteria ? "FilterButton" : ""}`}
+            id="dropdown-basic"
+          >
             Sort by :{" "}
-            {sortCriteria ? (
-              sortCriteria === "time" ? (
-                "Time"
-              ) : (
-                "Price"
-              )
-            ) : (
-              "Select an option"
-            )}
+            {sortCriteria
+              ? sortCriteria === "time"
+                ? "Time"
+                : "Price"
+              : "Select an option"}
           </Dropdown.Toggle>
 
           <Dropdown.Menu className="Filter-menu">
-            <Dropdown.Item  className="menu" onClick={() => handleSortChange("time")}>
+            <Dropdown.Item
+              className="menu"
+              onClick={() => handleSortChange("time")}
+            >
               Sort by Time
             </Dropdown.Item>
-            <Dropdown.Item className="menu" onClick={() => handleSortChange("price")}>
+            <Dropdown.Item
+              className="menu"
+              onClick={() => handleSortChange("price")}
+            >
               Sort by Price
             </Dropdown.Item>
             <Dropdown.Divider />
             {sortCriteria === "time" && (
               <>
-                <Dropdown.Item className="menu" onClick={() => handleOrderChange("desc")}>
+                <Dropdown.Item
+                  className="menu"
+                  onClick={() => handleOrderChange("desc")}
+                >
                   Latest First
                 </Dropdown.Item>
-                <Dropdown.Item className="menu" onClick={() => handleOrderChange("asc")}>
+                <Dropdown.Item
+                  className="menu"
+                  onClick={() => handleOrderChange("asc")}
+                >
                   Oldest First
                 </Dropdown.Item>
               </>
             )}
             {sortCriteria === "price" && (
               <>
-                <Dropdown.Item className="menu" onClick={() => handleOrderChange("asc")}>
+                <Dropdown.Item
+                  className="menu"
+                  onClick={() => handleOrderChange("asc")}
+                >
                   Cheapest First
                 </Dropdown.Item>
-                <Dropdown.Item className="menu" onClick={() => handleOrderChange("desc")}>
+                <Dropdown.Item
+                  className="menu"
+                  onClick={() => handleOrderChange("desc")}
+                >
                   Most Expensive First
                 </Dropdown.Item>
               </>
@@ -356,13 +402,13 @@ const Gallery = () => {
       <Row>
         {(selectedTag ? sortPhotos(photos) : sortPhotos(photos)).map(
           (photo) => (
-            <Col key={photo.id} xs={12} md={4} lg={3} className="mb-4">
+            <Col key={photo.id} xs={12} md={6} lg={3} className="mb-4">
               <div
-                className="relative flex flex-col w-[fit-content] h-[fit-content] bg-white bg-opacity-10 rounded-lg shadow-md border border-black mt-3 p-2"
+                className="relative flex flex-col w-[fit-content] h-[fit-content] bg-white bg-opacity-10 rounded-lg shadow-md border border-black mt-3 p-2 shadow-sm h-100"
                 onMouseEnter={() => setHoveredPhotoId(photo.id)}
                 onMouseLeave={() => setHoveredPhotoId(null)}
               >
-                <div className="relative flex flex-col items-center justify-center">
+                <div className="relative flex flex-col items-center justify-center h-100">
                   <Image
                     crossOrigin="anonymous"
                     src={`/api/${photo.path}`}
@@ -427,6 +473,7 @@ const Gallery = () => {
             </Col>
           )
         )}
+        <ToastContainer />
       </Row>
     </Layout>
   );

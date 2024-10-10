@@ -1,0 +1,21 @@
+/* global.css */
+
+.custom-modal {
+    width: 90%; /* กำหนดความกว้างของ Modal */
+    max-width: 500px; /* ความกว้างสูงสุด */
+    border-radius: 10px; /* มุมมน */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* เงา */
+  }
+  
+  .modal-content {
+    background-color: #f8f9fa; /* สีพื้นหลังของ Modal */
+    border: none; /* ปิดขอบ */
+    border-radius: 10px; /* มุมมน */
+    padding: 20px; /* ขอบภายใน */
+  }
+  
+  /* ปรับแต่งปุ่มใน Modal */
+  .modal-footer .btn {
+    border-radius: 5px; /* มุมมนของปุ่ม */
+  }
+  
