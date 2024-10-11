@@ -1,5 +1,6 @@
 describe("profile test", () => {
   it("should navigate to profile", () => {
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/login");
 
     cy.get("#email").type("aaa@gmail.com");

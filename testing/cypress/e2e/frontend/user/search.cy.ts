@@ -1,5 +1,6 @@
 describe("search test", () => {
   it("should search pic", () => {
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/login");
 
     cy.get("#email").type("aaa@gmail.com");

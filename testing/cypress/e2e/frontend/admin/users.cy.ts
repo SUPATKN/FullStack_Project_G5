@@ -1,5 +1,6 @@
 describe("users test", () => {
   it("users", () => {
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/login");
     // cy.get(
     //   "#root > div > nav > div > div.nav-actions > div > a.nav-link.login"
@@ -11,6 +12,6 @@ describe("users test", () => {
     cy.get('[data-cy="login-button"]').click();
     cy.wait(4000);
     cy.get('[data-cy="users-btn"]').click();
-    cy.get('[data-cy="view-btn"]').click();
+    cy.get('[data-cy="view-btn"]').first().click();
   });
 });

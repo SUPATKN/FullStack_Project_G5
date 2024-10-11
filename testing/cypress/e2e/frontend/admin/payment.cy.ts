@@ -1,5 +1,6 @@
 describe("payment test", () => {
   it("manage payment", () => {
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/login");
     cy.url().should("include", "/login");
     cy.wait(2000);

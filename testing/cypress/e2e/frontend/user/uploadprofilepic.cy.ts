@@ -2,6 +2,7 @@ import "cypress-file-upload";
 
 describe("upload profile pic test", () => {
   it("should upload profile pic", () => {
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/login");
 
     cy.get("#email").type("aaa@gmail.com");
