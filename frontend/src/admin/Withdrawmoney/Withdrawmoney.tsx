@@ -1,11 +1,13 @@
+// import { Hexagon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Image, Modal } from "react-bootstrap";
 import axios from "axios";
 
-interface Slip {
+interface WithdrawSlips {
   slip_id: number;
   user_id: number;
-  order_id: number;
+  username: string; // เพิ่ม username
+  withdraw_id: number;
   amount: number;
   coins: number;
   status: string;
@@ -13,9 +15,9 @@ interface Slip {
   admin_note: string | null;
 }
 
-export default function PaymentSlips() {
-  const [slips, setSlips] = useState<Slip[]>([]);
-  const [selectedSlip, setSelectedSlip] = useState<Slip | null>(null);
+export default function WithdrawMoney() {
+  const [slips, setSlips] = useState<WithdrawSlips[]>([]);
+  const [selectedSlip, setSelectedSlip] = useState<WithdrawSlips | null>(null);
   const [showSlipModal, setShowSlipModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,8 +26,11 @@ export default function PaymentSlips() {
     setLoading(true);
     setError(null); // Reset error state
     try {
-      const response = await axios.get<Slip[]>("/api/slips/get");
+      const response = await axios.get<WithdrawSlips[]>(
+        "/api/wirhdrawslips/get"
+      );
       setSlips(response.data);
+      console.log("object", response);
     } catch (error) {
       console.error("Error fetching slips:", error);
       setError("Failed to fetch slips.");
@@ -36,7 +41,11 @@ export default function PaymentSlips() {
 
   const handleApproveSlip = async (slip_id: number) => {
     try {
-      await axios.post(`/api/slips/approve/${slip_id}`);
+      console.log("Approving slip with ID:", slip_id);
+      const response = await axios.post(
+        `/api/withdrawslips/approve/${slip_id}`
+      );
+      console.log("Approve response:", response.data); // Log response for debugging
       await fetchSlips(); // Re-fetch slips after operation
     } catch (error) {
       console.error("Error approving slip:", error);
@@ -46,7 +55,7 @@ export default function PaymentSlips() {
 
   const handleRejectSlip = async (slip_id: number) => {
     try {
-      await axios.post(`/api/slips/reject/${slip_id}`);
+      await axios.post(`/api/withdrawslips/reject/${slip_id}`);
       await fetchSlips(); // Re-fetch slips after operation
     } catch (error) {
       console.error("Error rejecting slip:", error);
@@ -54,7 +63,7 @@ export default function PaymentSlips() {
     }
   };
 
-  const handleShowSlip = (slip: Slip) => {
+  const handleShowSlip = (slip: WithdrawSlips) => {
     setSelectedSlip(slip);
     setShowSlipModal(true);
   };
@@ -74,7 +83,7 @@ export default function PaymentSlips() {
       ) : (
         <>
           <h4 className="flex items-center text-white text-2xl text-center font-light letter-spacing-0-7px mb-4">
-            ◆ Payment Slips
+            ◆ Withdraw Money
           </h4>
 
           <div className="overflow-hidden w-[1100px] shadow-md bg-white bg-opacity-10 border-black">

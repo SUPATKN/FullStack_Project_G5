@@ -7,7 +7,7 @@ import useAuth from "../../hook/useAuth";
 import { User, Album } from "../../types/api";
 import CreateAlbumForm from "./CreateAlbumForm"; // นำเข้าฟอร์ม
 import SelectAlbumModal from "../../components/SelectAlbumModal"; // Import modal component
-import "../global.css";
+// import "../global.css";
 import { Link } from "react-router-dom";
 import { SquarePen, ShoppingBag, SquareArrowUpRight, Tag } from "lucide-react";
 
@@ -269,6 +269,12 @@ const Profile: React.FC = () => {
     }
   };
 
+  const handleViewWithdrawMoney = () => {
+    if (user) {
+      navigate("/withdraw-money", { state: { userId: user.id } });
+    }
+  };
+
   // const handleDownload = () => {
   //   if (previewImage) {
   //     const link = document.createElement("a");
@@ -443,6 +449,14 @@ const Profile: React.FC = () => {
               View Purchased Photos
             </button>
           )}
+          <button
+            data-cy="viewpur-btn"
+            className=" p-2 px-3 w-[fit-content] h-[fit-content] bg-[#0096FF] rounded-md text-white cursor-pointer hover:bg-[#6495ED] flex items-center justify-center text-center no-underline hover:no-underline"
+            onClick={handleViewWithdrawMoney}
+          >
+            <ShoppingBag className="text-white h-[20px] mr-2" />
+            Withdraw money
+          </button>
         </div>
         <Row className="flex flex-wrap justify-center gap-1 mt-4">
           {photos

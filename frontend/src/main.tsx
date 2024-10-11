@@ -23,6 +23,7 @@ import ViewAlbumPhotos from "./pages/Profile/ViewAlbumPhotos";
 import Home from "./pages/Home";
 import Page from "./admin/page";
 import Auth from "./pages/Login&Register/Auth";
+import Withdrawmoney from "./pages/WithdrawForm";
 axios.defaults.withCredentials = true;
 const queryClient = new QueryClient();
 
@@ -103,8 +104,14 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               </PrivateRoute>
             }
           />
-
-
+          <Route
+            path="/withdraw-money"
+            element={
+              <PrivateRoute>
+                <Withdrawmoney />
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/profileadmin"
             element={

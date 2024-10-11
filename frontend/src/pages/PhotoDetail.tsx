@@ -5,6 +5,7 @@ import { Button, Image, Form } from "react-bootstrap";
 
 import Layout from "../Layout";
 import useAuth from "../hook/useAuth";
+import { toast, ToastContainer } from "react-toastify"; // รวม toast ที่นี่
 import {
   SquareArrowUpRight,
   Tag,
@@ -39,7 +40,7 @@ const PhotoDetail = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const { user: currentUser, refetch } = useAuth();
   const [newComments, setNewComments] = useState<{ [key: string]: string }>({});
-  const [users, setUsers] = useState<{ id: string; username: string }[]>([]);
+  const [users, setUsers] = useState<{ id: number; username: string }[]>([]);
   const [likes, setLikes] = useState<{ photo_id: number; user_id: number }[]>(
     []
   );
@@ -97,7 +98,7 @@ const PhotoDetail = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get<{ id: string; username: string }[]>(
+      const { data } = await axios.get<{ id: number; username: string }[]>(
         "/api/allusers"
       );
       const map = data.reduce((acc, user) => {
@@ -235,8 +236,9 @@ const PhotoDetail = () => {
     return likes.filter((like) => like.photo_id === parseInt(photoId)).length;
   };
 
-  const handleUsernameClick = (userId: string) => {
+  const handleUsernameClick = (userId: number) => {
     const user = users.find((user) => user.id === userId);
+    console.log("user:", photo?.user_id);
     if (user) {
       navigate(`/profile/${userId}`, { state: { user } });
     }
@@ -244,7 +246,8 @@ const PhotoDetail = () => {
 
   const handlePurchase = async () => {
     if (!currentUser) {
-      alert("You need to be logged in to purchase a photo.");
+      // alert("You need to be logged in to purchase a photo.");
+      toast.error("You need to be logged in to purchase a photo.");
       return;
     }
     console.log("hasPurchased: ", hasPurchased);
@@ -257,7 +260,7 @@ const PhotoDetail = () => {
         });
         setHasPurchased(true);
         console.log("Updated hasPurchased:", true);
-
+        toast.success("Purchase successful!");
         const updatedPhotoResponse = await axios.get<PhotoDetailProps>(
           `/api/photo/${photo.id}`
         );
@@ -265,6 +268,16 @@ const PhotoDetail = () => {
         console.log("Updated photo:", updatedPhotoResponse.data);
       } catch (error) {
         console.error("Error purchasing photo:", error);
+
+        // แจ้งเตือนเมื่อเกิดข้อผิดพลาดในการซื้อ
+        if (axios.isAxiosError(error) && error.response) {
+          const errorMessage =
+            error.response.data.error ||
+            "An error occurred during the purchase.";
+          toast.error(errorMessage);
+        } else {
+          toast.error("An unexpected error occurred. Please try again.");
+        }
       }
     }
   };
@@ -280,7 +293,10 @@ const PhotoDetail = () => {
   const handleClose = () => {
     setShowCommentForm(false);
   };
-
+  const getPhotoOwner = (userId: number) => {
+    const user = users.find((user) => user.id === userId);
+    return user || null;
+  };
   return (
     <LoadingWrapper>
       <Layout>
@@ -422,7 +438,7 @@ const PhotoDetail = () => {
                     />
                     <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
                   </svg>
-                  Limit Download :{" "}
+                  Limit Sales :{" "}
                   {photo.max_sales === null
                     ? "Unlimited"
                     : photo.max_sales === 0
@@ -433,7 +449,6 @@ const PhotoDetail = () => {
                 <div className="flex items-center justify-start gap-[10px]">
                   {currentUser ? (
                     <button
-                      data-cy="like-btn"
                       className="btnLike gap-[6px] w-[fit-content] h-[fit-content]  rounded-md text-back cursor-pointer hover:text-gray-500 flex items-center justify-center text-center no-underline hover:no-underline focus:to-teal-950"
                       onClick={() =>
                         handleLike(
@@ -493,9 +508,7 @@ const PhotoDetail = () => {
                   )}
                   <p
                     className="mt-2"
-                    onClick={() =>
-                      handleUsernameClick(photo.user_id.toString())
-                    }
+                    onClick={() => handleUsernameClick(photo.user_id)}
                   />
                   {currentUser ? (
                     <>
@@ -676,7 +689,8 @@ const PhotoDetail = () => {
                       ></Button>
                     )
                   ) : (photo.max_sales === 0 && hasPurchased) ||
-                    photo.price === 0 ? (
+                    photo.price === 0 ||
+                    hasPurchased ? (
                     currentUser ? (
                       <div className="flex items-center justify-center ml-2 float-right">
                         <button
@@ -723,7 +737,6 @@ const PhotoDetail = () => {
                         </p>
                         {currentUser?.id === comment.user_id && (
                           <button
-                            data-cy="delete-btn"
                             className=" text-red-600 cursor-pointer hover:scale-110 flex items-center justify-center text-center no-underline hover:no-underline"
                             onClick={() =>
                               handleDeleteComment(
@@ -766,8 +779,12 @@ const PhotoDetail = () => {
               PAYMENT NOW PRICE : {photo?.price} BATH
             </h2>
           </div> */}
+          {currentUser && (
+            <p className="mt-3">Logged in as: {currentUser.username}</p>
+          )}
         </div>
       </Layout>
+      <ToastContainer />
     </LoadingWrapper>
   );
 };

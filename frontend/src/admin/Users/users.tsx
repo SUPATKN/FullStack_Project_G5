@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { Hexagon } from "lucide-react";
-import { Image, Modal } from "react-bootstrap";
-import { Bar } from "react-chartjs-2";
+import { useState, useEffect } from 'react';
+import { Hexagon } from 'lucide-react';
+import { Image, Modal } from 'react-bootstrap';
+import { Bar } from 'react-chartjs-2';
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from 'axios';
 
 interface User {
   name: string;
@@ -29,14 +29,13 @@ interface Comment {
   created_at: string;
 }
 
+
 export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [showPhotoModal, setShowPhotoModal] = useState<boolean>(false);
-  const [likes, setLikes] = useState<{ photo_id: number; user_id: number }[]>(
-    []
-  );
+  const [likes, setLikes] = useState<{ photo_id: number; user_id: number }[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   // const [loading, setLoading] = useState<boolean>(true);
 
@@ -91,8 +90,7 @@ export default function Users() {
   };
 
   const getCommentCount = (photoId: string) => {
-    return comments.filter((comment) => comment.photo_id === parseInt(photoId))
-      .length;
+    return comments.filter((comment) => comment.photo_id === parseInt(photoId)).length;
   };
 
   const getTotalLikesForUser = (userId: number) => {
@@ -117,12 +115,13 @@ export default function Users() {
     totalComments: getTotalCommentsForUser(userId),
   }));
 
+  
   const calculateMaxValue = (datasets: number[][], buffer: number) => {
     const allValues = datasets.flat();
     const maxValue = Math.max(...allValues);
     return maxValue + buffer;
   };
-
+  
   const maxYValue = calculateMaxValue(
     [
       userStats.map((stat) => stat.totalLikes),
@@ -173,6 +172,7 @@ export default function Users() {
     }
   };
 
+
   useEffect(() => {
     fetchUsers();
     fetchAllPhoto();
@@ -180,189 +180,189 @@ export default function Users() {
     fetchComments();
   }, []);
   return (
-    <div>
-      <h4 className="flex items-center text-white text-2xl">
-        <Hexagon className="text-white w-10 h-10 mr-2" />
-        Users
-      </h4>
-      <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
-        <table className="table-auto mx-auto w-[1100px] h-full border-collapse border-black">
-          <thead>
-            <tr className="text-center border-black">
-              <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap rounded-tl-[8px]">
-                ID
-              </th>
-              <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap ">
-                Username
-              </th>
-              <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap ">
-                Email
-              </th>
-              <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap rounded-tr-lg">
-                Profile
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id} className="text-center">
-                <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tl-lg">
-                  {user.id}
-                </td>
-                <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap">
-                  {user.username}
-                </td>
-                <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap">
-                  {user.email}
-                </td>
-                <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tr-lg">
-                  <button
-                    data-cy="view-btn"
-                    className="bg-[#ff8833] text-white w-[100px] h-[30px] rounded-md"
-                    onClick={() => handleUsernameClick(user.id.toString())}
-                  >
-                    View Profile
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className='ml-4'>
+            
+            <h4 className=" flex items-center text-white text-2xl text-center font-light letter-spacing-0-7px mb-4">
+              ◆ Users
+          </h4>
+            <div className="overflow-hidden border shadow-md bg-white bg-opacity-10 border-black">
+              <table className="table-auto mx-auto w-[1100px] h-full border-collapse border-black">
+                <thead>
+                  <tr className="text-center border-black">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap">
+                      ID
+                    </th>
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap ">
+                      Username
+                    </th>
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap ">
+                      Email
+                    </th>
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap">
+                      Profile
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user.id} className="text-center">
+                      <td className="border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[183px] whitespace-nowrap rounded-tl-lg">
+                        {user.id}
+                      </td>
+                      <td className="border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[183px] whitespace-nowrap">
+                        {user.username}
+                      </td>
+                      <td className="border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[183px] whitespace-nowrap">
+                        {user.email}
+                      </td>
+                      <td className="border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[183px] whitespace-nowrap">
+                        <button
+                          className="p-2  px-3 bg-[#ff8833] text-white w-[fit-content] h-[fit-content] rounded-md hover:bg-orange-500"
+                          onClick={() =>
+                            handleUsernameClick(user.id.toString())
+                          }
+                        >
+                          View Profile
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-      <h4 className="mt-4 flex items-center text-white text-2xl">
-        <Hexagon className="text-white w-10 h-10 mr-2" />
-        User Photos
-      </h4>
-      <div className="overflow-hidden rounded-lg border shadow-md bg-white bg-opacity-10 border-black">
-        <table className="table-auto mx-auto w-[1100px] h-full border-collapse border-black">
-          <thead>
-            <tr className="text-center">
-              <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px]  whitespace-nowrap rounded-tl-[8px]">
-                Photo ID
-              </th>
-              <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap ">
-                User ID
-              </th>
-              <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap ">
-                Photo
-              </th>
-              <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-bold text-[#ff8833] w-[275px] whitespace-nowrap rounded-tr-lg">
-                Price
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {photos.map((photo) => (
-              <tr key={photo.id} className="text-center">
-                <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tl-lg">
-                  {photo.id}
-                </td>
-                <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap">
-                  {photo.user_id}
-                </td>
-                <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px] h-full  whitespace-nowrap flex items-center justify-center">
+            <h4 className=" mt-4 flex items-center text-white text-2xl text-center font-light letter-spacing-0-7px mb-4">
+              ◆ User Photos
+          </h4>
+            <div className="overflow-hidden  border shadow-md bg-white bg-opacity-10 border-black">
+              <table className="table-auto mx-auto w-[1100px] h-full border-collapse border-black">
+                <thead>
+                  <tr className="text-center">
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap">
+                      Photo ID
+                    </th>
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap ">
+                      User ID
+                    </th>
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap">
+                      Photo
+                    </th>
+                    <th className="border-[#ff8833] border-2 px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-[#ff8833] w-[183px] whitespace-nowrap">
+                      Price
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {photos.map((photo) => (
+                    <tr key={photo.id} className="text-center">
+                      <td className="border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[183px] whitespace-nowrap rounded-tl-lg">
+                        {photo.id}
+                      </td>
+                      <td className="border-black px-2 py-3 text-[16px] font-normal letter-spacing-0-7px text-white w-[183px] whitespace-nowrap">
+                        {photo.user_id}
+                      </td>
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px] h-full  whitespace-nowrap flex items-center justify-center">
+                        <Image
+                          crossOrigin="anonymous"
+                          src={`/api/${photo.path}`}
+                          alt={`Image ${photo.id}`}
+                          // thumbnail
+                          width={100}
+                          height={100}
+                          onClick={() => handleShowPhoto(photo)}
+                          className="cursor-pointer"
+                        />
+                      </td>
+                      <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tr-lg">
+                        {photo.price}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            <h4 className=" mt-4 flex items-center text-white text-2xl text-center font-light letter-spacing-0-7px mb-4">
+              ◆ User Stats Bar Graph
+          </h4>
+            <div className="w-[80%] mx-auto mb-4">
+              <Bar
+                data={getBarGraphData()}
+                options={{
+                  responsive: true,
+                  indexAxis: "x",
+                  plugins: {
+                    legend: {
+                      position: "top",
+                    },
+                    tooltip: {
+                      callbacks: {
+                        label: function (context) {
+                          let label = context.dataset.label || "";
+                          if (label) {
+                            label += ": ";
+                          }
+                          if (context.parsed.y !== null) {
+                            label += context.parsed.y;
+                          }
+                          return label;
+                        },
+                      },
+                    },
+                  },
+                  scales: {
+                    x: {
+                      stacked: false,
+                    },
+                    y: {
+                      stacked: false,
+                      min: 0, // Minimum value on y-axis
+                      max: maxYValue, // Maximum value on y-axis, extended by buffer
+                    },
+                  },
+                }}
+              />
+            </div>
+            {selectedPhoto && (
+              <Modal show={showPhotoModal} onHide={handleClosePhotoModal}>
+                <Modal.Header closeButton onClick={handleClosePhotoModal}>
+                  <Modal.Title className="frontsize-15px">
+                    <span style={{ fontSize: "18px" }}>Title: </span>
+                    <span style={{ color: "green", fontSize: "18px" }}>
+                      {selectedPhoto.title}
+                    </span>
+                  </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
                   <Image
                     crossOrigin="anonymous"
-                    src={`/api/${photo.path}`}
-                    alt={`Image ${photo.id}`}
-                    // thumbnail
-                    width={100}
-                    height={100}
-                    onClick={() => handleShowPhoto(photo)}
-                    className="cursor-pointer"
+                    src={`/api/${selectedPhoto.path}`}
+                    alt={`Image ${selectedPhoto.id}`}
+                    fluid
                   />
-                </td>
-                <td className="border-black px-2 py-3 text-[16px] font-medium text-white w-[275px]  whitespace-nowrap rounded-tr-lg">
-                  {photo.price}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <h4 className="mt-4 flex items-center text-white text-2xl">
-        <Hexagon className="text-white w-10 h-10 mr-2" />
-        User Stats Bar Graph
-      </h4>
-      <div className="w-[80%] mx-auto">
-        <Bar
-          data={getBarGraphData()}
-          options={{
-            responsive: true,
-            indexAxis: "x",
-            plugins: {
-              legend: {
-                position: "top",
-              },
-              tooltip: {
-                callbacks: {
-                  label: function (context) {
-                    let label = context.dataset.label || "";
-                    if (label) {
-                      label += ": ";
-                    }
-                    if (context.parsed.y !== null) {
-                      label += context.parsed.y;
-                    }
-                    return label;
-                  },
-                },
-              },
-            },
-            scales: {
-              x: {
-                stacked: false,
-              },
-              y: {
-                stacked: false,
-                min: 0, // Minimum value on y-axis
-                max: maxYValue, // Maximum value on y-axis, extended by buffer
-              },
-            },
-          }}
-        />
-      </div>
-      {selectedPhoto && (
-        <Modal show={showPhotoModal} onHide={handleClosePhotoModal}>
-          <Modal.Header closeButton onClick={handleClosePhotoModal}>
-            <Modal.Title className="frontsize-15px">
-              <span style={{ fontSize: "18px" }}>Title: </span>
-              <span style={{ color: "green", fontSize: "18px" }}>
-                {selectedPhoto.title}
-              </span>
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Image
-              crossOrigin="anonymous"
-              src={`/api/${selectedPhoto.path}`}
-              alt={`Image ${selectedPhoto.id}`}
-              fluid
-            />
-            <div style={{ textAlign: "center", marginTop: "15px" }}>
-              <div style={{ fontSize: "15px", fontWeight: "bold" }}>
-                Descriptions
-              </div>
-              <div
-                style={{
-                  color: "grey",
-                  fontSize: "15px",
-                  marginTop: "5px",
-                }}
-              >
-                {selectedPhoto.description}
-              </div>
-            </div>
-          </Modal.Body>
-          {/* <Modal.Footer>
+                  <div style={{ textAlign: "center", marginTop: "15px" }}>
+                    <div style={{ fontSize: "15px", fontWeight: "bold" }}>
+                      Descriptions
+                    </div>
+                    <div
+                      style={{
+                        color: "grey",
+                        fontSize: "15px",
+                        marginTop: "5px",
+                      }}
+                    >
+                      {selectedPhoto.description}
+                    </div>
+                  </div>
+                </Modal.Body>
+                {/* <Modal.Footer>
                   <Button variant="secondary" onClick={handleClosePhotoModal}>
                     Close
                   </Button>
                 </Modal.Footer> */}
-        </Modal>
-      )}
+              </Modal>
+            )}
+
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Hexagon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface User {
@@ -9,7 +8,7 @@ interface User {
   email: string;
 }
 
-interface Ordershistory {
+interface Withdrawhistory {
   history_id: number;
   user_id: number;
   price: number;
@@ -22,7 +21,7 @@ export default function Orderhistory() {
   const [users, setUsers] = useState<User[]>([]);
 
   const [selectedUserName, setSelectedUserName] = useState<string | null>(null);
-  const [orderHistory, setOrderHistory] = useState<Ordershistory[]>([]);
+  const [orderHistory, setOrderHistory] = useState<Withdrawhistory[]>([]);
   const [showOrderHistoryModal, setShowOrderHistoryModal] =
     useState<boolean>(false);
 
@@ -33,9 +32,12 @@ export default function Orderhistory() {
 
   const fetchOrderHistory = async (user_id: number) => {
     try {
-      const response = await axios.get<Ordershistory[]>("/api/orders/history", {
-        params: { user_id },
-      });
+      const response = await axios.get<Withdrawhistory[]>(
+        "/api/withdraw/history",
+        {
+          params: { user_id },
+        }
+      );
       setOrderHistory(response.data);
       setShowOrderHistoryModal(true);
       console.log("user_id", user_id);
@@ -60,7 +62,7 @@ export default function Orderhistory() {
   return (
     <div>
       <h4 className=" flex items-center text-white text-2xl text-center font-light letter-spacing-0-7px mb-4">
-        ◆ Orders History
+        ◆ Withdraw History
       </h4>
       <div className="overflow-hidden  border shadow-md bg-white bg-opacity-10 border-black">
         <table className="table-auto mx-auto w-[1100px] border-collapse border-black">
@@ -112,7 +114,7 @@ export default function Orderhistory() {
           <div className="bg-white p-4 w-[700px] rounded-md shadow-md border max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h2 className="text-black text-[24px] font-normal ml-2">
-                Order History for{" "}
+                Withdraw History for{" "}
                 <span style={{ color: "orange" }}>{selectedUserName}</span>
               </h2>
               <button
@@ -150,10 +152,10 @@ export default function Orderhistory() {
                         {order.history_id}
                       </td>
                       <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap">
-                        -{order.price}
+                        +{order.price}
                       </td>
                       <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap">
-                        +{order.coins}
+                        -{order.coins}
                       </td>
                       <td className="border px-2 py-3 text-[16px] font-medium text-black w-[120px] whitespace-nowrap">
                         {order.status}

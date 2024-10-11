@@ -4,6 +4,9 @@
 .Body{
   background-color: #181818;
 }
+.BodyAdmin{
+  background-color: #000000;
+}
 body {
   margin: 0;
   background-color: #000000;
