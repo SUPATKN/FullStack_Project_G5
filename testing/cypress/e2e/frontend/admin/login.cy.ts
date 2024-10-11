@@ -1,5 +1,6 @@
 describe("admin login test", () => {
   it("login", () => {
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/login");
     // cy.get(
     //   "#root > div > nav > div > div.nav-actions > div > a.nav-link.login"
