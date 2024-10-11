@@ -55,7 +55,7 @@ export default function WithdrawMoney() {
 
   const handleRejectSlip = async (slip_id: number) => {
     try {
-      await axios.post(`/api/withdrawslips/reject/${slip_id}`);
+      await axios.post(`/api/wirhdrawslips/reject/${slip_id}`);
       await fetchSlips(); // Re-fetch slips after operation
     } catch (error) {
       console.error("Error rejecting slip:", error);

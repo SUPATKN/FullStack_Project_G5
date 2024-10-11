@@ -1892,6 +1892,7 @@ app.get("/api/photos/search", async (req: Request, res: Response) => {
     const photos = await dbClient.query.images.findMany({
       where: sql`LOWER(${images.title}) LIKE ${'%' + lowerCaseTitle + '%'}` 
     });
+    
 
     console.log("Photos found for title:", title, photos);
 
@@ -2105,7 +2106,7 @@ app.get("/api/wirhdrawslips/get", async (req: Request, res: Response) => {
 app.post("/api/withdrawslips/approve/:slipId", async (req: Request, res: Response) => {
   const slipId = parseInt(req.params.slipId, 10);
 
-console.log("Received slip ID from params:", req.params.slipId);
+  console.log("Received slip ID from params:", req.params.slipId);
   if (isNaN(slipId)) {
     return res.status(400).json({ error: "Invalid slip ID" });
   }
@@ -2116,167 +2117,89 @@ console.log("Received slip ID from params:", req.params.slipId);
       where: eq(withdrwaslips.slip_id, slipId),
     });
 
-    console.log("Slip found:", slip);
-
     if (!slip || slip.status !== "pending") {
       return res
         .status(404)
         .json({ error: "Slip not found or already processed" });
     }
+    console.log("Slip found:", slip);
 
     // Fetch the user
     const user = await dbClient.query.users.findFirst({
       where: eq(users.id, slip.user_id),
     });
-    console.log("Fetched user:", user); // Log user details
-
-    const username = users.username;  // หรือ user.username ขึ้นอยู่กับโครงสร้างของ user
-    console.log("Username:", username);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+    console.log("Fetched user:", user);
+
+    // Check if the user has enough coins to withdraw
+    
 
     // Fetch the associated order
     const withdraw = await dbClient.query.withdraws.findFirst({
       where: eq(withdraws.user_id, slip.user_id),
-      
     });
-    console.log("Fetched withdraw:", withdraw); // Log withdraw details
-
 
     if (!withdraw) {
       return res.status(404).json({ error: "Order not found" });
     }
+    console.log("Fetched withdraw:", withdraw);
 
     // Update user coins based on the approved slip
-    await dbClient
-      .update(users)
-      .set({ coin: user.coin - slip.coins })
-      .where(eq(users.id, slip.user_id))
-      .execute();
-
+    try {
+      await dbClient
+        .update(users)
+        .set({ coin: user.coin - slip.coins })
+        .where(eq(users.id, slip.user_id))
+        .execute();
       console.log("User coins updated successfully");
-
+    } catch (updateError) {
+      console.error("Failed to update user coins:", updateError);
+      return res.status(500).json({ error: "Failed to update user coins" });
+    }
 
     // Insert the order into orders_history
-    await dbClient
-      .insert(withdraws_history)
-      .values({
-        user_id: slip.user_id,
-        withdraw_id: withdraw.withdraw_id,
-        coins: slip.coins,
-        price: slip.amount,
-        status: "Approved",
-        create_at: new Date(),
-      })
-      .execute();
+    try {
+      await dbClient
+        .insert(withdraws_history)
+        .values({
+          user_id: slip.user_id,
+          withdraw_id: withdraw.withdraw_id,
+          coins: slip.coins,
+          price: slip.amount,
+          status: "Approved",
+          create_at: new Date(),
+        })
+        .execute();
+      console.log("Order recorded successfully");
+    } catch (historyError) {
+      console.error("Failed to insert into withdraws_history:", historyError);
+      return res.status(500).json({ error: "Failed to record the order" });
+    }
 
     // Delete the slip after approving
-    await dbClient.delete(withdrwaslips).where(eq(withdrwaslips.slip_id, slipId)).execute();
+    try {
+      await dbClient
+        .delete(withdrwaslips)
+        .where(eq(withdrwaslips.slip_id, slipId))
+        .execute();
       console.log("Slip deleted successfully");
+    } catch (deleteError) {
+      console.error("Failed to delete slip:", deleteError);
+      return res.status(500).json({ error: "Failed to delete slip" });
+    }
 
-    res
-      .status(200)
-      .json({ message: "Slip approved, coins added, and order recorded" ,
-        username: username
-      });
+    res.status(200).json({
+      message: "Slip approved, coins deducted, and order recorded",
+    });
   } catch (error) {
     console.error("Error approving slip:", error);
     res.status(500).json({ error: "Failed to approve slip" });
   }
 });
 
-// Reject Slip
-app.post("/api/wirhdrawslips/reject/:slipId", async (req: Request, res: Response) => {
-  const slipId = parseInt(req.params.slipId, 10);
-
-  if (isNaN(slipId)) {
-    return res.status(400).json({ error: "Invalid slip ID" });
-  }
-
-  try {
-    // Fetch the slip
-    const slip = await dbClient.query.withdrwaslips.findFirst({
-      where: eq(withdrwaslips.slip_id, slipId),
-    });
-
-    if (!slip || slip.status !== "pending") {
-      return res
-        .status(404)
-        .json({ error: "Slip not found or already processed" });
-    }
-
-    // Fetch the user
-    const user = await dbClient.query.users.findFirst({
-      where: eq(users.id, slip.user_id),
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    // Fetch the associated order
-    const withdraw = await dbClient.query.withdraws.findFirst({
-      where: eq(withdraws.user_id, slip.user_id),
-      // Assumes you want the latest order, adjust if needed
-    });
-
-
-    if (!withdraw) {
-      return res.status(404).json({ error: "Order not found" });
-    }
-
-    // Insert the order into orders_history with status "rejected"
-    await dbClient
-      .insert(withdraws_history)
-      .values({
-        user_id: slip.user_id,
-        withdraw_id: withdraw.withdraw_id, // Use the found order_id
-        coins: slip.coins,
-        price: slip.amount, // Assuming slip.amount corresponds to the price
-        status: "Rejected",
-        create_at: new Date(), // or use timestamp if preferred
-      })
-      .execute();
-
-    // Delete the slip upon rejection
-    await dbClient.delete(withdrwaslips).where(eq(withdrwaslips.slip_id, slipId)).execute();
-
-    res
-      .status(200)
-      .json({ message: "Slip rejected, order recorded in history" });
-  } catch (error) {
-    console.error("Error rejecting slip:", error);
-    res.status(500).json({ error: "Failed to reject slip" });
-  }
-});
-
-app.post("/api/selectedwithdraw", async (req, res) => {
-  const { price, coins, user_id } = req.body;
-
-  console.log("Price:", price);
-  console.log("Quantity:", coins);
-  console.log("User_Id:", user_id);
-
-  try {
-    // Convert price to string if necessary
-    const formattedPrice = parseFloat(price).toFixed(2); // Format price as a decimal with 2 places
-
-    await dbClient.insert(withdraws).values({
-      user_id: Number(user_id),
-      price: formattedPrice, // Keep price as a string in decimal format
-      quantity: Number(coins),
-      status: "pending",
-      created_at: new Date(),
-    });
-
-    res.status(201).json({ message: "Orders added successfully" });
-  } catch (error) {
-    console.error("Error inserting order into the database:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 app.get("/api/withdraw/history", async (req: Request, res: Response) => {
   try {

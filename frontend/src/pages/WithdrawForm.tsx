@@ -76,6 +76,13 @@ const Withdraw = () => {
       return;
     }
 
+    if (user.coin < coin) {
+      alert(
+        `You have only ${user.coin} coins, but you are trying to withdraw ${coin} coins.`
+      );
+      return;
+    }
+
     setSelectedAmount(amount);
     setSelectedCoins(coin);
     console.log("Amount:", amount);
