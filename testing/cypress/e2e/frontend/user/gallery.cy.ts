@@ -1,5 +1,6 @@
 describe("gallery page test", () => {
   it("should navigate to the Gallery page when Gallery link is clicked", () => {
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/");
     // cy.get(
     //   "#root > div > nav > div > div.navbar-collapse > ul > li.active > a"

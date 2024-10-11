@@ -1,5 +1,6 @@
 describe("delete album test", () => {
   it("should delete album", () => {
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/login");
 
     cy.get("#email").type("aaa@gmail.com");
@@ -8,6 +9,6 @@ describe("delete album test", () => {
 
     cy.wait(2000);
     cy.get('[data-cy="profile-btn"]').click();
-    cy.get('[data-cy="delete-btn"]').click();
+    cy.get('[data-cy="delete-btn"]').first().click();
   });
 });

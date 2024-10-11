@@ -1,5 +1,6 @@
 describe("register test", () => {
   it("sign up", () => {
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/register");
     // cy.get('[data-cy="signup-button"]').click();
     cy.get("#username").type("ccc");

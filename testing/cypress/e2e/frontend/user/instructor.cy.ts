@@ -3,6 +3,7 @@ describe("instructor page test", () => {
     //   cy.get(
     //     "#root > div > nav > div > div.navbar-collapse > ul > li:nth-child(4) > a"
     //   ).click();
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/instructor");
     cy.get("#email").type("aaa@gmail.com");
     cy.get("#password").type("12345678");

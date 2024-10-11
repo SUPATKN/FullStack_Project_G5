@@ -6,7 +6,7 @@ describe("upload page test", () => {
     //     "#root > div > nav > div > div.navbar-collapse > ul > li:nth-child(4) > a"
     //   ).click();
     cy.visit("http://localhost:5899/upload");
-    cy.get("#email").type("bbb@gmail.com");
+    cy.get("#email").type("aaa@gmail.com");
     cy.get("#password").type("12345678");
     cy.get('[data-cy="login-button"]').click();
     cy.wait(2000);
@@ -16,14 +16,16 @@ describe("upload page test", () => {
     cy.get('[data-cy="start-upload"]').first().click();
     // #root > div > nav > div > div.nav-actions > a.nav-link.start-upload > div
     cy.url().should("include", "/upload");
-    const imagePath = "img1.png";
+    const imagePath = "dog.jpg";
     cy.wait(2000);
     cy.get('[data-cy="file-input"]').attachFile(imagePath);
     cy.wait(1000);
-    cy.get("#formTitle").type("img1");
-    cy.get("#formDescription").type("hehe");
+    cy.get("#formTitle").type("Dog");
+    cy.get("#formDescription").type("Cute");
     // cy.get("#formIsFree").click();
     // cy.get("#formPrice").type("1");
+    cy.get("#formTags").first().click();
+    cy.wait(1000);
     cy.get('[data-cy="upload-button"]').click();
     cy.get('[data-cy="success-message"]').should(
       "contain",

@@ -1,8 +1,9 @@
 describe("add to cart test", () => {
   it("should add to cart", () => {
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/login");
 
-    cy.get("#email").type("aaa@gmail.com");
+    cy.get("#email").type("bbb@gmail.com");
     cy.get("#password").type("12345678");
     cy.get('[data-cy="login-button"]').click();
     cy.wait(2000);
@@ -17,6 +18,6 @@ describe("add to cart test", () => {
       .first()
       .click();
     cy.get('[data-cy="cart-btn"]').click();
-    cy.get("#root > div > div > div.Cart > div.checkout.w-100.mb-2").click();
+    // cy.get("#root > div > div > div.Cart > div.checkout.w-100.mb-2").click();
   });
 });

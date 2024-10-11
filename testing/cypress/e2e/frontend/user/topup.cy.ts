@@ -2,9 +2,10 @@ import "cypress-file-upload";
 
 describe("top up test", () => {
   it("should top up", () => {
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/login");
 
-    cy.get("#email").type("bbb@gmail.com");
+    cy.get("#email").type("aaa@gmail.com");
     cy.get("#password").type("12345678");
     cy.get('[data-cy="login-button"]').click();
     cy.wait(2000);
@@ -15,7 +16,7 @@ describe("top up test", () => {
     cy.get(
       "#root > div > div > div > div > div > div > div.col-md-4 > div > button"
     ).click();
-    const imagePath = "img1.png";
+    const imagePath = "slip.png";
     cy.wait(2000);
     cy.get(
       "#root > div > div > div > div > div > div > div.col-md-4 > div > div.mt-2.boxQR > div > input"

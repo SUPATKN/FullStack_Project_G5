@@ -1,5 +1,6 @@
 describe("view album test", () => {
   it("should view album", () => {
+    cy.viewport("macbook-16");
     cy.visit("http://localhost:5899/login");
 
     cy.get("#email").type("aaa@gmail.com");
