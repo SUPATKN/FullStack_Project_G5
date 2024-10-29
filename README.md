@@ -11,7 +11,8 @@ This project consists of a full-stack setup using containerized services for the
 2. [Frontend Setup](#frontend-setup)
 3. [Backend Setup](#backend-setup)
 4. [Database Setup](#database-setup)
-5. [Folder Structure](#folder-structure)
+5. [API Endpoints](#api-endpoints)
+6. [Folder Structure](#folder-structure)
 
 ---
 
