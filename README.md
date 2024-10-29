@@ -1,4 +1,4 @@
-# FullStack_Project_G5
+# FullStack Project G5
 
 ## Project Overview
 This project consists of a full-stack setup using containerized services for the frontend, backend, and database. It is structured to allow efficient development, testing, and deployment.
