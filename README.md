@@ -104,7 +104,7 @@ To spin up the containerized environments, use the following commands.
 3. **User Management**  
    - Access the PostgreSQL shell:
       ```bash
-      docker exec -it pf-db bash
+      docker exec -it art-database bash
       psql -U postgres -d mydb
       ```
    - Update the user and permissions:
